@@ -1,5 +1,5 @@
-import { useSelector } from "react-redux";
-
+import {theme} from 'native-base';
+import {useSelector} from 'react-redux';
 
 export default Color = {
 
@@ -25,11 +25,15 @@ export default Color = {
   darkBlue: '#1877F2',
   boxgrey: '#0000004F',
   purple: '#0D668E',
+  secondry: '#C32C27',
 
   // theme colors
   grey: "#5D5D5D",
   cartheme: ['#79B9F6', '#00309E',],
   btnColor: ['#565657', "#000000"],
+  grey: '#5D5D5D',
+  cartheme: ['#79B9F6', '#00309E'],
+  btnColor: ['#565657', '#000000'],
   tabBarGradient: ['#000000', '#464646'],
   circleblue: '#404552',
   themeDarkGray: '#535353',
@@ -42,5 +46,3 @@ export default Color = {
   themeBgColor: ['#E9CB5800', '#E9CB58'],
   statusBarColor: ['#297FAD', '#297FAD'],
 };
-
-

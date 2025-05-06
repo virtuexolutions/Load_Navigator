@@ -3,7 +3,13 @@
 import {useNavigation} from '@react-navigation/native';
 import {Formik} from 'formik';
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, ScrollView, StyleSheet, View} from 'react-native';
+import {
+  ActivityIndicator,
+  ImageBackground,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {moderateScale} from 'react-native-size-matters';
 import {useDispatch, useSelector} from 'react-redux';
@@ -60,7 +66,6 @@ const LoginScreen = props => {
   //   messaging()
   //     .getToken()
   //     .then(_token => {
-  //       console.log('🚀 Srrrrrrrrrrrrrrrrrr:', _token);
   //       setDeviceToken(_token);
   //       dispatch(SetFCMToken({fcmToken: _token}));
   //     })
@@ -68,233 +73,169 @@ const LoginScreen = props => {
   // }, []);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <ImageBackground
+      imageStyle={{
+        width: '100%',
+        height: '100%',
+      }}
+    resizeMode='stretch'
+      source={require('../Assets/Images/login_bg.png')}
+      style={{height: windowHeight, width: windowWidth, alignItems: 'center'}}>
       <CustomStatusBar
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <ScrollView
-        scrollEnabled={false}
+
+      <View
         style={{
-          height: windowHeight,
-          width: windowWidth,
-          backgroundColor: 'white',
-        }}
-        contentContainerStyle={{
-          alignItems: 'center',
-          paddingBottom: moderateScale(90, 0.6),
-        }}
-        showsVerticalScrollIndicator={false}>
-        <View
+          height: windowHeight * 0.17,
+          width: windowHeight * 0.2,
+        }}>
+        <CustomImage
+          resizeMode="contain"
+          source={require('../Assets/Images/logo.png')}
           style={{
-            height: windowHeight * 0.1,
-            width: windowHeight * 0.2,
-            marginTop: windowHeight * 0.04,
-          }}>
-          <CustomImage
-            resizeMode="contain"
-            // source={require('../Assets/Images/logo.png')}
-            style={{
-              width: '100%',
-              height: '100%',
-            }}
-          />
-        </View>
-        <CustomText isBold style={styles.text}>
-          Sign in
-        </CustomText>
-        <View style={[styles.feild_container]}>
-          <Formik
-            initialValues={{
-              email: '',
-              password: '',
-            }}
-            validationSchema={loginSchema}
-            onSubmit={login}>
-            {({handleChange, handleSubmit, values, errors, touched}) => {
-              return (
-                <>
-                  <TextInputWithTitle
-                    title={'email Id *'}
-                    titleText={'Username'}
-                    placeholder={'Email'}
-                    setText={handleChange('email')}
-                    value={values.email}
-                    viewHeight={0.055}
-                    viewWidth={0.82}
-                    inputWidth={0.8}
-                    border={1}
-                    fontSize={moderateScale(10, 0.6)}
-                    borderRadius={30}
-                    backgroundColor={'transparent'}
-                    borderColor={Color.lightGrey}
-                    marginTop={moderateScale(10, 0.3)}
-                    placeholderColor={Color.darkGray}
-                    titleStlye={{right: 10}}
-                  />
-                  {touched.email && errors.email && (
-                    <CustomText
-                      textAlign={'left'}
-                      style={{
-                        fontSize: moderateScale(10, 0.6),
-                        color: Color.red,
-                        alignSelf: 'flex-start',
-                      }}>
-                      {errors.email}
-                    </CustomText>
-                  )}
-                  <TextInputWithTitle
-                    secureText={true}
-                    title={'password *'}
-                    placeholder={'**********'}
-                    setText={handleChange('password')}
-                    value={values.password}
-                    viewHeight={0.055}
-                    viewWidth={0.82}
-                    inputWidth={0.8}
-                    border={1}
-                    borderRadius={30}
-                    backgroundColor={'transparent'}
-                    borderColor={Color.lightGrey}
-                    marginTop={moderateScale(10, 0.3)}
-                    // color={Color.white}
-                    placeholderColor={Color.darkGray}
-                    titleStlye={{right: 10}}
-                  />
-                  {touched.password && errors.password && (
-                    <CustomText
-                      textAlign={'left'}
-                      style={{
-                        fontSize: moderateScale(10, 0.6),
-                        color: Color.red,
-                        alignSelf: 'flex-start',
-                      }}>
-                      {errors.password}
-                    </CustomText>
-                  )}
-                  <CustomText
-                    onPress={() => {
-                      navigation.navigate('VerifyEmail');
-                    }}
-                    style={styles.forgotpassword}>
-                    Forgot password ?
-                  </CustomText>
-                  <View style={{marginTop: moderateScale(10, 0.6)}} />
-                  <CustomButton
-                    text={
-                      isLoading ? (
-                        <ActivityIndicator size={'small'} color={Color.white} />
-                      ) : (
-                        'sign in '
-                      )
-                    }
-                    fontSize={moderateScale(15, 0.3)}
-                    textColor={Color.white}
-                    borderWidth={0}
-                    borderColor={Color.white}
-                    borderRadius={moderateScale(30, 0.3)}
-                    width={windowWidth * 0.8}
-                    height={windowHeight * 0.075}
-                    bgColor={Color.darkBlue}
-                    textTransform={'capitalize'}
-                    elevation={true}
-                    onPress={handleSubmit}
-                  />
-                </>
-              );
-            }}
-          </Formik>
-        </View>
-        <View style={styles.button_container}>
-          <CustomText style={styles.soc_text}>
-            or connecting using social account
-          </CustomText>
-          {/* <CustomButton
-            onPress={() => {
-              setLoginMethod('Google');
-
-              GoogleSignin.configure({
-                offlineAccess: true,
-                webClientId:
-                  '679685403786-posjs7qgk9l5n3f4c13ni6soaf9dv0bb.apps.googleusercontent.com',
-              });
-
-              GoogleSignin.hasPlayServices()
-                .then(hasPlayService => {
-                  if (hasPlayService) {
-                    GoogleSignin.signIn()
-                      .then(userInfo => {
-                        console.log(
-                          'helllllllllllooooooooooooooooo',
-                          JSON.stringify(userInfo, null, 2),
-                        );
-                        loginWithGoogle(userInfo);
-                      })
-                      .catch(e => {
-                        console.log(
-                          'ERROR IS=============: ' + JSON.stringify(e.message),
-                        );
-                      });
-                  }
-                })
-                .catch(e => {
-                  console.log('ERROR IS: ' + JSON.stringify(e, null, 2));
-                });
-            }}
-            text={'connect with google'}
-            fontSize={moderateScale(12, 0.3)}
-            textColor={Color.white}
-            borderWidth={1.5}
-            borderColor={Color.white}
-            borderRadius={moderateScale(30, 0.3)}
-            width={windowWidth * 0.85}
-            height={windowHeight * 0.065}
-            bgColor={Color.darkBlue}
-            textTransform={'capitalize'}
-          /> */}
-          <CustomButton
-            onPress={() => {}}
-            text={'connect with number'}
-            fontSize={moderateScale(13, 0.3)}
-            textColor={Color.themeBlack}
-            borderWidth={0.8}
-            borderColor={Color.black}
-            borderRadius={moderateScale(30, 0.3)}
-            width={windowWidth * 0.85}
-            height={windowHeight * 0.065}
-            marginTop={moderateScale(10, 0.3)}
-            bgColor={Color.white}
-            textTransform={'capitalize'}
-          />
-        </View>
-        <CustomText style={styles.do_text}>
-          Don’t have an account?
-          <CustomText
-            onPress={() => {
-              navigation.navigate('Signup');
-            }}
-            isBold
-            style={styles.Sign_text}>
-            Sign Up
-          </CustomText>
-        </CustomText>
-
-        <ImagePickerModal
-          show={imagePicker}
-          setShow={setImagePicker}
-          setFileObject={setImage}
+            width: '100%',
+            height: '100%',
+          }}
         />
-      </ScrollView>
-    </SafeAreaView>
+      </View>
+      <CustomText isBold style={styles.text}>
+        Trucking Company Login To Your Account
+      </CustomText>
+      <View>
+        <Formik
+          initialValues={{
+            email: '',
+            password: '',
+          }}
+          validationSchema={loginSchema}
+          onSubmit={login}>
+          {({handleChange, handleSubmit, values, errors, touched}) => {
+            return (
+              <>
+                <TextInputWithTitle
+                  titleText={'Username'}
+                  placeholder={'Email'}
+                  setText={handleChange('email')}
+                  value={values.email}
+                  viewHeight={0.062}
+                  viewWidth={0.85}
+                  inputWidth={0.82}
+                  border={1}
+                  fontSize={moderateScale(10, 0.6)}
+                  borderRadius={30}
+                  backgroundColor={'transparent'}
+                  borderColor={Color.white}
+                  marginTop={moderateScale(10, 0.3)}
+                  placeholderColor={Color.mediumGray}
+                  titleStlye={{right: 10}}
+                />
+                {touched.email && errors.email && (
+                  <CustomText
+                    textAlign={'left'}
+                    style={{
+                      fontSize: moderateScale(10, 0.6),
+                      color: Color.red,
+                      alignSelf: 'flex-start',
+                    }}>
+                    {errors.email}
+                  </CustomText>
+                )}
+                <TextInputWithTitle
+                  secureText={true}
+                  placeholder={'Password'}
+                  setText={handleChange('password')}
+                  value={values.password}
+                  viewHeight={0.062}
+                  viewWidth={0.85}
+                  inputWidth={0.82}
+                  border={1}
+                  borderRadius={30}
+                  backgroundColor={'transparent'}
+                  borderColor={Color.white}
+                  marginTop={moderateScale(10, 0.3)}
+                  // color={Color.white}
+                  placeholderColor={Color.mediumGray}
+                  titleStlye={{right: 10}}
+                />
+                {touched.password && errors.password && (
+                  <CustomText
+                    textAlign={'left'}
+                    style={{
+                      fontSize: moderateScale(10, 0.6),
+                      color: Color.red,
+                      alignSelf: 'flex-start',
+                    }}>
+                    {errors.password}
+                  </CustomText>
+                )}
+                <CustomText
+                  onPress={() => {
+                    navigation.navigate('VerifyEmail');
+                  }}
+                  style={styles.forgotpassword}>
+                  Forgot password ?
+                </CustomText>
+                <View style={{marginTop: moderateScale(10, 0.6)}} />
+                <CustomButton
+                  text={
+                    isLoading ? (
+                      <ActivityIndicator size={'small'} color={Color.white} />
+                    ) : (
+                      'sign in '
+                    )
+                  }
+                  fontSize={moderateScale(15, 0.3)}
+                  textColor={Color.white}
+                  borderWidth={0}
+                  borderColor={Color.white}
+                  borderRadius={moderateScale(30, 0.3)}
+                  width={windowWidth * 0.85}
+                  height={windowHeight * 0.065}
+                  bgColor={Color.secondry}
+                  textTransform={'capitalize'}
+                  elevation={true}
+                  onPress={handleSubmit}
+                />
+              </>
+            );
+          }}
+        </Formik>
+      </View>
+      <View style={styles.button_container}>
+        <CustomText style={styles.soc_text}>
+          or connecting using social account
+        </CustomText>
+      </View>
+      <CustomText style={styles.do_text}>
+        Don’t have an account?
+        <CustomText
+          onPress={() => {
+            navigation.navigate('Signup');
+          }}
+          isBold
+          style={styles.Sign_text}>
+          Sign Up
+        </CustomText>
+      </CustomText>
+
+      <ImagePickerModal
+        show={imagePicker}
+        setShow={setImagePicker}
+        setFileObject={setImage}
+      />
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   text: {
     fontSize: moderateScale(24, 0.6),
-    color: Color.themeBlack,
+    color: Color.white,
     paddingVertical: moderateScale(10, 0.6),
-    paddingTop: windowHeight * 0.02,
+    width: windowWidth * 0.7,
+    textAlign: 'center',
   },
   feild_container: {
     borderWidth: 0.5,
