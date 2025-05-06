@@ -1,10 +1,10 @@
 import React from 'react';
-import {Text} from 'react-native';
+import { Text } from 'react-native';
 import Color from '../Assets/Utilities/Color';
-import {FONTS} from '../Constant/theme';
+import { FONTS } from '../Constant/theme';
 
 const CustomText = props => {
-  const {children, numberOfLines, textAlign, style, isBold, onPress} = props;
+  const { children, numberOfLines, textAlign, style, isBold, onPress } = props;
   return (
     <Text
       onPress={onPress}
@@ -16,9 +16,9 @@ const CustomText = props => {
           textAlign: textAlign,
         },
         style,
-        {fontFamily: 'Quicksand-Regular'},
+        { fontFamily: 'Poppins-Regular' },
         isBold && {
-          fontFamily: 'Quicksand-Bold',
+          fontFamily: 'Poppins-Bold',
           fontWeight: 'bold',
         },
       ]}

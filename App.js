@@ -28,6 +28,7 @@ import CustomImage from './SRC/Components/CustomImage';
 import CustomText from './SRC/Components/CustomText';
 import { moderateScale } from 'react-native-size-matters';
 import { StripeProvider } from '@stripe/stripe-react-native';
+import PostLoadScreen from './SRC/Screens/PostLoadScreen';
 
 const App = () => {
   // const [publishableKey, setPublishableKey] = useState('');
@@ -199,7 +200,8 @@ const MainContainer = () => {
     return <SplashScreen />;
   }
   // return <ChooseDeclineReasonScreen/>;
-  return <AppNavigator />;
+  // return <AppNavigator />;
+  return <PostLoadScreen />
 };
 
 const useloader = value => {
