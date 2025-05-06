@@ -1,16 +1,21 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useState} from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
-import {moderateScale} from 'react-native-size-matters';
-import {useDispatch, useSelector} from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { moderateScale } from 'react-native-size-matters';
+import { useDispatch, useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import ScreenBoiler from '../Components/ScreenBoiler';
-import {setUserToken} from '../Store/slices/auth';
-import {SetUserRole} from '../Store/slices/auth-slice';
-import {setUserLogOut} from '../Store/slices/common';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import { setUserToken } from '../Store/slices/auth';
+import { SetUserRole } from '../Store/slices/auth-slice';
+import { setUserLogOut } from '../Store/slices/common';
+import { windowHeight, windowWidth } from '../Utillity/utils';
+import { Icon } from 'native-base';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import Feather from 'react-native-vector-icons/Feather'
+import AntDesign from 'react-native-vector-icons/AntDesign'
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 
 const Drawer = React.memo(() => {
   const dispatch = useDispatch();
@@ -18,206 +23,108 @@ const Drawer = React.memo(() => {
   const adminData = [
     {
       id: 1,
-      name: 'Inbox',
+      name: 'Post Load',
       onPress: () => {
         navigation.navigate('HomeScreen');
       },
+      iconName: 'post',
+      iconType: MaterialCommunityIcons
     },
     {
       id: 2,
-      name: 'Refer Friends',
+      name: 'Directory',
       onPress: () => {
         // setIsModalVisible(true);
         navigation.navigate('ReferFriendScreen');
       },
+      iconName: 'folder',
+      iconType: Feather
     },
     {
       id: 3,
-      name: 'Oppurtunities',
+      name: 'Setting',
       onPress: () => {
         navigation.navigate('MyJourneys');
       },
+      iconName: 'setting',
+      iconType: AntDesign
     },
 
+
+  ];
+
+  const adminData1 = [
     {
-      id: 4,
-      name: 'Earnings',
+      id: 1,
+      name: 'Refer a friend',
       onPress: () => {
         navigation.navigate('Earningsscreen');
       },
+      iconName: 'handshake',
+      iconType: FontAwesome5
     },
     {
-      id: 5,
-      name: 'History',
+      id: 2,
+      name: 'Help/FAQS',
       onPress: () => {
         navigation.navigate('History');
       },
+      iconName: 'hands-helping',
+      iconType: FontAwesome5
     },
     {
-      id: 6,
-      name: 'Update vehicle',
+      id: 3,
+      name: 'Support CHat',
       onPress: () => {
         navigation.navigate('AddYourCar');
       },
+      iconName: 'message-reply-text',
+      iconType: MaterialCommunityIcons
     },
-
-    {
-      id: 7,
-      name: 'Accounts ',
-      onPress: () => {
-        navigation.navigate('Profile');
-      },
-    },
-    {
-      id: 8,
-      name: 'Change password ',
-      onPress: () => {
-        navigation.navigate('ChangePassword');
-      },
-    },
-    {
-      id: 9,
-      name: 'privacy policy ',
-      onPress: () => {
-        navigation.navigate('PrivacyPolicy');
-      },
-    },
-    {
-      id: 10,
-      name: 'terms & conditions',
-      onPress: () => {
-        navigation.navigate('TermsAndConditions');
-      },
-    },
-  ];
+  ]
 
   return (
     <ScreenBoiler
       statusBarBackgroundColor={'white'}
       statusBarContentStyle={'dark-content'}>
-      <View
-        style={{
-          height: windowHeight,
-          backgroundColor: Color.white,
-          borderTopRightRadius: moderateScale(120, 0.6),
-          borderBottomRightRadius: moderateScale(120, 0.6),
-          paddingVertical: moderateScale(60, 0.6),
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-        <View style={styles.profile_view}>
+      <View style={styles.drawer_view}>
+        <View style={styles.header_view}>
           <View style={styles.image_view}>
-            <CustomImage
-              style={styles.image}
-              // source={require('../Assets/Images/user_image2.png')}
-            />
+            <CustomImage style={styles.image} source={require('../Assets/Images/logo.png')} />
           </View>
-          <View
-            style={{
-              width: moderateScale(15, 0.6),
-              height: moderateScale(15, 0.6),
-              backgroundColor: '#04FF3F',
-              borderRadius: windowWidth,
-              top: -12,
-              left: 10,
-            }}
-          />
-          <CustomText isBold style={styles.heading_text}>
-            PAT H. JHONSON
-          </CustomText>
-          <CustomText style={styles.text}>Diver : Car Name</CustomText>
+          <CustomText isBold style={styles.heading_text}>Load Manager</CustomText>
         </View>
-        <View
-          style={{
-            height: '60%',
-          }}>
-          {adminData.map((item, index) => (
-            <>
-              <TouchableOpacity
-                key={item.id}
-                onPress={item.onPress}
-                style={{
-                  width: windowWidth * 0.7,
-                  borderColor: Color.black,
-                  margin: moderateScale(10, 0.3),
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}>
-                <CustomText
-                  style={{
-                    fontSize: moderateScale(14, 0.6),
-                    color: Color.black,
-                  }}>
-                  {item.name}
-                </CustomText>
-              </TouchableOpacity>
-            </>
-          ))}
+        <View style={{
+          paddingHorizontal: moderateScale(15, 0.6),
+          paddingVertical: moderateScale(15, 0.6)
+        }}>
+          {adminData.map((item) => {
+            return (
+              <View style={styles.row_view}>
+                <Icon name={item?.iconName} as={item?.iconType} size={moderateScale(15, 0.6)} color={Color.lightGrey} />
+                <CustomText style={styles.text}>{item?.name}</CustomText>
+              </View>
+            )
+          })
+          }
+          <View style={styles.line} />
+          {adminData1.map((item) => {
+            return (
+              <View style={styles.row_view}>
+                <Icon name={item?.iconName} as={item?.iconType} size={moderateScale(15, 0.6)} color={Color.lightGrey} />
+                <CustomText style={styles.text}>{item?.name}</CustomText>
+              </View>
+            )
+          })
+          }
         </View>
-        <View style={styles.end_view}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('HelpAndSupport');
-            }}
-            style={{
-              width: windowWidth * 0.7,
-              borderColor: Color.black,
-              margin: moderateScale(5, 0.3),
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}>
-            <CustomText
-              style={{
-                fontSize: moderateScale(14, 0.6),
-                color: Color.black,
-              }}>
-              Help
-            </CustomText>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('LearningCenter');
-            }}
-            style={{
-              width: windowWidth * 0.7,
-              borderColor: Color.black,
-              margin: moderateScale(5, 0.3),
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}>
-            <CustomText
-              style={{
-                fontSize: moderateScale(14, 0.6),
-                color: Color.black,
-              }}>
-              Learning Center
-            </CustomText>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              dispatch(setUserToken(''));
-              dispatch(SetUserRole(''));
-              dispatch(setUserLogOut());
-            }}
-            style={{
-              width: windowWidth * 0.7,
-              borderColor: Color.black,
-              margin: moderateScale(5, 0.3),
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}>
-            <CustomText
-              style={{
-                fontSize: moderateScale(14, 0.6),
-                color: Color.veryLightGray,
-              }}>
-              Logout
-            </CustomText>
-          </TouchableOpacity>
+        <View style={[styles.row_view, {
+          position: 'absolute',
+          bottom: 80,
+          marginLeft: moderateScale(15, 0.6),
+        }]}>
+          <Icon name={'logout'} as={MaterialCommunityIcons} size={moderateScale(15, 0.6)} color={Color.secondary} />
+          <CustomText style={[styles.text, { color: Color.secondary }]}>{'Logout'}</CustomText>
         </View>
       </View>
     </ScreenBoiler>
@@ -227,42 +134,46 @@ const Drawer = React.memo(() => {
 export default Drawer;
 
 const styles = StyleSheet.create({
-  Profile: {
-    width: windowWidth * 0.15,
-    height: windowWidth * 0.15,
-    borderRadius: (windowWidth * 0.2) / 1,
-    borderWidth: 1,
-    borderColor: Color.white,
-    overflow: 'hidden',
+  drawer_view: {
+    backgroundColor: '#292929',
+    height: windowHeight
   },
-  menu_text: {
-    color: Color.darkGray,
-  },
-  profile_view: {
-    paddingHorizontal: moderateScale(20, 0.6),
-    height: '20%',
-    paddingVertical: moderateScale(20, 0.6),
+  header_view: {
+    width: '100%',
+    height: windowHeight * 0.2,
+    backgroundColor: Color.black,
+    justifyContent: "center",
+    alignItems: 'center'
   },
   image_view: {
-    width: moderateScale(60, 0.6),
-    height: moderateScale(60, 0.6),
-    borderRadius: windowHeight,
+    width: windowWidth * 0.4,
+    height: windowWidth * 0.2,
+    marginTop: moderateScale(10, 0.6)
   },
   image: {
     width: '100%',
-    height: '100%',
-    borderRadius: windowHeight,
+    height: '100%'
   },
   heading_text: {
-    fontSize: moderateScale(14, 0.6),
-    textTransform: 'uppercase',
+    fontSize: moderateScale(18, 0.6),
+    color: Color.white,
+  },
+  row_view: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingHorizontal: moderateScale(15, 0.6),
+    marginTop: moderateScale(20, 0.6)
   },
   text: {
-    fontSize: moderateScale(11, 0.6),
+    fontSize: moderateScale(14, 0.6),
+    color: Color.lightGrey,
+    marginLeft: moderateScale(10, 0.6)
   },
-  end_view: {
-    height: '20%',
-    width: '100%',
-    paddingHorizontal: moderateScale(20, 0.6),
-  },
+  line: {
+    width: '90%',
+    height: 1,
+    backgroundColor: Color.lightGrey,
+    marginVertical: moderateScale(20, 0.6)
+  }
 });

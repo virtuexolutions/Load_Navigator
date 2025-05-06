@@ -31,7 +31,7 @@ export default Color = {
   grey: "#5D5D5D",
   cartheme: ['#79B9F6', '#00309E',],
   btnColor: ['#565657', "#000000"],
-  grey: '#5D5D5D',
+  grey: '#757575',
   cartheme: ['#79B9F6', '#00309E'],
   btnColor: ['#565657', '#000000'],
   tabBarGradient: ['#000000', '#464646'],

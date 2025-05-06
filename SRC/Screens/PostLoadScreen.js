@@ -11,8 +11,11 @@ import Entypo from 'react-native-vector-icons/Entypo'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { Icon } from 'native-base'
+import navigationService from '../navigationService'
+import { useNavigation } from '@react-navigation/native'
 
 const PostLoadScreen = () => {
+    const navigation = useNavigation()
     const [isVisible, setIsVisible] = useState(false)
     const [lead, setLead] = useState(false)
     const [chase, setChase] = useState(false)
@@ -137,9 +140,14 @@ const PostLoadScreen = () => {
     return (
         <SafeAreaView style={styles.safe_area_view}>
             <ScrollView style={styles.scroll_view}>
+                <TouchableOpacity onPress={() => navigation.toggleDrawer()} style={{
+                    marginTop: moderateScale(50, 0.6), paddingHorizontal: moderateScale(15, 0.6),
+                }}>
+                    <Icon as={Entypo} name='menu' size={moderateScale(26, 0.6)} color={Color.white} />
+                </TouchableOpacity>
                 <View style={styles.main_view}>
                     <View style={[styles.post_card, {
-                        height: isDetails ? windowHeight * 0.45 : windowHeight * 0.35,
+                        height: isDetails ? windowHeight * 0.55 : windowHeight * 0.35,
                     }]}>
                         <CustomText isBold style={styles.card_heading}>Loads</CustomText>
                         <CustomText style={styles.card_text}>View Past Load Or Post a new One.</CustomText>
@@ -177,15 +185,20 @@ const PostLoadScreen = () => {
                             {truckDetails.map((item) => {
                                 return (
                                     <View style={[styles.row_view, {
-                                        justifyContent: 'flex-start'
+                                        justifyContent: 'flex-start',
+                                        marginTop: moderateScale(7, 0.6)
                                     }]}>
-                                        <View>
-                                            {/* <Icon/> */}
-                                        </View> 
-                                        <CustomText>{item?.text}</CustomText>
+                                        <View style={styles.icon_box}>
+                                            <Icon name={item?.iconName} as={item?.iconType} color={Color.white} size={moderateScale(13, 0.6)} style={{ alignSelf: 'center' }} />
+                                        </View>
+                                        <CustomText style={styles.details_text}>{item?.text}</CustomText>
                                     </View>
                                 )
                             })}
+                            <CustomText style={{ fontSize: moderateScale(12, 0.6), marginTop: moderateScale(10, 0.6) }}>Lead</CustomText>
+                            <View style={[styles.lines, {
+                                marginTop: moderateScale(10, 0.6)
+                            }]} />
                         </View>) : (
                             <>
                                 <CustomText isBold style={[styles.card_heading, { marginTop: moderateScale(10, 0.6) }]}>Welcome! Let's Get Started</CustomText>
@@ -193,11 +206,10 @@ const PostLoadScreen = () => {
                                 <View style={styles.lines} />
                             </>
                         )
-
                         }
                     </View>
                 </View>
-                <SideBarModal setIsPost={setIsDetails} isPost={isDetails} requirements={requirements} isModalVisible={isVisible} positionOptions={positionOptions} setIsModalVisible={setIsVisible} />
+                <SideBarModal isPostDetails={isDetails} setIsPost={setIsDetails} isPost={isDetails} requirements={requirements} isModalVisible={isVisible} positionOptions={positionOptions} setIsModalVisible={setIsVisible} />
             </ScrollView>
         </SafeAreaView>
     )
@@ -241,7 +253,7 @@ const styles = StyleSheet.create({
         width: windowWidth * 0.8,
         height: 1,
         backgroundColor: Color.veryLightGray,
-        marginTop: moderateScale(15, 0.6)
+        marginTop: moderateScale(10, 0.6)
     },
     row_view: {
         flexDirection: 'row',
@@ -263,5 +275,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: moderateScale(20, 0.6),
         marginLeft: moderateScale(10, 0.6)
-    }
+    },
+    icon_box: {
+        width: moderateScale(20, 0.6),
+        height: moderateScale(20, 0.6),
+        backgroundColor: Color.secondary,
+        borderRadius: moderateScale(100, 0.6),
+        justifyContent: 'center',
+        alignItems: "center",
+        marginRight: moderateScale(7, 0.6)
+    },
 })

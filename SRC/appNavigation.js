@@ -1,10 +1,10 @@
-import {createDrawerNavigator} from '@react-navigation/drawer';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import {enableScreens} from 'react-native-screens';
-import {moderateScale} from 'react-native-size-matters';
-import {useSelector} from 'react-redux';
+import { enableScreens } from 'react-native-screens';
+import { moderateScale } from 'react-native-size-matters';
+import { useSelector } from 'react-redux';
 import Drawer from './Drawer/Drawer';
 import navigationService from './navigationService';
 import ChangePassword from './Screens/ChangePassword';
@@ -17,6 +17,8 @@ import VerifyNumber from './Screens/VerifyNumber';
 import WalkThroughScreen from './Screens/WalkthroughScreen';
 import SplashScreen from './Screens/SplashScreen';
 import StartScreen from './Screens/StartScreen';
+import PostLoadScreen from './Screens/PostLoadScreen';
+import Color from './Assets/Utilities/Color';
 
 enableScreens();
 const AppNavigator = () => {
@@ -34,14 +36,14 @@ const AppNavigator = () => {
       walkThrough == false
         ? 'WalkThroughScreen'
         : token == null
-        ? 'LoginScreen'
-        : 'MyDrawer';
+          ? 'LoginScreen'
+          : 'MyDrawer';
 
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
-          initialRouteName={'LoginScreen'}
-          screenOptions={{headerShown: false}}>
+          initialRouteName={'MyDrawer'}
+          screenOptions={{ headerShown: false }}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
           <RootNav.Screen
             name="WalkThroughScreen"
@@ -173,15 +175,17 @@ export const MyDrawer = () => {
   return (
     <DrawerNavigation.Navigator
       drawerContent={props => <Drawer {...props} />}
-      initialRouteName={'Home'}
+      initialRouteName={'PostLoadScreen'}
       screenOptions={{
         headerShown: false,
         drawerStyle: {
-          width: '80%',
-          borderTopRightRadius: moderateScale(120, 0.6),
-          borderBottomRightRadius: moderateScale(120, 0.6),
+          width: '70%',
+          // borderTopRightRadius: moderateScale(120, 0.6),
+          // borderBottomRightRadius: moderateScale(120, 0.6),
         },
-      }}></DrawerNavigation.Navigator>
+      }}>
+      <DrawerNavigation.Screen name="PostLoadScreen" component={PostLoadScreen} />
+    </DrawerNavigation.Navigator>
   );
 };
 

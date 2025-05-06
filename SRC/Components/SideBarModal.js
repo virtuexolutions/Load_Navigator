@@ -7,8 +7,10 @@ import CustomText from './CustomText';
 import { moderateScale } from 'react-native-size-matters';
 import TextInputWithTitle from './TextInputWithTitle';
 import CustomButton from './CustomButton';
+import { Icon } from 'native-base';
+import Entypo from 'react-native-vector-icons/Entypo'
 
-const SideBarModal = ({ isModalVisible, isPost, setIsPost, requirements, setIsModalVisible, isPostDetails = true, positionOptions }) => {
+const SideBarModal = ({ isModalVisible, isPost, setIsPost, requirements, setIsModalVisible, isPostDetails, positionOptions }) => {
     return (
         <Modal
             hasBackdrop={true}
@@ -16,6 +18,7 @@ const SideBarModal = ({ isModalVisible, isPost, setIsPost, requirements, setIsMo
                 justifyContent: 'center',
                 alignItems: 'flex-end',
             }}
+            
             isVisible={isModalVisible}
             onBackdropPress={() => {
                 setIsModalVisible(false);
@@ -24,6 +27,80 @@ const SideBarModal = ({ isModalVisible, isPost, setIsPost, requirements, setIsMo
                 <ScrollView showsVerticalScrollIndicator={false}>
                     {isPostDetails ? (
                         <View>
+                            <View style={styles.header}>
+                                <CustomText isBold style={{ color: Color.white, fontSize: moderateScale(18, 0.6) }}>Post A Load</CustomText>
+                                <Icon name='cross' as={Entypo} />
+                            </View>
+                            <View style={{
+                                paddingTop: moderateScale(20, 0.6),
+                                paddingHorizontal: moderateScale(20, 0.6)
+                            }}>
+                                <CustomText isBold style={styles.heading_text}>Posted</CustomText>
+                                <CustomText style={styles.text}>Less Than a minute ago</CustomText>
+                                <CustomText isBold style={styles.heading_text}>status</CustomText>
+                                <CustomText style={styles.text}>Open</CustomText>
+                                <CustomText isBold style={styles.heading_text}>Alert</CustomText>
+                                <CustomText style={styles.text}>Calculating notifications sent to drivers</CustomText>
+                                <CustomText isBold style={styles.heading_text}>Load Date</CustomText>
+                                <CustomText style={styles.text}>04/24/2025</CustomText>
+                                <CustomText isBold style={styles.heading_text}>Phone</CustomText>
+                                <CustomText style={styles.text}>(123) 281-6351</CustomText>
+                                <CustomText isBold style={styles.heading_text}>Origin</CustomText>
+                                <CustomText style={styles.text}>Pennsylvania Furance, PA, USA</CustomText>
+                                <CustomText isBold style={styles.heading_text}>Destination</CustomText>
+                                <CustomText style={styles.text}>Furance, SC, USA</CustomText>
+                                <CustomText isBold style={styles.heading_text}>Est. Mileage</CustomText>
+                                <CustomText style={styles.text}>609 mi</CustomText>
+                                <CustomText isBold style={styles.heading_text}>Rate</CustomText>
+                                <CustomText style={styles.text}>$5.00/mi</CustomText>
+                                <CustomButton text={
+                                    'Mark Covered '
+                                }
+                                    onPress={() => {
+                                        setIsPost(true)
+                                        setIsModalVisible(false)
+                                    }}
+                                    fontSize={moderateScale(14, 0.3)}
+                                    textColor={Color.white}
+                                    borderRadius={moderateScale(30, 0.3)}
+                                    width={windowWidth * 0.58}
+                                    marginTop={moderateScale(15, 0.3)}
+                                    height={windowHeight * 0.055}
+                                    bgColor={
+                                        Color.secondary
+                                    }
+                                    style={{
+                                        alignSelf: 'flex-start'
+                                    }}
+                                    textTransform={'capitalize'}
+                                />
+                                <CustomButton text={
+                                    'Cancle'
+                                }
+                                    onPress={() => setIsModalVisible(false)}
+                                    fontSize={moderateScale(14, 0.3)}
+                                    textColor={Color.black}
+                                    borderRadius={moderateScale(30, 0.3)}
+                                    width={windowWidth * 0.58}
+                                    height={windowHeight * 0.055}
+                                    bgColor={
+                                        Color.white
+                                    }
+                                    marginTop={moderateScale(10, 0.3)}
+                                    borderColor={Color.black}
+                                    borderWidth={1}
+                                    style={{
+                                        alignSelf: 'flex-start'
+                                    }}
+                                    textTransform={'capitalize'}
+                                />
+                            </View>
+                        </View>
+                    ) : (
+                        <View style={{
+                            paddingTop: moderateScale(60, 0.6),
+                            paddingHorizontal: moderateScale(20, 0.6)
+                        }}>
                             <View style={[styles.row_view, {
                                 width: windowWidth * 0.2
                             }]}>
@@ -141,7 +218,6 @@ const SideBarModal = ({ isModalVisible, isPost, setIsPost, requirements, setIsMo
                             <CustomButton text={
                                 'Cancle'
                             }
-                                onPress={() => setIsVisible(false)}
                                 fontSize={moderateScale(14, 0.3)}
                                 textColor={Color.black}
                                 borderRadius={moderateScale(30, 0.3)}
@@ -159,8 +235,6 @@ const SideBarModal = ({ isModalVisible, isPost, setIsPost, requirements, setIsMo
                                 textTransform={'capitalize'}
                             />
                         </View>
-                    ) : (
-                        <></>
                     )}
                 </ScrollView>
             </View>
@@ -178,8 +252,7 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         position: 'absolute',
         right: 0,
-        paddingTop: moderateScale(60, 0.6),
-        paddingHorizontal: moderateScale(20, 0.6)
+
     },
     box: {
         height: moderateScale(16, 0.6),
@@ -200,5 +273,14 @@ const styles = StyleSheet.create({
     heading_text: {
         fontSize: moderateScale(15, 0.6),
         marginTop: moderateScale(15, 0.6)
+    },
+    header: {
+        width: windowWidth * 0.7,
+        height: windowHeight * 0.12,
+        backgroundColor: Color.secondary,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: "center",
+        padding: moderateScale(20, 0.6),
     }
 })
