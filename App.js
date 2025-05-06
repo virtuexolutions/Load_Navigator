@@ -6,14 +6,14 @@
  * @flow strict-local
  */
 
-import React, {useEffect, useState} from 'react';
-import {Provider} from 'react-redux';
-import {PersistGate} from 'redux-persist/integration/react';
+import React, { useEffect, useState } from 'react';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 // import {StripeProvider} from '@stripe/stripe-react-native';
 // import messaging from '@react-native-firebase/messaging';
-import {NativeBaseProvider} from 'native-base';
+import { NativeBaseProvider } from 'native-base';
 import SplashScreen from './SRC/Screens/SplashScreen';
-import {persistor, store} from './SRC/Store/index';
+import { persistor, store } from './SRC/Store/index';
 import {
   requestCameraPermission,
   requestLocationPermission,
@@ -22,15 +22,13 @@ import {
   windowWidth,
 } from './SRC/Utillity/utils';
 import AppNavigator from './SRC/appNavigation';
-import {Alert, TouchableOpacity, View} from 'react-native';
+import { Alert, TouchableOpacity, View } from 'react-native';
 import navigationService from './SRC/navigationService';
 import CustomImage from './SRC/Components/CustomImage';
 import CustomText from './SRC/Components/CustomText';
 import { moderateScale } from 'react-native-size-matters';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import PostLoadScreen from './SRC/Screens/PostLoadScreen';
-import {moderateScale} from 'react-native-size-matters';
-import {StripeProvider} from '@stripe/stripe-react-native';
 import CarDirectory from './SRC/Screens/CarDirectory';
 
 const App = () => {
@@ -68,8 +66,8 @@ const MainContainer = () => {
     return <SplashScreen />;
   }
   // return <ChooseDeclineReasonScreen/>;
-  // return <AppNavigator />;
-  return <PostLoadScreen />
+  return <AppNavigator />;
+  // return <PostLoadScreen />
 };
 
 const useloader = value => {
