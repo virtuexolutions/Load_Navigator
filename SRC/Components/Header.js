@@ -29,7 +29,7 @@ const Header = props => {
   const dispatch = useDispatch();
   const notification = useSelector(state => state.commonReducer.notification);
   const cartData = useSelector(state => state.commonReducer.cart);
-  const navigationN = useNavigation();
+  // const navigationN = useNavigation();
 
   const [isModalVisible, setModalVisible] = useState(false);
   const {

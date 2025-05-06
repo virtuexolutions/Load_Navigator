@@ -15,6 +15,9 @@ import Signup from './Screens/Signup';
 import VerifyEmail from './Screens/VerifyEmail';
 import VerifyNumber from './Screens/VerifyNumber';
 import WalkThroughScreen from './Screens/WalkthroughScreen';
+import CarDirectory from './Screens/CarDirectory';
+import Alerts from './Screens/Alerts';
+import Menu from './Screens/Menu';
 
 enableScreens();
 const AppNavigator = () => {
@@ -34,15 +37,26 @@ const AppNavigator = () => {
         : token == null
         ? 'LoginScreen'
         : 'MyDrawer';
+    // const firstScreen =
+    //   walkThrough == false
+    //     ? 'WalkThroughScreen'
+    //     : token == null
+    //     ? 'LoginScreen'
+    //     : 'MyDrawer';
 
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
-          initialRouteName={firstScreen}
+          initialRouteName={"Menu"}
+          // initialRouteName={"CarDirectory"}
           // initialRouteName={'Walletscreen'}
           // initialRouteName={'RateScreen'}
           screenOptions={{headerShown: false}}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
+          <RootNav.Screen name="CarDirectory" component={CarDirectory} />
+          <RootNav.Screen name="Alerts" component={Alerts} />
+          <RootNav.Screen name="Menu" component={Menu} />
+
           <RootNav.Screen
             name="WalkThroughScreen"
             component={WalkThroughScreen}
