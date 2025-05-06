@@ -5,23 +5,21 @@ import {moderateScale, ScaledSheet} from 'react-native-size-matters';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
+import { ImageBackground } from 'react-native';
 
 const SplashScreen = () => {
   // const backgroundImage = require('../Assets/Images/splash.gif');
   return (
-    <View style={styles.container}>
+    <ImageBackground 
+    source={require('../Assets/Images/bg.jpg')}
+    style={styles.container}>
       <View style={styles.logo_Container}>
         <CustomImage
-          // source={require('../Assets/Images/logo.png')}
+          source={require('../Assets/Images/logo.png')}
           style={styles.logo}
         />
       </View>
-      <CustomText style={styles.text}>
-        
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas
-        efficitur consectetur ligula eget ultrices.
-      </CustomText>
-    </View>
+    </ImageBackground>
   );
 };
 

@@ -1,10 +1,10 @@
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
-import { enableScreens } from 'react-native-screens';
-import { moderateScale } from 'react-native-size-matters';
-import { useSelector } from 'react-redux';
+import {enableScreens} from 'react-native-screens';
+import {moderateScale} from 'react-native-size-matters';
+import {useSelector} from 'react-redux';
 import Drawer from './Drawer/Drawer';
 import navigationService from './navigationService';
 import ChangePassword from './Screens/ChangePassword';
@@ -15,6 +15,8 @@ import Signup from './Screens/Signup';
 import VerifyEmail from './Screens/VerifyEmail';
 import VerifyNumber from './Screens/VerifyNumber';
 import WalkThroughScreen from './Screens/WalkthroughScreen';
+import SplashScreen from './Screens/SplashScreen';
+import StartScreen from './Screens/StartScreen';
 
 enableScreens();
 const AppNavigator = () => {
@@ -38,9 +40,7 @@ const AppNavigator = () => {
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
-          initialRouteName={firstScreen}
-          // initialRouteName={'Walletscreen'}
-          // initialRouteName={'RateScreen'}
+          initialRouteName={'LoginScreen'}
           screenOptions={{headerShown: false}}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
           <RootNav.Screen
@@ -54,6 +54,8 @@ const AppNavigator = () => {
           <RootNav.Screen name="Signup" component={Signup} />
           <RootNav.Screen name="VerifyNumber" component={VerifyNumber} />
           <RootNav.Screen name="Profile" component={Profile} />
+          <RootNav.Screen name="SplashScreen" component={SplashScreen} />
+          <RootNav.Screen name="StartScreen" component={StartScreen} />
         </RootNav.Navigator>
       </NavigationContainer>
     );
@@ -179,9 +181,7 @@ export const MyDrawer = () => {
           borderTopRightRadius: moderateScale(120, 0.6),
           borderBottomRightRadius: moderateScale(120, 0.6),
         },
-      }}>
- 
-    </DrawerNavigation.Navigator>
+      }}></DrawerNavigation.Navigator>
   );
 };
 
