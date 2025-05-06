@@ -5,7 +5,7 @@ import Header from '../Components/Header'
 
 const CarDirectory = () => {
   const dummyData=[{
-    id:1, name:"lorem ipsum"
+    id:1, name:"lorem ipsum "
   }]
   return (
     <>

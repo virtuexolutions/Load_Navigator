@@ -187,7 +187,7 @@ const TextInputWithTitle = props => {
               <Icon
                 name={showPassword ? 'eye' : 'eye-slash'}
                 as={FontAwesome}
-                color={Color.black}
+                color={Color.white}
                 size={moderateScale(18, 0.3)}
               />
             </TouchableOpacity>

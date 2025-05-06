@@ -15,9 +15,10 @@ export const loginSchema = Yup.object({
 });
 
 export const SignupSchema = Yup.object({
-  name: Yup.string().required('Name is required'),
+  name: Yup.string().required('Name is required !'),
+  address: Yup.string().required('Address is required !'),
   email: Yup.string()
-    .email('Invalid email address')
+    .email('Invalid email address !')
     .required('Email is requried !'),
   contact: Yup.number()
     // .matches(/^\d+$/, 'Mobile number must contain only digits')
@@ -25,15 +26,15 @@ export const SignupSchema = Yup.object({
     // .max(15, 'Mobile number cannot exceed 15 digits')
     .required('Mobile number is required'),
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password'), null], 'Passwords must match')
-    .required('Confirm Password is required'),
+    .oneOf([Yup.ref('password'), null], 'Passwords must match !')
+    .required('Confirm Password is required !'),
   password: Yup.string()
-    .min(8, 'Password must be at least 8 characters')
-    .max(8, 'Password must be at least 8 characters')
+    .min(8, 'Password must be at least 8 characters !')
+    .max(8, 'Password must be at least 8 characters ! ')
     .required('Password is required !'),
   termsAccepted: Yup.boolean()
-    .oneOf([true], 'You must accept the terms and conditions')
-    .required('Required'),
+    .oneOf([true], 'You must accept the terms and conditions ! ')
+    .required('Required !'),
   // modal: Yup.boolean().required('Car number is required'),
   // number: Yup.boolean().required('Car number is required'),
   // seat: Yup.bool().required('Seat is required'),
@@ -43,7 +44,7 @@ export const SignupSchema = Yup.object({
 
 export const forgotpasswordSchema = Yup.object({
   email: Yup.string()
-    .email('Invalid email address')
+    .email('Invalid email address !')
     .required('Email is requried !'),
 });
 
