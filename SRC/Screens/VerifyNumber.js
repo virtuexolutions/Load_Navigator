@@ -1,35 +1,32 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-  View,
-  TouchableOpacity,
-  Dimensions,
+  ActivityIndicator,
   ImageBackground,
   Platform,
   ToastAndroid,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { ScaledSheet, moderateScale } from 'react-native-size-matters';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import { useDispatch, useSelector } from 'react-redux';
-import navigationService from '../navigationService';
-import Color from '../Assets/Utilities/Color';
-import CustomText from '../Components/CustomText';
-import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
-import CustomButton from '../Components/CustomButton';
-import { ActivityIndicator } from 'react-native';
-import { Post } from '../Axios/AxiosInterceptorFunction';
 import {
   CodeField,
   Cursor,
   useBlurOnFulfill,
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
-import { useEffect } from 'react';
-// import CardContainer from '../Components/CardContainer';
+import {ScaledSheet, moderateScale} from 'react-native-size-matters';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import {useSelector} from 'react-redux';
+import Color from '../Assets/Utilities/Color';
+import {Post} from '../Axios/AxiosInterceptorFunction';
+import CustomButton from '../Components/CustomButton';
+import CustomText from '../Components/CustomText';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import {useNavigation} from '@react-navigation/native';
+import {Icon} from 'native-base';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import CustomStatusBar from '../Components/CustomStatusBar';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { Icon } from 'native-base';
-import LinearGradient from 'react-native-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+import CustomImage from '../Components/CustomImage';
+import {color} from 'native-base/lib/typescript/theme/styled-system';
 
 const VerifyNumber = props => {
   const SelecteduserRole = useSelector(
@@ -40,15 +37,13 @@ const VerifyNumber = props => {
   //params
   const email = props?.route?.params?.email;
   const phoneNumber = props?.route?.params?.phoneNumber;
-  const { user_type } = useSelector(state => state.authReducer);
+  const {user_type} = useSelector(state => state.authReducer);
 
   //states
   const [code, setCode] = useState('');
-  console.log("🚀 ~ VerifyNumber ~ code===============:", code)
   const [isLoading, setIsLoading] = useState(false);
-  console.log("🚀 ~ VerifyNumber ~ isLoading:", isLoading)
   const CELL_COUNT = 4;
-  const ref = useBlurOnFulfill({ code, cellCount: CELL_COUNT });
+  const ref = useBlurOnFulfill({code, cellCount: CELL_COUNT});
   const [abcd, getCellOnLayoutHandler] = useClearByFocusCell({
     code,
     setCode,
@@ -72,7 +67,7 @@ const VerifyNumber = props => {
   const sendOTP = async () => {
     const url = 'password/email';
     setIsLoading(true);
-    const response = await Post(url, { email: email }, apiHeader());
+    const response = await Post(url, {email: email}, apiHeader());
     setIsLoading(false);
     if (response != undefined) {
       Platform.OS == 'android'
@@ -85,15 +80,14 @@ const VerifyNumber = props => {
     const url = 'password/code/check';
     setIsLoading(true);
     console.log(code);
-    const response = await Post(url, { code: code }, apiHeader());
+    const response = await Post(url, {code: code}, apiHeader());
     setIsLoading(false);
-    console.log("🚀 ~ VerifyOTP ~ response============================== :", response?.data)
     if (response != undefined) {
       Platform.OS == 'android'
         ? ToastAndroid.show(`otp verified`, ToastAndroid.SHORT)
         : alert(`otp verified`);
 
-      navigationN.navigate('ResetPassword', { email: email });
+      navigationN.navigate('ResetPassword', {email: email});
     }
   };
 
@@ -107,9 +101,11 @@ const VerifyNumber = props => {
     }
   }, [timerLabel]);
 
-
   return (
-    <>
+    <ImageBackground
+      style={styles.bg_con}
+      resizeMode={'stretch'}
+      source={require('../Assets/Images/login_bg.png')}>
       <CustomStatusBar
         backgroundColor={Color.white}
         barStyle={'dark-content'}
@@ -120,22 +116,11 @@ const VerifyNumber = props => {
           navigationN.goBack();
         }}
         activeOpacity={0.8}
-        style={{
-          position: 'absolute',
-          top: moderateScale(20, 0.3),
-          left: moderateScale(20, 0.3),
-          height: moderateScale(30, 0.3),
-          width: moderateScale(30, 0.3),
-          borderRadius: moderateScale(5, 0.3),
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: Color.themeBlack,
-          zIndex: 1,
-        }}>
+        style={styles.back}>
         <Icon
           name={'arrowleft'}
           as={AntDesign}
-          size={moderateScale(22, 0.3)}
+          size={moderateScale(15, 0.3)}
           color={Color.white}
           onPress={() => {
             navigationN.goBack();
@@ -143,18 +128,32 @@ const VerifyNumber = props => {
         />
       </TouchableOpacity>
 
+      <View style={styles.logo}>
+        <CustomImage
+          style={{
+            height: '100%',
+            width: '100%',
+          }}
+          source={require('../Assets/Images/logo.png')}
+        />
+      </View>
+
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingBottom: moderateScale(20, 0.3),
-          marginTop: windowHeight * 0.13,
+          marginTop: windowHeight * 0.03,
           alignItems: 'center',
-          // justifyContent: 'center',
           width: '100%',
           height: windowHeight,
         }}>
-        <CustomText style={styles.h1}>Verification</CustomText>
-        <CustomText style={styles.h2}>Sent a verification code </CustomText>
+        <CustomText isBold style={styles.h2}>
+          Enter Verification Code
+        </CustomText>
+        <CustomText
+          style={{fontSize: moderateScale(11, 0.6), color: Color.white ,textAlign  :'center' ,width : windowWidth *0.7,}}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed scelerisque turpis iaculis
+        </CustomText>
         <CodeField
           placeholder={'0'}
           ref={ref}
@@ -164,19 +163,19 @@ const VerifyNumber = props => {
           rootStyle={styles.codeFieldRoot}
           keyboardType="number-pad"
           textContentType="oneTimeCode"
-          renderCell={({ index, symbol, isFocused }) => (
+          renderCell={({index, symbol, isFocused}) => (
             <View
               onLayout={getCellOnLayoutHandler(index)}
               key={index}
               style={[styles.cellRoot, isFocused && styles.focusCell]}>
               <CustomText
-                style={[styles.cellText, isFocused && { color: Color.black }]}>
+                style={[styles.cellText, isFocused && {color: Color.black}]}>
                 {symbol || (isFocused ? <Cursor /> : null)}
               </CustomText>
             </View>
           )}
         />
-        <CustomText style={[styles.txt3, { width: windowWidth * 0.6 }]}>
+        <CustomText style={[styles.txt3, {width: windowWidth * 0.6}]}>
           Didn’t get Code yet?
         </CustomText>
         {
@@ -191,7 +190,13 @@ const VerifyNumber = props => {
           </TouchableOpacity>
         }
         <CustomButton
-          text={isLoading ? <ActivityIndicator size={'small'} color={Color.white} /> : 'Verify'}
+          text={
+            isLoading ? (
+              <ActivityIndicator size={'small'} color={Color.white} />
+            ) : (
+              'Verify'
+            )
+          }
           isBold
           textColor={Color.white}
           width={windowWidth * 0.85}
@@ -199,20 +204,20 @@ const VerifyNumber = props => {
           borderRadius={30}
           marginTop={moderateScale(20, 0.3)}
           onPress={() => {
-            VerifyOTP()
+            VerifyOTP();
           }}
-          bgColor={Color.darkBlue}
+          bgColor={Color.secondry}
         />
       </KeyboardAwareScrollView>
-    </>
+    </ImageBackground>
   );
 };
 
 const styles = ScaledSheet.create({
-  txt2: {
-    color: Color.black,
-    fontSize: moderateScale(25, 0.6),
-    textTransform: 'uppercase',
+  bg_con: {
+    height: windowHeight,
+    width: windowWidth,
+    alignItems: 'center',
   },
   txt3: {
     color: Color.mediumGray,
@@ -228,14 +233,7 @@ const styles = ScaledSheet.create({
     borderBottomWidth: 1,
     borderColor: Color.white,
     fontWeight: '600',
-    // alignSelf : 'center'
   },
-  txt5: {
-    color: Color.black,
-
-    fontSize: moderateScale(12, 0.6),
-  },
-
   codeFieldRoot: {
     marginTop: moderateScale(20, 0.3),
     marginBottom: moderateScale(15, 0.3),
@@ -248,7 +246,7 @@ const styles = ScaledSheet.create({
     height: moderateScale(45, 0.3),
     justifyContent: 'center',
     alignItems: 'center',
-    borderColor: Color.themeBlack,
+    borderColor: Color.white,
     borderWidth: 1,
     borderRadius: moderateScale(5, 0.3),
   },
@@ -263,7 +261,7 @@ const styles = ScaledSheet.create({
   },
   h1: {
     fontSize: moderateScale(22, 0.6),
-    color: Color.themeBlack,
+    color: Color.white,
     textAlign: 'left',
     width: '80%',
     fontWeight: '700',
@@ -271,13 +269,32 @@ const styles = ScaledSheet.create({
   },
   h2: {
     fontSize: moderateScale(20.6),
-    color: Color.mediumGray,
+    color: Color.white,
     textAlign: 'left',
     width: '80%',
     fontWeight: '600',
     letterSpacing: 0.8,
     textTransform: 'none',
   },
+  logo: {
+    height: windowHeight * 0.1,
+    width: windowWidth * 0.4,
+    marginTop: windowHeight * 0.1,
+  },
+  back: {
+    position: 'absolute',
+    top: moderateScale(20, 0.3),
+    left: moderateScale(20, 0.3),
+    height: moderateScale(20, 0.3),
+    width: moderateScale(20, 0.3),
+    borderRadius: moderateScale(30, 0.3),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: Color.white,
+    borderWidth: 1,
+    zIndex: 1,
+  },
 });
 
 export default VerifyNumber;
+                                

@@ -2,15 +2,13 @@
 // import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {useNavigation} from '@react-navigation/native';
 import {Formik} from 'formik';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   ActivityIndicator,
   ImageBackground,
-  ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {moderateScale} from 'react-native-size-matters';
 import {useDispatch, useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
@@ -22,9 +20,10 @@ import CustomText from '../Components/CustomText';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
 import {loginSchema} from '../Constant/schema';
-import {SetFCMToken, setUserToken} from '../Store/slices/auth-slice';
+import {setUserToken} from '../Store/slices/auth-slice';
 import {setUserData} from '../Store/slices/common';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import {mode} from 'native-base/lib/typescript/theme/tools';
 
 const LoginScreen = props => {
   const dispatch = useDispatch();
@@ -78,9 +77,14 @@ const LoginScreen = props => {
         width: '100%',
         height: '100%',
       }}
-    resizeMode='stretch'
+      resizeMode="stretch"
       source={require('../Assets/Images/login_bg.png')}
-      style={{height: windowHeight, width: windowWidth, alignItems: 'center'}}>
+      style={{
+        height: windowHeight,
+        width: windowWidth,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
       <CustomStatusBar
         backgroundColor={Color.white}
         barStyle={'dark-content'}
@@ -154,7 +158,7 @@ const LoginScreen = props => {
                   borderRadius={30}
                   backgroundColor={'transparent'}
                   borderColor={Color.white}
-                  marginTop={moderateScale(10, 0.3)}
+                  marginTop={moderateScale(15, 0.3)}
                   // color={Color.white}
                   placeholderColor={Color.mediumGray}
                   titleStlye={{right: 10}}
@@ -204,9 +208,27 @@ const LoginScreen = props => {
         </Formik>
       </View>
       <View style={styles.button_container}>
-        <CustomText style={styles.soc_text}>
-          or connecting using social account
-        </CustomText>
+        <View style={styles.line}></View>
+        <CustomText style={styles.soc_text}>You can Connect with</CustomText>
+
+        <View style={styles.line}></View>
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+        }}>
+        <View style={styles.icon_con}>
+          <CustomImage
+            style={styles.icon}
+            source={require('../Assets/Images/google.png')}
+          />
+        </View>
+        <View style={styles.icon_con}>
+          <CustomImage
+            style={styles.icon2}
+            source={require('../Assets/Images/mac.png')}
+          />
+        </View>
       </View>
       <CustomText style={styles.do_text}>
         Don’t have an account?
@@ -237,26 +259,7 @@ const styles = StyleSheet.create({
     width: windowWidth * 0.7,
     textAlign: 'center',
   },
-  feild_container: {
-    borderWidth: 0.5,
-    borderColor: '#28272369',
-    borderRadius: 20,
-    height: windowHeight * 0.38,
-    width: windowWidth * 0.9,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: moderateScale(10, 0.6),
-    backgroundColor: Color.white,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 22,
-    paddingHorizontal: moderateScale(20, 0.6),
-  },
+
   forgotpassword: {
     fontSize: moderateScale(10, 0.6),
     color: Color.black,
@@ -266,25 +269,57 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   button_container: {
-    paddingTop: windowHeight * 0.08,
+    paddingTop: windowHeight * 0.05,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   soc_text: {
-    fontSize: moderateScale(8, 6),
+    fontSize: moderateScale(11, 0.6),
     paddingVertical: moderateScale(8, 0.6),
     textAlign: 'center',
     letterSpacing: 0.7,
-    fontWeight: '700',
+    color: Color.white,
+    marginHorizontal: moderateScale(10, 0.6),
   },
   do_text: {
-    paddingVertical: moderateScale(35, 0.6),
+    paddingVertical: moderateScale(10, 0.6),
     textTransform: 'none',
     letterSpacing: 0.5,
     fontSize: moderateScale(12, 0.6),
+    color: Color.white,
   },
   Sign_text: {
-    color: Color.themeBlack,
+    color: Color.secondry,
     paddingRight: moderateScale(5, 0.6),
     fontSize: moderateScale(12, 0.6),
+    borderBottomWidth: 1,
+    borderBottomColor: Color.secondry,
+  },
+  line: {
+    width: windowWidth * 0.2,
+    borderBottomWidth: 1,
+    borderBottomColor: Color.white,
+  },
+  icon_con: {
+    height: windowHeight * 0.04,
+    width: windowHeight * 0.04,
+    borderRadius: (windowHeight * 0.04) / 2,
+    backgroundColor: 'white',
+    overflow: 'hidden',
+    marginHorizontal: moderateScale(5, 0.6),
+    marginTop: moderateScale(10, 0.6),
+  },
+  icon: {
+    height: '75%',
+    width: '70%',
+    marginTop: moderateScale(5, 0.6),
+    marginLeft: moderateScale(3, 0.6),
+  },
+  icon2: {
+    height: '75%',
+    width: '67%',
+    marginTop: moderateScale(4, 0.6),
+    marginLeft: moderateScale(5.4, 0.6),
   },
 });
 
