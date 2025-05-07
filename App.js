@@ -9,8 +9,6 @@
 import React, { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-// import {StripeProvider} from '@stripe/stripe-react-native';
-// import messaging from '@react-native-firebase/messaging';
 import { NativeBaseProvider } from 'native-base';
 import SplashScreen from './SRC/Screens/SplashScreen';
 import { persistor, store } from './SRC/Store/index';
@@ -18,15 +16,8 @@ import {
   requestCameraPermission,
   requestLocationPermission,
   requestWritePermission,
-  windowHeight,
-  windowWidth,
 } from './SRC/Utillity/utils';
 import AppNavigator from './SRC/appNavigation';
-import { Alert, TouchableOpacity, View } from 'react-native';
-import navigationService from './SRC/navigationService';
-import CustomImage from './SRC/Components/CustomImage';
-import CustomText from './SRC/Components/CustomText';
-import { moderateScale } from 'react-native-size-matters';
 import { StripeProvider } from '@stripe/stripe-react-native';
 import PostLoadScreen from './SRC/Screens/PostLoadScreen';
 import CarDirectory from './SRC/Screens/CarDirectory';
@@ -43,14 +34,12 @@ const App = () => {
             <MainContainer />
           </NativeBaseProvider>
         </PersistGate>
-      </Provider>
+       </Provider>
     </StripeProvider>
   );
 };
 
 const MainContainer = () => {
-  // const isFocused = useIsFocused()
-  // const dispatch = useDispatch();
 
   useEffect(() => {
     async function GetPermission() {
@@ -65,7 +54,7 @@ const MainContainer = () => {
   if (isloading == true) {
     return <SplashScreen />;
   }
-  // return <ChooseDeclineReasonScreen/>;
+
   return <AppNavigator />;
   // return <PostLoadScreen />
 };

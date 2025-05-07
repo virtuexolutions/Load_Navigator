@@ -18,7 +18,9 @@ import WalkThroughScreen from './Screens/WalkthroughScreen';
 import SplashScreen from './Screens/SplashScreen';
 import StartScreen from './Screens/StartScreen';
 import PostLoadScreen from './Screens/PostLoadScreen';
-import Color from './Assets/Utilities/Color';
+import CarDirectory from './Screens/CarDirectory';
+import Alerts from './Screens/Alerts';
+import Menu from './Screens/Menu';
 
 enableScreens();
 const AppNavigator = () => {
@@ -45,6 +47,10 @@ const AppNavigator = () => {
           initialRouteName={'MyDrawer'}
           screenOptions={{ headerShown: false }}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
+          <RootNav.Screen name="CarDirectory" component={CarDirectory} />
+          <RootNav.Screen name="Alerts" component={Alerts} />
+          <RootNav.Screen name="Menu" component={Menu} />
+
           <RootNav.Screen
             name="WalkThroughScreen"
             component={WalkThroughScreen}
