@@ -78,11 +78,10 @@ const ResetPassword = props => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.container}>
           <CustomText isBold style={styles.txt2}>
-            Forget Password
+            Reset Password
           </CustomText>
           <CustomText style={styles.txt3}>
-            Forgot your password ? don't worry, jsut take a simple step and
-            create your new password!
+            Enter a new password to set a new password for {email}
           </CustomText>
           <Formik
             initialValues={{
@@ -152,7 +151,7 @@ const ResetPassword = props => {
                     width={windowWidth * 0.8}
                     height={windowHeight * 0.065}
                     marginTop={moderateScale(20, 0.3)}
-                    onPress={handleSubmit}
+                    onPress={()=>navigationN.navigate('LoginScreen')}
                     borderRadius={30}
                     bgColor={
                       Color.darkBlue

@@ -5,6 +5,7 @@ import {Formik} from 'formik';
 import React, {useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
   ImageBackground,
   StyleSheet,
   View,
@@ -46,19 +47,20 @@ const LoginScreen = props => {
   };
 
   const login = async values => {
-    const body = {
-      email: values.email,
-      password: values.password,
-      device_token: device_token,
-    };
-    const url = 'login';
-    setIsLoading(true);
-    const response = await Post(url, body, apiHeader(token));
-    setIsLoading(false);
-    if (response != undefined) {
-      dispatch(setUserToken({token: response?.data?.token}));
-      dispatch(setUserData(response?.data?.user_info));
-    }
+    // Alert.alert('fsdfdsfsdfsd')
+    //  dispatch(setUserData(values.email));
+    dispatch(setUserToken({token: 'dfsdfs'}));
+    // const body = {
+    //   email: values.email,
+    //   password: values.password,
+    //   device_token: device_token,
+    // };
+    // const url = 'login';
+    // setIsLoading(true);
+    // const response = await Post(url, body, apiHeader(token));
+    // setIsLoading(false);
+    // if (response != undefined) {
+    // }
   };
 
   // useEffect(() => {
@@ -262,11 +264,12 @@ const styles = StyleSheet.create({
 
   forgotpassword: {
     fontSize: moderateScale(10, 0.6),
-    color: Color.black,
+    color: Color.white,
     textAlign: 'right',
     width: '95%',
     paddingVertical: moderateScale(4, 0.6),
     fontWeight: '700',
+    alignSelf : 'flex-end'
   },
   button_container: {
     paddingTop: windowHeight * 0.05,

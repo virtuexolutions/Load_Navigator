@@ -21,12 +21,17 @@ import PostLoadScreen from './Screens/PostLoadScreen';
 import CarDirectory from './Screens/CarDirectory';
 import Alerts from './Screens/Alerts';
 import Menu from './Screens/Menu';
+import SelectRoute from './Screens/SelectRoute';
+import ViewLeadBoard from './Screens/ViewLeadBoard';
+import CreateRoute from './Screens/CreateRoute';
 
 enableScreens();
 const AppNavigator = () => {
   const isGoalCreated = useSelector(state => state.authReducer.isGoalCreated);
   const walkThrough = useSelector(state => state.authReducer.userWalkThrough);
+  console.log("🚀 ~ AppNavigator ~ walkThrough:", walkThrough)
   const role = useSelector(state => state.authReducer.role);
+  console.log("🚀 ~ AppNavigator ~ role:", role)
   const isVerified = useSelector(state => state.authReducer.isVerified);
   const token = useSelector(state => state.authReducer.token);
 
@@ -38,13 +43,13 @@ const AppNavigator = () => {
       walkThrough == false
         ? 'WalkThroughScreen'
         : token == null
-          ? 'LoginScreen'
-          : 'MyDrawer';
+          ? 'StartScreen'
+          : 'SelectRoute';
 
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
-          initialRouteName={'MyDrawer'}
+          initialRouteName={firstScreen}
           screenOptions={{ headerShown: false }}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
           <RootNav.Screen name="CarDirectory" component={CarDirectory} />
@@ -64,6 +69,9 @@ const AppNavigator = () => {
           <RootNav.Screen name="Profile" component={Profile} />
           <RootNav.Screen name="SplashScreen" component={SplashScreen} />
           <RootNav.Screen name="StartScreen" component={StartScreen} />
+          <RootNav.Screen name="SelectRoute" component={SelectRoute} />
+          <RootNav.Screen name="ViewLeadBoard" component={ViewLeadBoard} />
+          <RootNav.Screen name="CreateRoute" component={CreateRoute} />
         </RootNav.Navigator>
       </NavigationContainer>
     );

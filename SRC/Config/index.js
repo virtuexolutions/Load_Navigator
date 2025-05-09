@@ -1,4 +1,4 @@
-export const baseUrl = "https://ridelink.cstmpanel.com";
+// export const baseUrl = "https://ridelink.cstmpanel.com";
 // export const baseUrl = "https://4b54-113-203-241-1.in.ngrok.io";
 export const imageUrl = `${baseUrl}/api/images/`;
 export const profilePicUrl = `${baseUrl}/uploads`

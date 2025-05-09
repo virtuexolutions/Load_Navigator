@@ -169,7 +169,7 @@ const VerifyNumber = props => {
               key={index}
               style={[styles.cellRoot, isFocused && styles.focusCell]}>
               <CustomText
-                style={[styles.cellText, isFocused && {color: Color.black}]}>
+                style={[styles.cellText, isFocused && {color: Color.white}]}>
                 {symbol || (isFocused ? <Cursor /> : null)}
               </CustomText>
             </View>
@@ -204,7 +204,7 @@ const VerifyNumber = props => {
           borderRadius={30}
           marginTop={moderateScale(20, 0.3)}
           onPress={() => {
-            VerifyOTP();
+            navigationN.navigate('ResetPassword', {email: email});
           }}
           bgColor={Color.secondry}
         />
@@ -255,7 +255,7 @@ const styles = ScaledSheet.create({
     borderWidth: 1,
   },
   cellText: {
-    color: Color.themeBlack,
+    color: Color.white,
     fontSize: moderateScale(20, 0.3),
     textAlign: 'center',
   },

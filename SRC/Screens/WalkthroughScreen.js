@@ -16,6 +16,7 @@ import { setWalkThrough } from '../Store/slices/auth-slice';
 import { windowHeight, windowWidth } from '../Utillity/utils';
 
 const WalkThroughScreen = props => {
+  // console.log('fdsfds')
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const slidesref = useRef(null);
@@ -78,9 +79,9 @@ const WalkThroughScreen = props => {
     );
   };
 
-  const RenderNextBtn = ({onPress}) => {
+  const RenderNextBtn = () => {
     return (
-      <TouchableOpacity onPress={onPress} style={styles.next_btn}>
+      <TouchableOpacity  style={styles.next_btn}>
         <CustomText
           style={{
             fontSize: moderateScale(14, 0.6),
@@ -124,45 +125,50 @@ const WalkThroughScreen = props => {
         renderItem={RenderSlider}
         data={slides}
         ref={slidesref}
-        renderPagination={activeindex => {
-          return (
-            <View
-              style={{
-                width: windowWidth,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingHorizontal: moderateScale(17, 0.6),
-                zIndex: 1,
-                position: 'absolute',
-                bottom: 30,
-              }}>
-              <RenderSkipBtn />
-              <RenderNextBtn
-                onPress={() => {
-                  if (slidesref.current) {
-                    if (activeindex < slides.length - 1) {
-                      slidesref.current.goToSlide(activeindex + 1, true);
-                    } else {
-                      dispatch(setWalkThrough(true));
-                    }
-                  }
-                }}
-              />
-            </View>
-          );
-        }}
+        // renderPagination={activeindex => {
+        //   return (
+        //     <View
+        //       style={{
+        //         width: windowWidth,
+        //         flexDirection: 'row',
+        //         justifyContent: 'space-between',
+        //         paddingHorizontal: moderateScale(17, 0.6),
+        //         zIndex: 1,
+        //         position: 'absolute',
+        //         bottom: 30,
+        //       }}>
+        //       <RenderSkipBtn />
+        //       <RenderNextBtn
+        //         onPress={() => {
+        //           if (slidesref.current) {
+        //             if (activeindex < slides.length - 1) {
+        //               slidesref.current.goToSlide(activeindex + 1, true);
+        //             } else {
+        //               dispatch(setWalkThrough(true));
+        //             }
+        //           }
+        //         }}
+        //       />
+        //     </View>
+        //   );
+        // }}
         // onPress={() => slidesref.current.goToSlide(1, true)}
         // showDoneButton={false}
         // showSkipButton={true}
-        // showPrevButton={true}
+        showPrevButton={true}
         showNextButton={true}
+        showDoneButton={true}
         activeDotStyle={{backgroundColor: Color.themeBlack}}
         dotStyle={{
           backgroundColor: 'transparent',
           borderWidth: 1,
           borderColor: Color.themeBlack,
         }}
-        renderDoneButton={RenderDoneBtn}
+        // renderDoneButton={RenderDoneBtn}
+        onDone={()=>{
+          // console.log('fdsfds')
+         dispatch(setWalkThrough(true))
+        }}
         // renderNextButton={RenderNextBtn}
         // renderSkipButton={RenderSkipBtn}
         // renderPrevButton={RenderBackBtn}
@@ -218,6 +224,10 @@ const styles = StyleSheet.create({
   },
   next_btn: {
     borderColor: Color.black,
+  },
+  btnRight :{
+    color : Color.white,
+    fontSize : moderateScale(18,0.6)
   },
 });
 

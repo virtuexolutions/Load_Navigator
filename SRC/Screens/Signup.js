@@ -6,6 +6,7 @@ import {
   Alert,
   ImageBackground,
   Platform,
+  SafeAreaView,
   ToastAndroid,
   View,
 } from 'react-native';
@@ -21,6 +22,8 @@ import {SignupSchema} from '../Constant/schema';
 import {setUserData} from '../Store/slices/common';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import Header from '../Components/Header';
+import CustomStatusBar from '../Components/CustomStatusBar';
+import { setUserToken } from '../Store/slices/auth-slice';
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -51,15 +54,20 @@ const Signup = () => {
       dispatch(setUserData(response?.data?.user_info));
     }
   };
+  const handlePress = async values =>{
+    console.log('ffs ds fds')
+  }
 
   return (
+    <SafeAreaView>
     <ImageBackground
       style={styles.bg_con}
       resizeMode={'stretch'}
       source={require('../Assets/Images/login_bg.png')}>
+        <CustomStatusBar/>
       <Header
         // title="Pilot Car Directory"
-        headerColor={Color.black}
+        headerColor={'transparent'}
         textstyle={{color: Color.white}}
         showBack
       />
@@ -76,14 +84,14 @@ const Signup = () => {
           address: '',
         }}
         validationSchema={SignupSchema}
-        onSubmit={onPressregister}>
+        onSubmit={handlePress}>
         {({
           values,
           handleChange,
           handleSubmit,
           errors,
           touched,
-          setFieldValue,
+
         }) => {
           return (
             <View>
@@ -174,7 +182,9 @@ const Signup = () => {
                 </CustomText>
               )}
               <CustomButton
-                onPress={handleSubmit}
+                onPress={()=>{
+                  dispatch(setUserToken({token : 'dsafsrtt'}))
+                }}
                 text={
                   isLoading ? (
                     <ActivityIndicator color={Color.white} size={'small'} />
@@ -204,6 +214,7 @@ const Signup = () => {
         setFileObject={setImage}
       /> */}
     </ImageBackground>
+    </SafeAreaView>
   );
 };
 

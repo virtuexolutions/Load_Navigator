@@ -17,78 +17,73 @@ import { useNavigation } from '@react-navigation/native'
 const PostLoadScreen = () => {
     const navigation = useNavigation()
     const [isVisible, setIsVisible] = useState(false)
-    const [lead, setLead] = useState(false)
-    const [chase, setChase] = useState(false)
-    const [pole, setPole] = useState(false)
-    const [steer, setSteer] = useState(false)
-    const [route, setRoute] = useState(false)
-    const [Survey, setSurvey] = useState(false)
-    const [thirdCar, setThirdCar] = useState(false)
-    const [fourthCar, setFourthCar] = useState(false)
     const [isDetails, setIsDetails] = useState(false)
+    const [positions, setPositions] = useState({
+        lead: false,
+        chase: false,
+        pole: false,
+        steer: false,
+        survey: false,
+        thirdCar: false,
+        fourthCar: false,
+        witpac: false,
+        cevo: false,
+        cse: false
+    });
+
     const positionOptions = [
         {
             id: 1,
             text: 'Lead',
-            value: lead,
-            setValue: setLead,
         },
         {
             id: 2,
             text: 'Chase',
-            value: chase,
-            setValue: setChase,
+            key: 'chase',
         },
         {
             id: 3,
             text: 'High Pole',
-            value: pole,
-            setValue: setPole,
+            key: 'pole',
         },
         {
             id: 4,
             text: 'Steer',
-            value: steer,
-            setValue: setSteer,
+            key: 'steer',
         },
         {
             id: 5,
             text: 'Route Survey',
-            value: Survey,
-            setValue: setSurvey,
+            key: 'survey',
         },
         {
             id: 6,
             text: 'Third Car',
-            value: thirdCar,
-            setValue: setThirdCar,
+            key: 'thirdCar',
         },
         {
             id: 7,
             text: 'Fourth Car',
-            value: fourthCar,
-            setValue: setFourthCar,
+            key: 'fourthCar',
         },
-    ]
+    ];
+
 
     const requirements = [
         {
             id: 1,
             text: 'WITPAC Needed',
-            value: lead,
-            setValue: setLead,
+            key: 'witpac'
         },
         {
             id: 2,
             text: 'CEVO Needed',
-            value: chase,
-            setValue: setChase,
+            key: 'cevo'
         },
         {
             id: 3,
             text: 'CSE Needed',
-            value: pole,
-            setValue: setPole,
+            key: 'cse'
         },
     ]
 
@@ -209,7 +204,7 @@ const PostLoadScreen = () => {
                         }
                     </View>
                 </View>
-                <SideBarModal isPostDetails={isDetails} setIsPost={setIsDetails} isPost={isDetails} requirements={requirements} isModalVisible={isVisible} positionOptions={positionOptions} setIsModalVisible={setIsVisible} />
+                <SideBarModal positions={positions} setPositions={setPositions} isPostDetails={isDetails} setIsPost={setIsDetails} isPost={isDetails} requirements={requirements} isModalVisible={isVisible} positionOptions={positionOptions} setIsModalVisible={setIsVisible} />
             </ScrollView>
         </SafeAreaView>
     )

@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import Modal from 'react-native-modal';
 import { windowHeight, windowWidth } from '../Utillity/utils';
@@ -9,8 +9,10 @@ import TextInputWithTitle from './TextInputWithTitle';
 import CustomButton from './CustomButton';
 import { Icon } from 'native-base';
 import Entypo from 'react-native-vector-icons/Entypo'
+import AntDesign from 'react-native-vector-icons/AntDesign'
+import navigationService from '../navigationService';
 
-const SideBarModal = ({ isModalVisible, isPost, setIsPost, requirements, setIsModalVisible, isPostDetails, positionOptions }) => {
+const SideBarModal = ({ isModalVisible, isPost, positions, setPositions, setIsPost, requirements, setIsModalVisible, isPostDetails, positionOptions }) => {
     return (
         <Modal
             hasBackdrop={true}
@@ -18,7 +20,7 @@ const SideBarModal = ({ isModalVisible, isPost, setIsPost, requirements, setIsMo
                 justifyContent: 'center',
                 alignItems: 'flex-end',
             }}
-            
+
             isVisible={isModalVisible}
             onBackdropPress={() => {
                 setIsModalVisible(false);
@@ -59,6 +61,7 @@ const SideBarModal = ({ isModalVisible, isPost, setIsPost, requirements, setIsMo
                                     onPress={() => {
                                         setIsPost(true)
                                         setIsModalVisible(false)
+                                        navigationService.navigate('CarDirectory')
                                     }}
                                     fontSize={moderateScale(14, 0.3)}
                                     textColor={Color.white}
@@ -151,30 +154,78 @@ const SideBarModal = ({ isModalVisible, isPost, setIsPost, requirements, setIsMo
                                 }]}>(can Select Multiple)</CustomText>
                             </View>
                             {positionOptions?.map((item) => {
+                                const isActive = positions[item.key];
                                 return (
-                                    <View style={[styles.row_view, {
-                                        width: windowWidth * 0.3,
-                                        alignItems: 'flex-start',
-                                        justifyContent: "flex-start",
-                                        marginBottom: moderateScale(7, 0.6)
-                                    }]}>
-                                        <View style={styles.box} />
-                                        <CustomText style={styles.text}>{item?.text}</CustomText>
-                                    </View>
-                                )
+                                    <TouchableOpacity
+                                        key={item.id}
+                                        onPress={() =>
+                                            setPositions((prev) => ({
+                                                ...prev,
+                                                [item.key]: !prev[item.key],
+                                            }))
+                                        }
+                                        style={[
+                                            styles.row_view,
+                                            {
+                                                width: windowWidth * 0.3,
+                                                alignItems: 'flex-start',
+                                                justifyContent: 'flex-start',
+                                                marginBottom: moderateScale(7, 0.6),
+                                            },
+                                        ]}
+                                    >
+                                        <View
+                                            style={[
+                                                styles.box,
+                                                {
+                                                    borderWidth: 1,
+                                                    borderColor: isActive ? Color.secondary : 'black',
+                                                    backgroundColor: isActive ? Color.secondary : Color.white
+                                                },
+                                            ]}
+                                        >
+                                            <Icon name='check' as={AntDesign} size={moderateScale(14, 0.6)} color={Color.white} />
+                                        </View>
+                                        <CustomText style={styles.text}>{item.text}</CustomText>
+                                    </TouchableOpacity>
+                                );
                             })}
                             <CustomText isBold style={[styles.heading_text, { marginBottom: moderateScale(10, 0.6) }]}>Additional requirements</CustomText>
                             {requirements?.map((item) => {
+                                const isActive = positions[item.key];
                                 return (
-                                    <View style={[styles.row_view, {
-                                        width: windowWidth * 0.3,
-                                        alignItems: 'flex-start',
-                                        justifyContent: "flex-start",
-                                        marginBottom: moderateScale(7, 0.6)
-                                    }]}>
-                                        <View style={styles.box} />
-                                        <CustomText style={styles.text}>{item?.text}</CustomText>
-                                    </View>
+                                    <TouchableOpacity
+                                        key={item.id}
+                                        onPress={() =>
+                                            setPositions((prev) => ({
+                                                ...prev,
+                                                [item.key]: !prev[item.key],
+                                            }))
+                                        }
+                                        style={[
+                                            styles.row_view,
+                                            {
+                                                width: windowWidth * 0.3,
+                                                alignItems: 'flex-start',
+                                                justifyContent: 'flex-start',
+                                                marginBottom: moderateScale(7, 0.6),
+                                            },
+                                        ]}
+                                    >
+                                        <View
+                                            style={[
+                                                styles.box,
+                                                {
+                                                    borderWidth: 1,
+                                                    borderColor: isActive ? Color.secondary : 'black',
+                                                    backgroundColor: isActive ? Color.secondary : Color.white
+                                                },
+                                            ]}
+                                        >
+                                            <Icon name='check' as={AntDesign} size={moderateScale(14, 0.6)} color={Color.white} />
+                                        </View>
+                                        <CustomText style={styles.text}>{item.text}</CustomText>
+                                    </TouchableOpacity>
                                 )
                             })}
                             <CustomText isBold style={styles.heading_text}>Rate</CustomText>
@@ -259,8 +310,7 @@ const styles = StyleSheet.create({
         width: moderateScale(16, 0.6),
         marginRight: moderateScale(6, 0.6),
         borderRadius: moderateScale(4, 0.6),
-        borderWidth: 1,
-        borderColor: Color.black
+
     },
     row_view: {
         flexDirection: 'row',

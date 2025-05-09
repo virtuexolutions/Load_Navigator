@@ -7,7 +7,7 @@ import Color from '../Assets/Utilities/Color';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import ScreenBoiler from '../Components/ScreenBoiler';
-import { setUserToken } from '../Store/slices/auth';
+import { setUserLogoutAuth, setUserToken } from '../Store/slices/auth';
 import { SetUserRole } from '../Store/slices/auth-slice';
 import { setUserLogOut } from '../Store/slices/common';
 import { windowHeight, windowWidth } from '../Utillity/utils';
@@ -35,7 +35,7 @@ const Drawer = React.memo(() => {
       name: 'Directory',
       onPress: () => {
         // setIsModalVisible(true);
-        navigation.navigate('ReferFriendScreen');
+        navigation.navigate('Menu');
       },
       iconName: 'folder',
       iconType: Feather
@@ -100,32 +100,34 @@ const Drawer = React.memo(() => {
         }}>
           {adminData.map((item) => {
             return (
-              <View style={styles.row_view}>
+              <TouchableOpacity onPress={item?.onPress} style={styles.row_view}>
                 <Icon name={item?.iconName} as={item?.iconType} size={moderateScale(15, 0.6)} color={Color.lightGrey} />
                 <CustomText style={styles.text}>{item?.name}</CustomText>
-              </View>
+              </TouchableOpacity>
             )
           })
           }
           <View style={styles.line} />
           {adminData1.map((item) => {
             return (
-              <View style={styles.row_view}>
+              <TouchableOpacity style={styles.row_view}>
                 <Icon name={item?.iconName} as={item?.iconType} size={moderateScale(15, 0.6)} color={Color.lightGrey} />
                 <CustomText style={styles.text}>{item?.name}</CustomText>
-              </View>
+              </TouchableOpacity>
             )
           })
           }
         </View>
-        <View style={[styles.row_view, {
+        <TouchableOpacity onPress={() => {
+          dispatch(setUserLogoutAuth())
+        }} style={[styles.row_view, {
           position: 'absolute',
           bottom: 80,
           marginLeft: moderateScale(15, 0.6),
         }]}>
           <Icon name={'logout'} as={MaterialCommunityIcons} size={moderateScale(15, 0.6)} color={Color.secondary} />
           <CustomText style={[styles.text, { color: Color.secondary }]}>{'Logout'}</CustomText>
-        </View>
+        </TouchableOpacity>
       </View>
     </ScreenBoiler>
   );

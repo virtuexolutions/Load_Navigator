@@ -91,7 +91,9 @@ const VerifyEmail = props => {
               email: '',
             }}
             validationSchema={forgotpasswordSchema}
-            onSubmit={sendOTP}>
+            onSubmit={(values)=>{
+              navigationN.navigate('VerifyNumber' , { email: values.email })
+            }}>
             {({ values, handleChange, handleSubmit, touched, errors }) => {
               console.log(
                 '🚀 ~ VerifyEmail ~ errors:',

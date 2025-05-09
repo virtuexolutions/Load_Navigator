@@ -1,14 +1,19 @@
-import {ImageBackground, StyleSheet, Text, View} from 'react-native';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import { windowHeight, windowWidth } from '../Utillity/utils';
 import CustomText from '../Components/CustomText';
 import CustomButton from '../Components/CustomButton';
-import {moderateScale} from 'react-native-size-matters';
-import {background, color, position} from 'native-base/lib/typescript/theme/styled-system';
-import {mode} from 'native-base/lib/typescript/theme/tools';
+import { moderateScale } from 'react-native-size-matters';
+import { background, color, position } from 'native-base/lib/typescript/theme/styled-system';
+import { mode } from 'native-base/lib/typescript/theme/tools';
 import Color from '../Assets/Utilities/Color';
+import { useDispatch } from 'react-redux';
+import { SetUserRole } from '../Store/slices/auth';
+import navigationService from '../navigationService';
 
 const StartScreen = () => {
+  const dispatch = useDispatch()
+
   return (
     <ImageBackground
       imageStyle={{
@@ -32,6 +37,10 @@ const StartScreen = () => {
           borderWidth={1}
           borderRadius={moderateScale(30, 0.6)}
           width={windowWidth * 0.85}
+          onPress={() => {
+            dispatch(SetUserRole('Company'))
+            navigationService.navigate('LoginScreen')
+          }}
         />
         <CustomButton
           text={'Pilot Car'}
@@ -42,6 +51,10 @@ const StartScreen = () => {
           borderWidth={1}
           borderRadius={moderateScale(30, 0.6)}
           width={windowWidth * 0.85}
+          onPress={() => {
+            dispatch(SetUserRole('Pilot'))
+            navigationService.navigate('LoginScreen')
+          }}
         />
 
         <CustomText
@@ -49,15 +62,15 @@ const StartScreen = () => {
             fontSize: moderateScale(10, 0.6),
             // paddingHorizontal: moderateScale(15, 0.6),
             // textAlign : 'center' ,
-            color : Color.white ,
+            color: Color.white,
             position: 'absolute',
-            bottom : 20 ,
+            bottom: 20,
             // width : windowWidth *0.95,
 
             // paddingVertical : moderateScale(15,.6)
-  
-  }}>
-  
+
+          }}>
+
           Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit. Nullam La
           Oreet Urna Vel Hendrerit Commodo. Etiam Ullamcorper Non Arcu Et
           Interdum.

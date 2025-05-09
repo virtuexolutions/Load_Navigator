@@ -1,15 +1,15 @@
-import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { windowHeight, windowWidth } from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
-import {Checkbox, Icon, IconButton} from 'native-base';
+import { Checkbox, Icon, IconButton } from 'native-base';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {moderateScale} from 'react-native-size-matters';
+import { moderateScale } from 'react-native-size-matters';
 import CustomText from '../Components/CustomText';
 import CustomDropDown from '../Components/CustomDropDown';
 import CustomImage from '../Components/CustomImage';
@@ -17,7 +17,7 @@ import CustomImage from '../Components/CustomImage';
 const Alerts = () => {
   const [escortPosition, setEscortPosition] = useState('');
   const [escortPositions, setEscortPositions] = useState([]);
-  const [ isSetupAlert, setIsSetupAlert] = useState(false);
+  const [isSetupAlert, setIsSetupAlert] = useState(false);
   const [origins, setOrigins] = useState([]);
   const [origin, setOrigin] = useState('');
   const [destinations, setDestinations] = useState([]);
@@ -68,8 +68,8 @@ const Alerts = () => {
     },
   ];
   return (
-      <ScrollView style={styles.mainScreen} contentContainerStyle={{
-        alignItems: 'center',
+    <ScrollView style={styles.mainScreen} contentContainerStyle={{
+      alignItems: 'center',
     }}>
       <AlertCard
         color={'#42460B'}
@@ -98,129 +98,129 @@ const Alerts = () => {
           </CustomText>
         }
       />
-{isSetupAlert ?       <SetupAlerts />
-     :
-     <>
-      <View style={styles.loadBoard}>
-        <View style={styles.loadBoardHead}>
-          <CustomText style={styles.txt2}>Load Board</CustomText>
-          <IconButton
-            title="Refresh"
-            icon={
-              <View style={styles.refreshContainer}>
-                <Icon as={EvilIcons} name="refresh" color={Color.mediumGray} />
-                <CustomText style={styles.txt3}>Refresh</CustomText>
-              </View>
-            }
-          />
-        </View>
-        <CustomText style={styles.txt4}>
-          Updated Less Than A Minute Ago
-        </CustomText>
-        <View style={styles.row}>
-          <CustomDropDown
-            width={windowWidth * 0.35}
-            data={escortPositions}
-            item={escortPosition}
-            setItem={setEscortPosition}
-            placeHolder={'Origin'}
-          />
-          <CustomDropDown
-            width={windowWidth * 0.35}
-            data={destinations}
-            item={destination}
-            setItem={setDestination}
-            placeHolder={'Destination'}
-          />
-        </View>
-        <View style={styles.row}>
-          <CustomDropDown
-            width={windowWidth * 0.35}
-            data={escortPositions}
-            item={escortPosition}
-            setItem={setEscortPosition}
-            placeHolder={'Escort Position'}
-          />
-          <View style={styles.checkboxGroup}>
-            <Checkbox
-              value="Quick Pay Only"
-              //  colorScheme={"dred"}
-              // defaultIsChecked
-              color={Color.secondary}
-              borderColor={Color.mediumGray}
-              children={
-                <CustomText style={styles.txt3}>Quick Pay Only</CustomText>
-              }
-              onChange={e => {}}
-            />
-            <Checkbox
-              value="Text Only"
-              //  defaultIsChecked
-              //  backgroundColor={Color.secondary}
-              //  bg={Color.secondary}
-              borderColor={Color.mediumGray}
-              children={
-                <CustomText style={styles.txt3}>Quick Pay Only</CustomText>
-              }
-              onChange={e => {}}
-            />
-          </View>
-        </View>
-       <View style={{width:windowWidth, paddingVertical:moderateScale(20,0.2), paddingHorizontal:moderateScale(20,0.3)}}>
-
-        <Checkbox
-          value="Hide"
-        //   style={{left: 10}}
-          //  colorScheme={"dred"}
-          defaultIsChecked
-          color={Color.secondary}
-          children={
-              <CustomText style={styles.txt3}>Hide Covered Loads</CustomText>
-            }
-            onChange={e => {}}
-            />
+      {isSetupAlert ? <SetupAlerts />
+        :
+        <>
+          <View style={styles.loadBoard}>
+            <View style={styles.loadBoardHead}>
+              <CustomText style={styles.txt2}>Load Board</CustomText>
+              <IconButton
+                title="Refresh"
+                icon={
+                  <View style={styles.refreshContainer}>
+                    <Icon as={EvilIcons} name="refresh" color={Color.mediumGray} />
+                    <CustomText style={styles.txt3}>Refresh</CustomText>
+                  </View>
+                }
+              />
             </View>
-      </View>
- <View style={styles.recentLoadBoards}>
-        <View style={styles.row_view}>
-          <CustomText isBold style={styles.heading_text}>
-            JLS Pilot Car Services
-          </CustomText>
-          <View style={styles.row_view}>
-            <CustomText style={styles.text}>Recent</CustomText>
-            <TouchableOpacity style={styles.btn}>
-              <CustomText style={[styles.text, {color: Color.white}]}>
-                Open
-              </CustomText>
-            </TouchableOpacity>
-          </View>
-        </View>
-        {truckDetails.map(item => {
-          return (
-            <View
-              style={[
-                styles.row_view,
-                {
-                  justifyContent: 'flex-start',
-                  marginTop: moderateScale(10, 0.6),
-                },
-              ]}>
-              <View style={styles.icon_box}>
-                <Icon
-                  name={item?.iconName}
-                  as={item?.iconType}
-                  color={Color.white}
-                  size={moderateScale(13, 0.6)}
-                  style={{alignSelf: 'center'}}
+            <CustomText style={styles.txt4}>
+              Updated Less Than A Minute Ago
+            </CustomText>
+            <View style={styles.row}>
+              <CustomDropDown
+                width={windowWidth * 0.35}
+                data={escortPositions}
+                item={escortPosition}
+                setItem={setEscortPosition}
+                placeHolder={'Origin'}
+              />
+              <CustomDropDown
+                width={windowWidth * 0.35}
+                data={destinations}
+                item={destination}
+                setItem={setDestination}
+                placeHolder={'Destination'}
+              />
+            </View>
+            <View style={styles.row}>
+              <CustomDropDown
+                width={windowWidth * 0.35}
+                data={escortPositions}
+                item={escortPosition}
+                setItem={setEscortPosition}
+                placeHolder={'Escort Position'}
+              />
+              <View style={styles.checkboxGroup}>
+                <Checkbox
+                  value="Quick Pay Only"
+                  //  colorScheme={"dred"}
+                  // defaultIsChecked
+                  color={Color.secondary}
+                  borderColor={Color.mediumGray}
+                  children={
+                    <CustomText style={styles.txt3}>Quick Pay Only</CustomText>
+                  }
+                  onChange={e => { }}
+                />
+                <Checkbox
+                  value="Text Only"
+                  //  defaultIsChecked
+                  //  backgroundColor={Color.secondary}
+                  //  bg={Color.secondary}
+                  borderColor={Color.mediumGray}
+                  children={
+                    <CustomText style={styles.txt3}>Quick Pay Only</CustomText>
+                  }
+                  onChange={e => { }}
                 />
               </View>
-              <CustomText style={styles.details_text}>{item?.text}</CustomText>
             </View>
-          );
-        })}
-      </View>
-     </>
-      
+            <View style={{ width: windowWidth, paddingVertical: moderateScale(20, 0.2), paddingHorizontal: moderateScale(20, 0.3) }}>
+
+              <Checkbox
+                value="Hide"
+                //   style={{left: 10}}
+                //  colorScheme={"dred"}
+                defaultIsChecked
+                color={Color.secondary}
+                children={
+                  <CustomText style={styles.txt3}>Hide Covered Loads</CustomText>
+                }
+                onChange={e => { }}
+              />
+            </View>
+          </View>
+          <View style={styles.recentLoadBoards}>
+            <View style={styles.row_view}>
+              <CustomText isBold style={styles.heading_text}>
+                JLS Pilot Car Services
+              </CustomText>
+              <View style={styles.row_view}>
+                <CustomText style={styles.text}>Recent</CustomText>
+                <TouchableOpacity style={styles.btn}>
+                  <CustomText style={[styles.text, { color: Color.white }]}>
+                    Open
+                  </CustomText>
+                </TouchableOpacity>
+              </View>
+            </View>
+            {truckDetails.map(item => {
+              return (
+                <View
+                  style={[
+                    styles.row_view,
+                    {
+                      justifyContent: 'flex-start',
+                      marginTop: moderateScale(10, 0.6),
+                    },
+                  ]}>
+                  <View style={styles.icon_box}>
+                    <Icon
+                      name={item?.iconName}
+                      as={item?.iconType}
+                      color={Color.white}
+                      size={moderateScale(13, 0.6)}
+                      style={{ alignSelf: 'center' }}
+                    />
+                  </View>
+                  <CustomText style={styles.details_text}>{item?.text}</CustomText>
+                </View>
+              );
+            })}
+          </View>
+        </>
+
       }
     </ScrollView>
   );
@@ -228,9 +228,9 @@ const Alerts = () => {
 
 export default Alerts;
 
-const AlertCard = ({children, color}) => {
+const AlertCard = ({ children, color }) => {
   return (
-    <View style={[styles.alertCard, color && {backgroundColor: color}]}>
+    <View style={[styles.alertCard, color && { backgroundColor: color }]}>
       <Icon
         name="checkcircle"
         as={AntDesign}
@@ -249,25 +249,25 @@ const AlertCard = ({children, color}) => {
 };
 
 const SetupAlerts = () => {
-    return (
-        <View style={styles.alertView}>
-            <CustomText style={styles.title}>Alerts</CustomText>
-            <View style={styles.setupContainer}>
-            <CustomText style={styles.text5} >Let's Create Your First Alert!</CustomText>
-            <CustomText style={styles.txt4}>select your preferred regions to get alerts for any loads originating from there.</CustomText>
-                <View style={styles.imageContainer}>
-                      <CustomImage 
-                      style={styles.image}
-                      source={require('../Assets/Images/mapWithTruck.png')}/>  
-                </View>
-                <View style={styles.imageContainer}>
-                      <CustomImage 
-                      style={styles.image}
-                      source={require('../Assets/Images/map1.png')}/>  
-                </View>
-            </View>
+  return (
+    <View style={styles.alertView}>
+      <CustomText style={styles.title}>Alerts</CustomText>
+      <View style={styles.setupContainer}>
+        <CustomText style={styles.text5} >Let's Create Your First Alert!</CustomText>
+        <CustomText style={styles.txt4}>select your preferred regions to get alerts for any loads originating from there.</CustomText>
+        <View style={styles.imageContainer}>
+          <CustomImage
+            style={styles.image}
+            source={require('../Assets/Images/mapWithTruck.png')} />
         </View>
-    )
+        <View style={styles.imageContainer}>
+          <CustomImage
+            style={styles.image}
+            source={require('../Assets/Images/map1.png')} />
+        </View>
+      </View>
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -286,11 +286,11 @@ const styles = StyleSheet.create({
     gap: moderateScale(10, 0.3),
     paddingVertical: moderateScale(20, 0.3),
     paddingHorizontal: moderateScale(10, 0.3),
-  },title:{
-    fontSize:moderateScale(30,0.2),
+  }, title: {
+    fontSize: moderateScale(30, 0.2),
     color: Color.white,
-    alignSelf:"center",
-},
+    alignSelf: "center",
+  },
   txt: {
     width: '85%',
     // textAlign:"center",
@@ -311,11 +311,11 @@ const styles = StyleSheet.create({
   txt4: {
     color: Color.mediumGray,
     fontSize: moderateScale(14, 0.3),
-    textAlign:"center"
-},
-text5:{
-      fontWeight :"bold",
-    fontSize:moderateScale(24,0.2),
+    textAlign: "center"
+  },
+  text5: {
+    fontWeight: "bold",
+    fontSize: moderateScale(24, 0.2),
 
   },
   refreshContainer: {
@@ -388,7 +388,7 @@ text5:{
     alignItems: 'center',
     marginRight: moderateScale(7, 0.6),
   },
-  setupContainer:{
+  setupContainer: {
     backgroundColor: Color.white,
     width: windowWidth * 0.9,
     // alignItems:"center",
@@ -397,16 +397,16 @@ text5:{
     marginTop: moderateScale(20, 0.2),
     borderRadius: moderateScale(20, 0.3),
   },
-  imageContainer:{
+  imageContainer: {
     width: windowWidth * 0.8,
     height: windowHeight * 0.3,
     borderRadius: moderateScale(30, 0.3),
-    overflow:"hidden",
+    overflow: "hidden",
     marginTop: moderateScale(20, 0.2),
-},
+  },
 
-  image:{
-    width  : "100%",
-    height : "100%",
+  image: {
+    width: "100%",
+    height: "100%",
   }
 });
