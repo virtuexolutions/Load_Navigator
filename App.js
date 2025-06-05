@@ -34,7 +34,7 @@ const App = () => {
             <MainContainer />
           </NativeBaseProvider>
         </PersistGate>
-       </Provider>
+      </Provider>
     </StripeProvider>
   );
 };

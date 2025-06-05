@@ -1,30 +1,32 @@
 // import messaging from '@react-native-firebase/messaging';
 // import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {useNavigation} from '@react-navigation/native';
-import {Formik} from 'formik';
-import React, {useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { Formik } from 'formik';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   ImageBackground,
+  Platform,
   StyleSheet,
+  ToastAndroid,
   View,
 } from 'react-native';
-import {moderateScale} from 'react-native-size-matters';
-import {useDispatch, useSelector} from 'react-redux';
+import { moderateScale } from 'react-native-size-matters';
+import { useDispatch, useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import { Post } from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import {loginSchema} from '../Constant/schema';
-import {setUserToken} from '../Store/slices/auth-slice';
-import {setUserData} from '../Store/slices/common';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import {mode} from 'native-base/lib/typescript/theme/tools';
+import { loginSchema } from '../Constant/schema';
+import { setUserToken } from '../Store/slices/auth-slice';
+import { setUserData } from '../Store/slices/common';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
+import { mode } from 'native-base/lib/typescript/theme/tools';
 
 const LoginScreen = props => {
   const dispatch = useDispatch();
@@ -37,30 +39,32 @@ const LoginScreen = props => {
   const [device_token, setDeviceToken] = useState(null);
 
   const loginWithGoogle = async response1 => {
-    const body = {...response1?.data};
+    const body = { ...response1?.data };
     const url = 'google-login';
     const response = await Post(url, body, apiHeader(token));
     if (response != undefined) {
-      dispatch(setUserToken({token: response?.data?.token}));
+      dispatch(setUserToken({ token: response?.data?.token }));
       dispatch(setUserData(response?.user_info));
     }
   };
 
   const login = async values => {
-    // Alert.alert('fsdfdsfsdfsd')
-    //  dispatch(setUserData(values.email));
-    dispatch(setUserToken({token: 'dfsdfs'}));
-    // const body = {
-    //   email: values.email,
-    //   password: values.password,
-    //   device_token: device_token,
-    // };
-    // const url = 'login';
-    // setIsLoading(true);
-    // const response = await Post(url, body, apiHeader(token));
-    // setIsLoading(false);
-    // if (response != undefined) {
-    // }
+    const body = {
+      email: values.email,
+      password: values.password,
+    };
+    console.log("🚀 ~ body:", body)
+    const url = 'login';
+    setIsLoading(true);
+    const response = await Post(url, body, apiHeader());
+    setIsLoading(false);
+    if (response != undefined) {
+      dispatch(setUserData(response?.data?.user_info));
+      dispatch(setUserToken({ token: response?.data?.token }));
+      Platform.OS == 'android'
+        ? ToastAndroid.show('Login Successfully', ToastAndroid.SHORT)
+        : Alert.alert('Login Successfully');
+    }
   };
 
   // useEffect(() => {
@@ -91,7 +95,6 @@ const LoginScreen = props => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-
       <View
         style={{
           height: windowHeight * 0.17,
@@ -117,7 +120,7 @@ const LoginScreen = props => {
           }}
           validationSchema={loginSchema}
           onSubmit={login}>
-          {({handleChange, handleSubmit, values, errors, touched}) => {
+          {({ handleChange, handleSubmit, values, errors, touched }) => {
             return (
               <>
                 <TextInputWithTitle
@@ -135,7 +138,7 @@ const LoginScreen = props => {
                   borderColor={Color.white}
                   marginTop={moderateScale(10, 0.3)}
                   placeholderColor={Color.mediumGray}
-                  titleStlye={{right: 10}}
+                  titleStlye={{ right: 10 }}
                 />
                 {touched.email && errors.email && (
                   <CustomText
@@ -163,7 +166,7 @@ const LoginScreen = props => {
                   marginTop={moderateScale(15, 0.3)}
                   // color={Color.white}
                   placeholderColor={Color.mediumGray}
-                  titleStlye={{right: 10}}
+                  titleStlye={{ right: 10 }}
                 />
                 {touched.password && errors.password && (
                   <CustomText
@@ -183,7 +186,7 @@ const LoginScreen = props => {
                   style={styles.forgotpassword}>
                   Forgot password ?
                 </CustomText>
-                <View style={{marginTop: moderateScale(10, 0.6)}} />
+                <View style={{ marginTop: moderateScale(10, 0.6) }} />
                 <CustomButton
                   text={
                     isLoading ? (
@@ -269,7 +272,7 @@ const styles = StyleSheet.create({
     width: '95%',
     paddingVertical: moderateScale(4, 0.6),
     fontWeight: '700',
-    alignSelf : 'flex-end'
+    alignSelf: 'flex-end'
   },
   button_container: {
     paddingTop: windowHeight * 0.05,

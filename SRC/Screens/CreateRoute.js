@@ -1,24 +1,98 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { moderateScale } from 'react-native-size-matters';
 import { windowHeight, windowWidth } from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
 import CustomButton from '../Components/CustomButton';
+import QRCodeScanner from 'react-native-qrcode-scanner';
+import Modal from 'react-native-modal'
+import CustomText from '../Components/CustomText';
+import navigationService from '../navigationService';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { pick } from '@react-native-documents/picker';
 
 const CreateRoute = () => {
+    const [modalVisible, setModalVisible] = useState(false);
+    const [scannedData, setScannedData] = useState(null);
+    const [pdfFile, setPdfFile] = useState(null);
+
+    const onSuccess = (e) => {
+        setScannedData(e.data); // Save scanned data
+        setModalVisible(true);  // Show modal
+    };
+    const [show, setShow] = useState(false)
+    const [fileObject, setFileObject] = useState({})
+
+    const openGallery = () => {
+        let options = {
+            mediaType: 'photo',
+            maxWidth: 500,
+            maxHeight: 500,
+            quailty: 0.9,
+            saveToPhotos: true,
+        };
+
+        launchImageLibrary(options, response => {
+            if (Platform.OS === 'ios') {
+                setShow(false);
+            }
+            if (response.didCancel) {
+            } else if (response.error) {
+            } else if (response.customButton) {
+                Alert.alert(response.customButton);
+            } else {
+                setFileObject({
+                    uri: response?.assets[0]?.uri,
+                    type: response?.assets[0]?.type,
+                    name: response?.assets[0]?.fileName,
+                });
+            }
+        });
+        // }
+    };
+
+
+
+    const selectDocument = async () => {
+        try {
+            const result = await pick({
+                allowMultiSelection: false,
+                type: ['application/pdf'],
+            });
+            console.log('Selected document:', result);
+        } catch (err) {
+            if (err.code === 'DOCUMENT_PICKER_CANCELED') {
+                console.log('User canceled the picker');
+            } else {
+                console.error('Unknown error:', err);
+            }
+        }
+    };
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Create A Route</Text>
             <View style={styles.scanBoxContainer}>
-                <Text style={styles.label}>Ending Point</Text>
+                <Text style={styles.label}>Scan Permit</Text>
+
                 <View style={styles.scanBox}>
-                    <View style={styles.corner} />
-                    <View style={[styles.corner, styles.topRight]} />
-                    <View style={[styles.corner, styles.bottomLeft]} />
-                    <View style={[styles.corner, styles.bottomRight]} />
+                    <QRCodeScanner
+                        onRead={onSuccess}
+                        reactivate={true}
+                        showMarker={true}
+                        cameraStyle={styles.cameraStyle}
+                        customMarker={
+                            <>
+                                <View style={styles.corner} />
+                                <View style={[styles.corner, styles.topLeft]} />
+                                <View style={[styles.corner, styles.topRight]} />
+                                <View style={[styles.corner, styles.bottomLeft]} />
+                                <View style={[styles.corner, styles.bottomRight]} />
+                            </>
+                        }
+                    />
                 </View>
                 <CustomButton
-                    text={'Create A Route'}
+                    text={'Scan QR COde'}
                     textColor={Color.white}
                     height={windowHeight * 0.06}
                     borderColor={Color.secondary}
@@ -32,10 +106,59 @@ const CreateRoute = () => {
                     }}
                 />
             </View>
+            <CustomButton
+                text={'Upload File'}
+                textColor={Color.white}
+                height={windowHeight * 0.06}
+                borderColor={Color.secondary}
+                borderWidth={1}
+                borderRadius={moderateScale(30, 0.6)}
+                width={windowWidth * 0.72}
+                bgColor={Color.secondary}
+                marginTop={moderateScale(20, 0.6)}
+                onPress={() => {
+                    openGallery()
+                }}
+            />
+            <CustomButton
+                text={'Upload PDF'}
+                textColor={Color.white}
+                height={windowHeight * 0.06}
+                borderColor={Color.secondary}
+                borderWidth={1}
+                borderRadius={moderateScale(30, 0.6)}
+                width={windowWidth * 0.72}
+                bgColor={Color.secondary}
+                marginTop={moderateScale(20, 0.6)}
+                onPress={() => {
+                    selectDocument()
+                }}
+            />
 
             <Text style={styles.description}>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed scelerisque turpis iaculis
             </Text>
+            <Modal
+                visible={modalVisible}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <CustomText style={styles.modalTitle}>Scanned QR Code</CustomText>
+                        <CustomText style={styles.modalData}>{scannedData}</CustomText>
+
+                        <TouchableOpacity
+                            style={styles.closeButton}
+                            onPress={() => setModalVisible(false)}
+                        >
+                            <Text style={styles.closeText}>Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
         </View>
     );
 };
@@ -60,8 +183,8 @@ const styles = StyleSheet.create({
         borderRadius: moderateScale(10, 0.6),
         padding: moderateScale(10, 0.6),
         alignItems: 'center',
-        width: windowWidth * 0.8,
-        height: windowHeight * 0.5,
+        width: windowWidth * 0.85,
+        height: windowHeight * 0.55,
         borderWidth: moderateScale(1, 0.6),
         borderColor: Color.secondary,
     },
@@ -74,7 +197,7 @@ const styles = StyleSheet.create({
     scanBox: {
         borderWidth: moderateScale(2.5, 0.6),
         borderColor: '#fff',
-        width: windowWidth * 0.75,
+        width: windowWidth * 0.65,
         height: windowWidth * 0.8,
         position: 'relative',
         justifyContent: 'center',
@@ -90,6 +213,19 @@ const styles = StyleSheet.create({
         borderColor: '#fff',
         borderLeftWidth: moderateScale(2, 0.6),
         borderTopWidth: moderateScale(2, 0.6),
+    },
+    cameraStyle: {
+        width: windowWidth * 0.66,
+        height: windowWidth * 0.5,
+        alignSelf: 'center',
+        marginTop: moderateScale(10, 0.6)
+    },
+
+    topLeft: {
+        top: 0,
+        left: 0,
+        borderTopWidth: 4,
+        borderLeftWidth: 4,
     },
     topRight: {
         top: 0,
@@ -124,5 +260,42 @@ const styles = StyleSheet.create({
         marginTop: moderateScale(50, 0.6),
         fontSize: moderateScale(12, 0.6),
         width: '80%',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+    modalContent: {
+        margin: 20,
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 30,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 15,
+    },
+    modalData: {
+        fontSize: 16,
+        color: '#333',
+        marginBottom: 20,
+    },
+    closeButton: {
+        backgroundColor: '#2196F3',
+        paddingVertical: 10,
+        paddingHorizontal: 25,
+        borderRadius: 8,
+    },
+    closeText: {
+        color: 'white',
+        fontSize: 16,
     },
 });

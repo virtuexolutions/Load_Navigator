@@ -1,7 +1,7 @@
 import React from 'react';
-import {Dimensions, PermissionsAndroid} from 'react-native';
-import {useDispatch} from 'react-redux';
-import {setLoaction} from '../Store/slices/common';
+import { Dimensions, PermissionsAndroid } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { setLoaction } from '../Store/slices/common';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;

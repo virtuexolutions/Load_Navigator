@@ -44,6 +44,7 @@ const ResetPassword = props => {
       password: values.password,
       confirm_password: values.confirmPassword,
     };
+    console.log("🚀 ~ data:", data)
     setIsLoading(true);
     const response = await Post(url, data, apiHeader());
     setIsLoading(false);
@@ -57,7 +58,10 @@ const ResetPassword = props => {
   };
 
   return (
-    <>
+    <ImageBackground
+      style={styles.bg_con}
+      resizeMode={'stretch'}
+      source={require('../Assets/Images/login_bg.png')}>
       <CustomStatusBar
         backgroundColor={Color.white}
         barStyle={'dark-content'}
@@ -109,6 +113,9 @@ const ResetPassword = props => {
                     backgroundColor={Color.white}
                     marginTop={moderateScale(10, 0.3)}
                     color={Color.black}
+                    titleStlye={{
+                      color: Color.white
+                    }}
                     placeholderColor={Color.veryLightGray}
                   />
                   {touched.password && errors.password && (
@@ -133,6 +140,9 @@ const ResetPassword = props => {
                     marginTop={moderateScale(10, 0.3)}
                     color={Color.black}
                     placeholderColor={Color.veryLightGray}
+                    titleStlye={{
+                      color: Color.white
+                    }}
                   />
                   {touched.password && errors.password && (
                     <CustomText style={styles.schemaText}>
@@ -151,10 +161,10 @@ const ResetPassword = props => {
                     width={windowWidth * 0.8}
                     height={windowHeight * 0.065}
                     marginTop={moderateScale(20, 0.3)}
-                    onPress={()=>navigationN.navigate('LoginScreen')}
+                    onPress={handleSubmit}
                     borderRadius={30}
                     bgColor={
-                      Color.darkBlue
+                      Color.secondary
                     }
                   />
                 </View>
@@ -163,18 +173,18 @@ const ResetPassword = props => {
           </Formik>
         </KeyboardAwareScrollView>
       </View>
-    </>
+    </ImageBackground>
   );
 };
 
 const styles = ScaledSheet.create({
-  main_container: {
-    height: windowHeight,
-    width: windowWidth,
-    backgroundColor: 'white',
-  },
+  // main_container: {
+  //   height: windowHeight,
+  //   width: windowWidth,
+  //   backgroundColor: 'white',
+  // },
   txt2: {
-    color: Color.black,
+    color: Color.white,
     fontSize: moderateScale(24, 0.6),
   },
   txt3: {
@@ -201,7 +211,7 @@ const styles = ScaledSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     width: windowWidth * 0.9,
-    borderColor: Color.mediumGray,
+    borderColor: Color.secondary,
     paddingVertical: moderateScale(10, 0.6),
     // height: windowHeight * 0.36,
     borderRadius: 20,
