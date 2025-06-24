@@ -86,6 +86,7 @@ android {
         versionName "1.0"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
+    
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -94,6 +95,7 @@ android {
             keyPassword 'android'
         }
     }
+
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
@@ -106,6 +108,13 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+//     flavorDimensions "default"
+// productFlavors {
+//     general {
+//         dimension "default"
+//     }
+// }
+
 }
 
 dependencies {
@@ -113,6 +122,8 @@ dependencies {
     implementation("com.facebook.react:react-android")
     implementation project(':react-native-camera')
     implementation project(':react-native-vector-icons')
+    implementation project(':react-native-permissions')
+
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
