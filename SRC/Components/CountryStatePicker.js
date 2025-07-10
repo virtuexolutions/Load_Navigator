@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(14, 0.6),
     color: Color.mediumGray,
   },
-  overlay: {marginTop :windowHeight*0.18, 
+  overlay: {marginTop :windowHeight*0.28, 
   // height : windowHeight *0.,
     // flex: 1,
     // paddingtop  : windowHeight *0.3,

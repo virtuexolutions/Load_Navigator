@@ -145,14 +145,7 @@ const PostLoadScreen = () => {
   ];
   return (
     <SafeAreaView style={styles.safe_area_view}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        tyle={styles.scroll_view}>
-        <CustomStatusBar
-          backgroundColor={Color.white}
-          barStyle={'light-content'}
-        />
-        <Header
+      <Header
           textstyle={{
             color: Color.white,
           }}
@@ -160,6 +153,14 @@ const PostLoadScreen = () => {
           headerColor={Color.secondary}
           Ismenu
         />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        tyle={styles.scroll_view}>
+        <CustomStatusBar
+          backgroundColor={Color.white}
+          barStyle={'light-content'}
+        />
+        
 
         <View style={styles.main_view}>
           <View

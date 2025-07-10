@@ -28,6 +28,8 @@ import {setUserToken} from '../Store/slices/auth-slice';
 import {setUserData} from '../Store/slices/common';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import DropDownSingleSelect from '../Components/DropDownSingleSelect';
+import { SetUserRole } from '../Store/slices/auth';
 
 const Signup = props => {
   const selectedArea = props?.route?.params?.selectedArea;
@@ -54,7 +56,7 @@ const Signup = props => {
   const [InsuranceCertificate, setInsuranceCertificate] = useState(false);
   const [CarDirectory, setCarDirectory] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedState, setSelectedState] = useState(null);
+  const [selectedState, setSelectedState] = useState("");
 
   const [selectedUserType, setSelectedUserType] = useState('');
   const [isSelected, setIsSelected] = useState(false);
@@ -74,8 +76,10 @@ const Signup = props => {
       hear_about_us: aboutUs?.name,
       agree_to_terms: Policy,
       selected_area: selectedArea,
-      role: selectedUserType == 'Company' && 'Company',
-      state: selectedState?.label,
+      // role: selectedUserType == 'Company' && 'Company',
+      role: selectedUserType,
+      // state: selectedState?.label,
+      state: selectedState,
     };
     const body1 = {
       first_name: firstName,
@@ -91,12 +95,14 @@ const Signup = props => {
       car_certificate: InsuranceCertificate,
       includeme_car_directory: CarDirectory,
       selected_area: selectedArea,
-      role: selectedUserType == 'pilot' && 'Pilot',
+      role: selectedUserType,
+      // role: selectedUserType == 'pilot' && 'Pilot',
       address: userAddress?.name,
-      state: selectedState?.label,
+      state: selectedState,
+      // state: selectedState?.label,
     };
-
-    for (let key in selectedUserType == 'Company' ? body : body1) {
+// return console.log("body === > ", JSON.stringify(body, null, 2));
+    for (let key in selectedUserType == 'Trucking' ? body : body1) {
       if (body[key] == '') {
         return Platform.OS == 'android'
           ? ToastAndroid.show(` ${key} field is empty`, ToastAndroid.SHORT)
@@ -117,6 +123,7 @@ const Signup = props => {
         : Alert.alert('Sign up successfully');
       dispatch(setUserData(response?.data?.user_info));
       dispatch(setUserToken({token: response?.data?.token}));
+      dispatch(SetUserRole(response?.data?.user_info?.role));
     }
   };
   const dummyarray = [
@@ -165,7 +172,7 @@ const Signup = props => {
             Note: You Can Sign Up For Both Account Types But You Must Register
             Using Separate Email Addresses.
           </CustomText>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => {
               setIsSelected(!isSelected);
             }}
@@ -190,7 +197,7 @@ const Signup = props => {
               {selectedUserType ? selectedUserType : ' select user type'}
             </CustomText>
             <Icon
-              name="chevron-down"
+              name={isSelected ? "chevron-up" :"chevron-down"}
               as={Entypo}
               color={Color.mediumGray}
               size={moderateScale(15, 0.6)}
@@ -199,11 +206,15 @@ const Signup = props => {
           {isSelected && (
             <View
               style={{
-                height: windowHeight * 0.07,
+                // height: windowHeight * 0.07,
                 width : windowWidth *0.9,
-                marginTop: moderateScale(5, 0.6),
+                zIndex:1,
+                top: moderateScale(150, 0.6),
+                position:"absolute",
+                // marginTop: moderateScale(1, 0.6),
                 borderRadius: moderateScale(15, 0.6),
                 borderWidth: 1,
+                backgroundColor:Color.black,
                 borderColor: Color.white,
                 paddingVertical: moderateScale(2, 0.6),
                 paddingHorizontal: moderateScale(15, 0.6),
@@ -218,7 +229,7 @@ const Signup = props => {
                     color: Color.mediumGray,
                     fontSize: moderateScale(12, 0.6),
                     paddingVertical: moderateScale(3, 0.6),
-                    borderBottomWidth: 1,
+                    borderBottomWidth: 0.5,
                     borderBottomColor: Color.white,
                   }}>
                   Pilot
@@ -226,7 +237,7 @@ const Signup = props => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  setSelectedUserType('Company');
+                  setSelectedUserType('Trucking');
                   setIsSelected(false);
                 }}>
                 <CustomText
@@ -234,13 +245,51 @@ const Signup = props => {
                     color: Color.mediumGray,
                     fontSize: moderateScale(12, 0.6),
 
-                    paddingVertical: moderateScale(3, 0.6),
+                    paddingVertical: moderateScale(5, 0.6),
                   }}>
                   company
                 </CustomText>
               </TouchableOpacity>
             </View>
-          )}
+          )} */}
+  <DropDownSingleSelect
+                array={["Pilot", "Trucking"]}
+                item={selectedUserType}
+                setItem={setSelectedUserType}
+                width={windowWidth * 0.9}
+                // placeHolderColor={Color.darkGray}
+                // placeholder={'Ápproval for Admittance'}
+                placeholder={'Select User Type'}
+                dropdownStyle={{
+                  borderBottomWidth: 0,
+                  width: windowWidth * 0.85,
+                  marginTop: 10,
+                  // paddingVertical:15,
+                }}
+                menuStyle={{    // backgroundColor:Color.red,
+                  // borderColor:Color.mediumGray,
+                  backgroundColor: Color.black,
+                  borderColor: Color.mediumGray,
+                  width: "84%",
+                  left:32,
+                  borderWidth:1,
+                  overflow:"hidden",
+                  marginTop:moderateScale(-6,0.2),
+                  // 
+                  // position:"absolute",
+                  // top:-10,
+                  // borderTopLeftRadius:moderateScale(5,0.2),
+                  // borderTopRightRadius:moderateScale(5,0.2),
+                  borderBottomRightRadius:moderateScale(15,0.2),
+                  borderBottomLeftRadius:moderateScale(15,0.2)}}
+                  menuTextColor={Color.mediumGray}
+                  changeColorOnSelect={true}
+                btnStyle={{
+                  backgroundColor: 'transparent',
+                  height: windowHeight * 0.057,
+                  borderWidth:1
+                }}
+              />
 
           <View
             style={{
@@ -338,12 +387,24 @@ const Signup = props => {
               {userAddress?.name ? userAddress?.name : 'Address'}
             </CustomText>
           </TouchableOpacity>
+          <View
 
-          <CountryStatePicker
+            style={styles.address_btn}>
+            <CustomText
+              numberOfLines={1}
+              style={{
+                fontSize: moderateScale(13, 0.6),
+                color: Color.mediumGray,
+              }}>
+              {selectedState ? selectedState : 'State'}
+            </CustomText>
+          </View>
+
+          {/* <CountryStatePicker
             country={selectedArea == 'Sign Up For Canada' ? 'USA' : 'Canada'}
             setSelectedState={setSelectedState}
             selectedState={selectedState}
-          />
+          /> */}
 
           {selectedUserType != 'Pilot' && (
             <TextInputWithTitle
@@ -644,6 +705,7 @@ const Signup = props => {
             setIsModalVisible={setIsModalVisible}
             setUserAddress={setUserAddress}
             userAddress={userAddress}
+            setState={setSelectedState}
           />
         </ScrollView>
       </ImageBackground>

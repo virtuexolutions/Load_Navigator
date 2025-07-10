@@ -124,27 +124,53 @@ const LoginScreen = props => {
           }}
         />
       </View>
+      <CustomText isBold style={[styles.text, {paddingVertical:0}]}>
+      {selectedUserType?.toLocaleLowerCase() == "trucking" ?  "Trucking Company" : selectedUserType?.toLocaleLowerCase() == "pilot" ? "Pilot Car" : ""}
+      </CustomText>
       <CustomText isBold style={styles.text}>
-        Trucking Company Login To Your Account
+         Login To Your Account
       </CustomText>
       <View>
-        {/* <Formik
-          initialValues={{
-            email: '',
-            password: '',
-          }}
-          validationSchema={loginSchema}
-          onSubmit={() => {
-            role == 'Company'
-              ? navigationService.navigate('PostLoadScreen')
-              : navigationService.navigate('ViewLeadBoard');
-          }}
-          // onSubmit={login}
-        >
-          {({handleChange, handleSubmit, values, errors, touched}) => {
-            return ( */}
         <>
-          <TouchableOpacity
+        <DropDownSingleSelect
+                array={["Pilot", "Trucking"]}
+                item={selectedUserType}
+                setItem={setSelectedUserType}
+                width={windowWidth * 0.85}
+                // placeHolderColor={Color.darkGray}
+                // placeholder={'Ápproval for Admittance'}
+                placeholder={'Select User Type'}
+                dropdownStyle={{
+                  borderBottomWidth: 0,
+                  width: windowWidth * 0.85,
+                  marginTop: 10,
+                }}
+                menuStyle={{    // backgroundColor:Color.red,
+                  // borderColor:Color.mediumGray,
+                  backgroundColor: Color.black,
+                  borderColor: Color.mediumGray,
+                  width: "79.5%",
+                  left:42,
+                  borderWidth:1,
+                  overflow:"hidden",
+                  marginTop:moderateScale(-6,0.2),
+                  // 
+                  // position:"absolute",
+                  // top:-10,
+                  // borderTopLeftRadius:moderateScale(5,0.2),
+                  // borderTopRightRadius:moderateScale(5,0.2),
+                  borderBottomRightRadius:moderateScale(15,0.2),
+                  borderBottomLeftRadius:moderateScale(15,0.2)}}
+                  menuTextColor={Color.mediumGray}
+                  changeColorOnSelect={true}
+                btnStyle={{
+                  backgroundColor: 'transparent',
+                  height: windowHeight * 0.057,
+                  borderWidth:1,
+                  bordderColor: Color.white,
+                }}
+              />
+          {/* <TouchableOpacity
             onPress={() => {
               setIsSelected(!isSelected);
             }}
@@ -168,7 +194,7 @@ const LoginScreen = props => {
               {selectedUserType ? selectedUserType : ' select user type'}
             </CustomText>
             <Icon
-              name="chevron-down"
+              name={isSelected ? "chevron-up" :"chevron-down"}
               as={Entypo}
               color={Color.mediumGray}
               size={moderateScale(15, 0.6)}
@@ -177,11 +203,11 @@ const LoginScreen = props => {
           {isSelected && (
             <View
               style={{
-                height: windowHeight * 0.07,
-                marginTop: moderateScale(5, 0.6),
+                width : windowWidth *0.85,
+                marginTop: moderateScale(-1, 0.6),
                 borderRadius: moderateScale(15, 0.6),
-                // backgroundColor :'red',
                 borderWidth: 1,
+                backgroundColor:Color.black,
                 borderColor: Color.white,
                 paddingVertical: moderateScale(2, 0.6),
                 paddingHorizontal: moderateScale(15, 0.6),
@@ -196,7 +222,7 @@ const LoginScreen = props => {
                     color: Color.mediumGray,
                     fontSize: moderateScale(12, 0.6),
                     paddingVertical: moderateScale(3, 0.6),
-                    borderBottomWidth: 1,
+                    borderBottomWidth: 0.2,
                     borderBottomColor: Color.white,
                   }}>
                   Pilot
@@ -204,7 +230,7 @@ const LoginScreen = props => {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  setSelectedUserType('Company');
+                  setSelectedUserType('Trucking');
                   setIsSelected(false);
                 }}>
                 <CustomText
@@ -212,13 +238,13 @@ const LoginScreen = props => {
                     color: Color.mediumGray,
                     fontSize: moderateScale(12, 0.6),
 
-                    paddingVertical: moderateScale(3, 0.6),
+                    paddingVertical: moderateScale(5, 0.6),
                   }}>
-                  company
+                  Trucking
                 </CustomText>
               </TouchableOpacity>
             </View>
-          )}
+          )} */}
 
           <TextInputWithTitle
             titleText={'Username'}
@@ -231,23 +257,12 @@ const LoginScreen = props => {
             border={1}
             fontSize={moderateScale(10, 0.6)}
             borderRadius={30}
-            backgroundColor={'transparent'}
+            backgroundColor={'black'}
             borderColor={Color.white}
             marginTop={moderateScale(10, 0.3)}
             placeholderColor={Color.mediumGray}
             titleStlye={{right: 10}}
           />
-          {/* {touched.email && errors.email && (
-            <CustomText
-              textAlign={'left'}
-              style={{
-                fontSize: moderateScale(10, 0.6),
-                color: Color.red,
-                alignSelf: 'flex-start',
-              }}>
-              {errors.email}
-            </CustomText>
-          )} */}
           <TextInputWithTitle
             secureText={true}
             placeholder={'Password'}
@@ -265,17 +280,7 @@ const LoginScreen = props => {
             placeholderColor={Color.mediumGray}
             titleStlye={{right: 10}}
           />
-          {/* {touched.password && errors.password && (
-            <CustomText
-              textAlign={'left'}
-              style={{
-                fontSize: moderateScale(10, 0.6),
-                color: Color.red,
-                alignSelf: 'flex-start',
-              }}>
-              {errors.password}
-            </CustomText>
-          )} */}
+       
           <CustomText
             onPress={() => {
               navigation.navigate('VerifyEmail');
@@ -307,9 +312,6 @@ const LoginScreen = props => {
             }}
           />
         </>
-        {/* );
-          }} */}
-        {/* </Formik> */}
       </View>
       <View style={styles.button_container}>
         <View style={styles.line}></View>
@@ -363,7 +365,7 @@ const styles = StyleSheet.create({
     width: windowWidth * 0.7,
     textAlign: 'center',
   },
-
+ 
   forgotpassword: {
     fontSize: moderateScale(10, 0.6),
     color: Color.white,

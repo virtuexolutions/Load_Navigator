@@ -218,13 +218,18 @@ export const MyDrawer = () => {
           // borderBottomRightRadius: moderateScale(120, 0.6),
         },
       }}>
-      {userRole.toLowerCase() == 'company' ? (
-        <DrawerNavigation.Screen
-          name="PostLoadScreen"
-          component={PostLoadScreen}
-        />
-      ) : (
+      {userRole.toLowerCase() == 'pilot' ? (
+       
         <DrawerNavigation.Screen name="SelectRoute" component={SelectRoute} />
+        // <DrawerNavigation.Screen
+        //   name="PostLoadScreen"
+        //   component={PostLoadScreen}
+        // />
+      ) : (
+        <DrawerNavigation.Screen
+        name="PostLoadScreen"
+        component={PostLoadScreen}
+      />
       )}
       <DrawerNavigation.Screen name="Help" component={Help} />
       <DrawerNavigation.Screen name="LoadBoard" component={LoadBoard} />

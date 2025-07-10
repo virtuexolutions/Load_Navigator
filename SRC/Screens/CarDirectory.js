@@ -21,6 +21,7 @@ import navigationService from '../navigationService';
 import {useSelector} from 'react-redux';
 import CountryStatePicker from '../Components/CountryStatePicker';
 import {Get} from '../Axios/AxiosInterceptorFunction';
+import DropDownSingleSelect from '../Components/DropDownSingleSelect';
 
 const CarDirectory = () => {
   const token = useSelector(state => state.authReducer.token);
@@ -32,7 +33,8 @@ const CarDirectory = () => {
   const [selectedState, setSelectedState] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [pilotData, setPilotData] = useState(false);
-
+  const [selectedCountry, setSelectedCountry] = useState(userData?.selected_area == 'Sign Up For Canada' ? 'Canada' : 'USA');
+  const countryOptions = ["Canada", "USA"];
   const [escortPositions, setEscortPositions] = useState([]);
 
   const dummyData = [
@@ -110,6 +112,26 @@ const CarDirectory = () => {
         barStyle={'light-content'}
       />
       <View style={styles.mainScreen}>
+      <View style={styles.dropDownsContainer}>
+        <DropDownSingleSelect
+                array={countryOptions}
+                item={selectedCountry}
+                setItem={setSelectedCountry}
+                width={windowWidth * 0.85}
+                // placeHolderColor={Color.darkGray}
+                // placeholder={'Ápproval for Admittance'}
+                placeholder={'Country'}
+                dropdownStyle={{
+                  borderBottomWidth: 0,
+                  width: windowWidth * 0.85,
+                  marginTop: 10,
+                }}
+                btnStyle={{
+                  backgroundColor: '#fff',
+                  height: windowHeight * 0.055,
+                }}
+              />
+        </View>
         <View style={styles.dropDownsContainer}>
           <CountryStatePicker
             style_dropDown={{
@@ -118,12 +140,14 @@ const CarDirectory = () => {
               width: windowWidth * 0.85,
               borderWidth: 0.5,
               justifyContent: 'center',
+              
               paddingHorizontal: moderateScale(15, 0.6),
               borderColor: Color.mediumGray,
               borderRadius: moderateScale(30, 0.6),
             }}
+            
             country={
-              userData?.selected_area == 'Sign Up For Canada' ? 'USA' : 'Canada'
+              selectedCountry
             }
             setSelectedState={setSelectedState}
             selectedState={selectedState}

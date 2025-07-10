@@ -130,7 +130,7 @@ const LoadDetails = props => {
 
     const c = 2 * Math.asin(Math.sqrt(a));
     return R * c;
-  }
+  } 
   useEffect(() => {
     const oLat = parseFloat(origin?.lat);
     const oLng = parseFloat(origin?.lng);
@@ -161,12 +161,13 @@ const LoadDetails = props => {
       status: 'pending',
       miles: distance,
       contact: userData?.contact,
-      // title :title ,
-      // weight:weight, 
-      // dimension :dimensions,
-      // type: selectedSize ,
+      title :title ,
+      weight:weight, 
+      dimension :dimensions,
+      type: selectedSize ,
 
     };
+//  return   console.log("🚀 ~ postALoad ~ body:", JSON.stringify(body,null,2))
 
     const url = 'auth/load_detail';
     setIsLoading(true);
@@ -174,6 +175,7 @@ const LoadDetails = props => {
     setIsLoading(false);
 
     if (response != undefined) {
+      console.log("🚀 ~ postALoad ~ response:", response)
       console.log('===================================> bhai hojaaaaaaaaaaaa');
       setSelectedRequirement([]);
       setSelectedPosition([]);
@@ -182,6 +184,12 @@ const LoadDetails = props => {
       setRate(0);
       setDistance('');
       setSelectedRate('');
+      setTitle("");
+      setWeight("");
+      setDimensions("");
+      setSelectedSize('');
+      setSelectedRate('');
+      
       navigationService.navigate('PostLoadScreen');
     }
   };
