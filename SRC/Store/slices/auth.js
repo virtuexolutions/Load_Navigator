@@ -33,7 +33,7 @@ const AuthSlice = createSlice({
     },
     setWalkThrough(state, action) {
       state.userWalkThrough = action.payload;
-      console.log("🚀 ~ setWalkThrough ~ action.payload:", action.payload)
+      console.log("🚀 ~ setWalkThrough ~ ac+tion.payload:", action.payload)
     },
   },
 });

@@ -24,6 +24,12 @@ import Menu from './Screens/Menu';
 import SelectRoute from './Screens/SelectRoute';
 import ViewLeadBoard from './Screens/ViewLeadBoard';
 import CreateRoute from './Screens/CreateRoute';
+import LoadDetails from './Screens/LoadDetails';
+import PostScreen from './Screens/PostScreen';
+import ServicesScreen from './Screens/ServicesScreen';
+import LoadBoard from './Screens/LoadBoard';
+import SelecteArea from './Screens/SelecteArea';
+import Help from './Screens/Help';
 
 enableScreens();
 const AppNavigator = () => {
@@ -34,6 +40,7 @@ const AppNavigator = () => {
   console.log('🚀 ~ AppNavigator ~ role:', role);
   const isVerified = useSelector(state => state.authReducer.isVerified);
   const token = useSelector(state => state.authReducer.token);
+  console.log('🚀 ~ AppNavigator ~ token:', token);
 
   const RootNav = createNativeStackNavigator();
   const RootNavLogged = createNativeStackNavigator();
@@ -42,21 +49,24 @@ const AppNavigator = () => {
     const firstScreen =
       walkThrough == false
         ? 'WalkThroughScreen'
-        : token == null
-        ? 'StartScreen'
-        // : role == 'Pilot'
-        // ? 'CreateRoute'
-        : 'SelectRoute';
+        : token != null
+        ? 'MyDrawer'
+        : 'SelecteArea';
+
+    console.log('asdasdfasdf token ================>', firstScreen, token);
 
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
           initialRouteName={firstScreen}
+          // initialRouteName={firstScreen}
           screenOptions={{headerShown: false}}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
           <RootNav.Screen name="CarDirectory" component={CarDirectory} />
           <RootNav.Screen name="Alerts" component={Alerts} />
           <RootNav.Screen name="Menu" component={Menu} />
+          <RootNav.Screen name="SelecteArea" component={SelecteArea} />
+          <RootNav.Screen name="StartScreen" component={StartScreen} />
 
           <RootNav.Screen
             name="WalkThroughScreen"
@@ -70,10 +80,16 @@ const AppNavigator = () => {
           <RootNav.Screen name="VerifyNumber" component={VerifyNumber} />
           <RootNav.Screen name="Profile" component={Profile} />
           <RootNav.Screen name="SplashScreen" component={SplashScreen} />
-          <RootNav.Screen name="StartScreen" component={StartScreen} />
-          <RootNav.Screen name="SelectRoute" component={SelectRoute} />
+          <RootNav.Screen name="Help" component={Help} />
           <RootNav.Screen name="ViewLeadBoard" component={ViewLeadBoard} />
           <RootNav.Screen name="CreateRoute" component={CreateRoute} />
+          <RootNav.Screen name="LoadDetails" component={LoadDetails} />
+          <RootNav.Screen name="PostScreen" component={PostScreen} />
+          {/* <RootNav.Screen name="PostLoadScreen" component={PostLoadScreen} /> */}
+          {/* <RootNav.Screen name="LoadBoard" component={LoadBoard} /> */}
+          <RootNav.Screen name="ServicesScreen" component={ServicesScreen} />
+
+          {/* <RootNav.Screen name="PostLoadScreen" component={ca} /> */}
         </RootNav.Navigator>
       </NavigationContainer>
     );
@@ -188,10 +204,12 @@ const AppNavigator = () => {
 export const MyDrawer = () => {
   const DrawerNavigation = createDrawerNavigator();
   const firstScreen = 'HomeScreen';
+  const userRole = useSelector(state => state.commonReducer.selectedRole);
+  console.log('🚀 ~ MyDrawer ~ userRole======================:', userRole);
   return (
     <DrawerNavigation.Navigator
       drawerContent={props => <Drawer {...props} />}
-      initialRouteName={'PostLoadScreen'}
+      initialRouteName={userRole == 'pilot' ? 'SelectRoute' : 'PostLoadScreen'}
       screenOptions={{
         headerShown: false,
         drawerStyle: {
@@ -200,10 +218,27 @@ export const MyDrawer = () => {
           // borderBottomRightRadius: moderateScale(120, 0.6),
         },
       }}>
+      {userRole.toLowerCase() == 'company' ? (
+        <DrawerNavigation.Screen
+          name="PostLoadScreen"
+          component={PostLoadScreen}
+        />
+      ) : (
+        <DrawerNavigation.Screen name="SelectRoute" component={SelectRoute} />
+      )}
+      <DrawerNavigation.Screen name="Help" component={Help} />
+      <DrawerNavigation.Screen name="LoadBoard" component={LoadBoard} />
+      <DrawerNavigation.Screen name="CarDirectory" component={CarDirectory} />
+      <DrawerNavigation.Screen name="LoadDetails" component={LoadDetails} />
+      <DrawerNavigation.Screen name="PostScreen" component={PostScreen} />
+      <DrawerNavigation.Screen name="ViewLeadBoard" component={ViewLeadBoard} />
+
       <DrawerNavigation.Screen
-        name="PostLoadScreen"
-        component={PostLoadScreen}
+        name="ServicesScreen"
+        component={ServicesScreen}
       />
+      {/* <DrawerNavigation.Screen name="LoadDetails" component={LoadDetails} />
+      <DrawerNavigation.Screen name="LoadDetails" component={LoadDetails} /> */}
     </DrawerNavigation.Navigator>
   );
 };

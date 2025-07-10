@@ -36,7 +36,7 @@ const Header = props => {
     title,
     showBack,
     showList,
-    logoAsTitle, 
+    logoAsTitle,
     headerColor,
     titleColor,
     close,
@@ -49,6 +49,7 @@ const Header = props => {
     navigation,
     textstyle,
     isFilledButton,
+    Ismenu
   } = props;
 
   const [searchText, setSearchText] = useState('');
@@ -91,31 +92,31 @@ const Header = props => {
           width: moderateScale(30, 0.3),
           justifyContent: 'center',
           alignItems: 'center',
-          width: "10%"
-        
+          width: '10%',
+
           // backgroundColor: showBack || showList ? 'white' : 'transparent',
         }}>
         {showBack ? (
-          <TouchableOpacity 
-          onPress={() =>{
-
-          }}
-          style={{width: moderateScale(20,0.4), height: moderateScale(20,0.4), 
-            borderRadius:moderateScale(10,0.2),
-            justifyContent:"center",
-            alignItems:"center",
-            borderWidth: 1, borderColor:Color.white}}
-          >
-
-          <Icon
-          name={'arrow-back'}
-          as={Ionicons}
-          size={moderateScale(15, 0.3)}
-          color={Color.white}
-          onPress={() => {
-            navigationN.goBack();
-          }}
-          />
+          <TouchableOpacity
+            onPress={() => {}}
+            style={{
+              width: moderateScale(20, 0.4),
+              height: moderateScale(20, 0.4),
+              borderRadius: moderateScale(10, 0.2),
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderWidth: 1,
+              borderColor: Color.white,
+            }}>
+            <Icon
+              name={'arrow-back'}
+              as={Ionicons}
+              size={moderateScale(15, 0.3)}
+              color={Color.white}
+              onPress={() => {
+                navigationN.goBack();
+              }}
+            />
           </TouchableOpacity>
         ) : (
           <>
@@ -124,9 +125,7 @@ const Header = props => {
                 <Icon
                   // style={styles.menu}
                   name={'menu'}
-                  as={Feather
-                    
-                  }
+                  as={Feather}
                   size={moderateScale(21, 0.3)}
                   color={Color.white}
                   // onPress={() => {
@@ -137,7 +136,7 @@ const Header = props => {
                   // }}
                 />
               </TouchableOpacity>
-            ) : menu ?  (
+            ) : Ismenu ? (
               <Icon
                 style={styles.menu}
                 name={'menu'}
@@ -156,36 +155,29 @@ const Header = props => {
                 }}
               />
             ) : null}
-            
           </>
         )}
       </View>
-      <View   
-      style={{width: "80%", alignItems:"center"}}
-      >
-
-      {title ? (
-        <CustomText style={[styles.text, textstyle]}>{title}</CustomText>
-      ) : (
-        <View 
-        style={{
-          width: windowWidth * 0.3,
-          // backgroundColor : 'red' ,
-            height: windowHeight * 0.05,
-
-          }}
-        >
-        <CustomImage
-          resizeMode={'cover'}
-          style={{
-            width:"100%",
-            height:"100%"
-          }}
-          source={require('../Assets/Images/logo.png')}
-          />
-        </View>
-      )}
-
+      <View style={{width: '80%', alignItems: 'center'}}>
+        {title ? (
+          <CustomText style={[styles.text, textstyle]}>{title}</CustomText>
+        ) : (
+          <View
+            style={{
+              width: windowWidth * 0.3,
+              backgroundColor: 'white',
+              height: windowHeight * 0.05,
+            }}>
+            <CustomImage
+              resizeMode={'cover'}
+              style={{
+                width: '100%',
+                height: '100%',
+              }}
+              source={require('../Assets/Images/logo.png')}
+            />
+          </View>
+        )}
       </View>
       {/* {/ <CustomText isBold style={{color : Color.white , fontSize : moderateScale(20,0.6)}} >Hola!!</CustomText> /} */}
       {/* {!hideUser && cart ? (
@@ -238,7 +230,8 @@ const Header = props => {
             }}
           />
         </View>
-      ) : (
+      ) : ( */}
+      {menu && (
         <View
           style={{
             width: windowHeight * 0.055,
@@ -246,15 +239,30 @@ const Header = props => {
             alignItems: 'center',
             height: windowHeight * 0.055,
           }}>
-          <CustomImage
+          <Icon
+            style={styles.menu}
+            name={'menu'}
+            as={Feather}
+            size={moderateScale(28, 0.3)}
+            color={Color.white}
+            onPress={() => {
+              console.log('hello mg ======================= ');
+              navigationN.toggleDrawer();
+              // dispatch(setUserLogOut())
+              // dispatch(SetUserRole(''));
+              // navigation.openDrawer()
+              // navigationN.dispatch(DrawerActions.toggleDrawer());
+            }}
+          />
+          {/* <CustomImage
             onPress={() => {
               // navigation.navigate('Profile')
               // dispatch(setUserLogoutAuth());
             }}
             source={require('../Assets/Images/user_Image.png')}
             style={{width: windowHeight * 0.06, height: windowHeight * 0.06}}
-          />
-          <View
+          /> */}
+          {/* <View
             style={{
               height: windowHeight * 0.018,
               width: windowHeight * 0.018,
@@ -263,9 +271,10 @@ const Header = props => {
               position: 'absolute',
               top: moderateScale(35, 0.6),
               right: moderateScale(29, 0.6),
-            }}></View>
+            }}></View> */}
         </View>
-      )} */}
+      )}
+      {/* // )} */}
     </View>
   );
 };

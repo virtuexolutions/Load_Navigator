@@ -88,7 +88,7 @@ const DropDownSingleSelect = ({
           name={iconName}
           as={iconType}
           size={moderateScale(22, 0.3)}
-          color={Color.veryLightGray}
+          color={Color.white}
           style={[
             styles.icon2,
             backgroundColor && {color: Color.themeGray},

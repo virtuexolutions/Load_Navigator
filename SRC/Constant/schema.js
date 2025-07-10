@@ -14,23 +14,59 @@ export const loginSchema = Yup.object({
     .required('Password is required !'),
 });
 
+// export const SignupSchema = Yup.object().shape({
+//   name: Yup.string().required('Business name is required'),
+//   email: Yup.string().email('Invalid email').required('Email is required'),
+//   contact: Yup.string()
+//     .matches(/^[0-9]{10}$/, 'Enter valid 10-digit number')
+//     .required('Phone number is required'),
+//   address: Yup.string().required('Address is required'),
+//   password: Yup.string()
+//     .min(8, 'Password must be at least 8 characters')
+//     .max(8, 'Password must be at least 8 characters')
+//     .required('Password is required !'),
+//   confirmPassword: Yup.string()
+//     .oneOf([Yup.ref('password'), null], 'Passwords must match')
+//     .required('Confirm Password is required'),
+// });
+
 export const SignupSchema = Yup.object().shape({
-  name: Yup.string().required('Business name is required'),
-  email: Yup.string().email('Invalid email').required('Email is required'),
+  first_name: Yup.string().trim().required('First name is required.'),
+
+  last_name: Yup.string().trim().required('Last name is required.'),
+
+  email: Yup.string()
+    .email('Enter a valid email.')
+    .required('Email is required.'),
+
   contact: Yup.string()
-    .matches(/^[0-9]{10}$/, 'Enter valid 10-digit number')
-    .required('Phone number is required'),
-  address: Yup.string().required('Address is required'),
+    .matches(/^\d{10,15}$/, 'Contact must be 10-15 digits.')
+    .required('Contact is required.'),
+
+  company_name: Yup.string().trim().required('Company name is required.'),
+
+  address: Yup.string().trim().required('Address is required.'),
+
+  dot_number: Yup.string()
+    .matches(/^\d+$/, 'DOT number must be numeric.')
+    .required('DOT number is required.'),
+
+  mc_number: Yup.string()
+    .matches(/^\d+$/, 'MC number must be numeric.')
+    .required('MC number is required.'),
+
   password: Yup.string()
-    .min(8, 'Password must be at least 8 characters')
-    .max(8, 'Password must be at least 8 characters')
-    .required('Password is required !'),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password'), null], 'Passwords must match')
-    .required('Confirm Password is required'),
+    .min(6, 'Password must be at least 6 characters.')
+    .required('Password is required.'),
+
+  confirm_password: Yup.string()
+    .oneOf([Yup.ref('password')], 'Passwords must match.')
+    .required('Please confirm your password.'),
+
+  hear_about_us: Yup.string().required('Please select how you heard about us.'),
+
+  agree_to_terms: Yup.boolean().oneOf([true], 'You must agree to the terms.'),
 });
-
-
 // export const SignupSchema = Yup.object({
 //   name: Yup.string().required('Name is required !'),
 //   address: Yup.string().required('Address is required !'),

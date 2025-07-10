@@ -1,37 +1,27 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
-import {
-  requestLocationPermission,
-  windowHeight,
-  windowWidth,
-} from '../Utillity/utils';
-import Color from '../Assets/Utilities/Color';
-import Modal from 'react-native-modal';
-import CustomText from './CustomText';
-import {moderateScale} from 'react-native-size-matters';
-import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
+import React, {useEffect, useRef} from 'react';
+import {KeyboardAvoidingView, StyleSheet, View} from 'react-native';
 import 'react-native-get-random-values';
+import Modal from 'react-native-modal';
+import PlacesInput from 'react-native-places-input';
+import {moderateScale} from 'react-native-size-matters';
+import Color from '../Assets/Utilities/Color';
+import {windowHeight, windowWidth} from '../Utillity/utils';
+import CustomText from './CustomText';
 
 import {useDispatch} from 'react-redux';
-import {setDropoffLocation} from '../Store/slices/common';
 
 const SearchLocationModal = ({
   isModalVisible,
   setIsModalVisible,
-  setAddress,
+  setUserAddress,
   locationType,
   setPickupLocation,
   setdropOffLocation,
-  onPressCurrentLocation,
-  isyourLocation = false,
-  setcurrentPossition,
-  onPress,
-  addLocation,
-  setAdditionalLocation,
-  additionalLocation,
+  userAddress,
 }) => {
   const dispatch = useDispatch();
-
+  const googlePlacesRef = useRef(null);
+  useEffect(() => {}, [userAddress]);
   return (
     <Modal
       hasBackdrop={true}
@@ -43,103 +33,66 @@ const SearchLocationModal = ({
       onBackdropPress={() => {
         setIsModalVisible(false);
       }}>
-      <View style={styles.maincontainer}>
-        <CustomText
-          style={{
-            color: Color.themeBlack,
-            marginBottom: moderateScale(10, 0.3),
-            fontSize: moderateScale(22, 0.6),
-          }}
-          isBold>
-          Select Location
-        </CustomText>
-        {locationType == 'pickup' && (
-          <TouchableOpacity
-            onPress={onPressCurrentLocation}
+      <KeyboardAvoidingView>
+        <View style={styles.maincontainer}>
+          <CustomText
             style={{
-              width: windowWidth * 0.8,
-              height: windowHeight * 0.05,
-              backgroundColor: Color.white,
-              paddingHorizontal: moderateScale(10, 0.3),
-              marginVertical: moderateScale(12, 0.2),
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              flexDirection: 'row',
-            }}>
-            <CustomText>Use Your Current Location</CustomText>
-          </TouchableOpacity>
-        )}
-        <GooglePlacesAutocomplete
-          onFail={error => console.error(error, 'errrrrrorrrr')}
-          placeholder="Search"
-          textInputProps={{
-            placeholderTextColor: '#5d5d5d',
-            // value: inputValue,
-          }}
-          onPress={(data, details = null) => {
-            // console.log('Location ========>>>>', {
-            //   name: data?.description,
-            //   lat: details?.geometry?.location?.lat,
-            //   lng: details?.geometry?.location?.lng,
-            // });
-            setIsModalVisible(false);
-            locationType == 'pickup'
-              ? dispatch(
-                  setPickupLocation({
-                    name: data?.description,
-                    lat: details?.geometry?.location?.lat,
-                    lng: details?.geometry?.location?.lng,
-                  }),
-                )
-              : dispatch(
-                  setDropoffLocation({
-                    name: data?.description,
-                    lat: details?.geometry?.location?.lat,
-                    lng: details?.geometry?.location?.lng,
-                  }),
-                );
-            locationType == 'pickup'
-              ? setPickupLocation({
-                  name: data?.description,
-                  lat: details?.geometry?.location?.lat,
-                  lng: details?.geometry?.location?.lng,
-                })
-              : setdropOffLocation({
-                  name: data?.description,
-                  lat: details?.geometry?.location?.lat,
-                  lng: details?.geometry?.location?.lng,
-                });
-          }}
-          query={{
-            key: 'AIzaSyAa9BJa70uf_20IoTJfAiK_3wz5Vr_I7wM',
-            language: 'en',
-          }}
-          isRowScrollable={true}
-          fetchDetails={true}
-          styles={{
-            textInputContainer: {
-              width: windowWidth * 0.8,
-              marginLeft: moderateScale(5, 0.6),
-            },
-            textInput: {
+              color: Color.themeBlack,
+              marginBottom: moderateScale(40, 0.3),
+              fontSize: moderateScale(22, 0.6),
+            }}
+            isBold>
+            Select Location
+          </CustomText>
+
+          <PlacesInput
+            googleApiKey={'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8'}
+            placeHolder="Search location"
+            textInputProps={{
+              placeholderTextColor: Color.darkGray, // ✅ set here
+            }}
+            onSelect={(data, details = null) => {
+              const location = {
+                name: data?.result?.formatted_address,
+                lat: data?.result?.geometry?.location?.lat,
+                lng: data?.result?.geometry?.location?.lng,
+              };
+
+              console.log('Location ========>>>>', location);
+
+              if (locationType === 'origin') {
+                setPickupLocation(location);
+              } else if (locationType === 'destination') {
+                setdropOffLocation(location);
+              } else if (locationType === 'address') {
+                setUserAddress(location);
+              }
+
+              setIsModalVisible(false);
+            }}
+            stylesContainer={{
+              position: 'absolute',
+              top: '10%',
+              alignSelf: 'center',
+              zIndex: 9999,
+              elevation: 10,
+            }}
+            listViewProps={{
+              keyboardShouldPersistTaps: 'handled',
+              nestedScrollEnabled: true,
+            }}
+            stylesInput={{
               height: windowHeight * 0.06,
-              color: '#5d5d5d',
-              fontSize: 16,
-              borderWidth: 2,
-              borderColor: Color.lightGrey,
-              borderRadius: moderateScale(20, 0.6),
-            },
-            listView: {
-              width: windowWidth * 0.8,
-              marginLeft: moderateScale(5, 0.6),
-              borderColor: Color.veryLightGray,
-            },
-            description: {
-              color: 'black',
-            },
-          }}
-        />
-      </View>
+              borderColor: '#ccc',
+              borderWidth: 1,
+              borderRadius: 30,
+              paddingHorizontal: moderateScale(15, 0.6),
+              backgroundColor: Color.white,
+              color: Color.black,
+            }}
+          />
+        </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
@@ -155,6 +108,6 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(20, 0.3),
     paddingVertical: moderateScale(15, 0.3),
     borderWidth: 1,
-    borderColor: Color.themeColor,
+    borderColor: Color.mediumGray,
   },
 });

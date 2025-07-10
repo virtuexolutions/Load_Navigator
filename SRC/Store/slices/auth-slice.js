@@ -16,7 +16,8 @@ export const AuthSlice = createSlice({
   initialState: initialState,
   reducers: {
     setUserToken: (state, action) => {
-      state.token = action?.payload?.token;
+      state.token = action?.payload?.token
+      console.log('================ >>>' , action?.payload)
     },
     setUserType(state, action) {
       state.user_type = action.payload;

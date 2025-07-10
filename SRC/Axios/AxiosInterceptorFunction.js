@@ -171,6 +171,51 @@ let Patch = async (route, data, headers, showAlert = true) => {
   }
 };
 
+
+
+let Put = async (route, data, headers, showAlert = true) => {
+  const apiUrl = URL(route);
+  console.log('here is the url =>', apiUrl);
+ 
+  try {
+    return await axios.put(apiUrl, data, headers);
+  } catch (error) {
+    console.log('error', error.message);
+    let networkError = error.message === 'Network Error';
+    if (showAlert) {
+      if (networkError) {
+        Alert.alert(
+          error.message,
+          'Please Check Your Network Connection',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                console.log('OK Pressed');
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      } else {
+        Alert.alert(
+          'Submission Errors',
+          error.response?.data?.message || 'Something went wrong.',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                console.log('OK Pressed');
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      }
+    }
+    return undefined;
+  }
+};
 let Delete = async (route, data, headers, showAlert = true) => {
   const apiUrl = URL(route);
 
@@ -215,4 +260,4 @@ let Delete = async (route, data, headers, showAlert = true) => {
   }
 };
 
-export {Post, Get, Patch, Delete};
+export {Post, Get, Patch, Delete ,Put};

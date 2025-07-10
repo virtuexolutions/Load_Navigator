@@ -10,6 +10,7 @@ import {useSelector} from 'react-redux';
 
 const SelectRoute = () => {
   const role = useSelector(state => state.authReducer.role);
+  console.log("🚀 ~ SelectRoute ~ role:", role)
 
   return (
     <ImageBackground
@@ -28,12 +29,12 @@ const SelectRoute = () => {
       <View
         style={{
           alignSelf: 'center',
-          height: windowHeight * 0.2,            
+          height: windowHeight * 0.2,
           position: 'absolute',
           bottom: 0,
         }}>
         <CustomButton
-          text={role == 'Pilot' ? 'Create A Route' : 'Post A Load'}
+          text={'Create A Route' }
           textColor={Color.white}
           height={windowHeight * 0.07}
           borderColor={Color.white}
@@ -41,15 +42,13 @@ const SelectRoute = () => {
           borderRadius={moderateScale(30, 0.6)}
           width={windowWidth * 0.85}
           onPress={() => {
-            if (role === 'Pilot') {
+          
               navigationService.navigate('CreateRoute');
-            } else {
-              navigationService.navigate('MyDrawer');
-            }
+          
           }}
         />
         <CustomButton
-          text={'View Leader Board'}
+          text={ 'View Leader Board'}
           marginTop={moderateScale(10, 0.6)}
           textColor={Color.white}
           height={windowHeight * 0.07}
@@ -58,11 +57,9 @@ const SelectRoute = () => {
           borderRadius={moderateScale(30, 0.6)}
           width={windowWidth * 0.85}
           onPress={() => {
-            if (role == 'Pilot') {
+          
               navigationService.navigate('ViewLeadBoard');
-            } else {
-              navigationService.navigate('Alerts');
-            }
+           
           }}
         />
       </View>
