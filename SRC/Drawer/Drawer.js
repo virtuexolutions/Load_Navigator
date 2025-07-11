@@ -22,12 +22,9 @@ const Drawer = React.memo(() => {
   const navigation = useNavigation();
 
   const role = useSelector(state => state.authReducer.role);
-  console.log('🚀 ~ Drawer ~ role:', role);
   const userData = useSelector(state => state.commonReducer.userData);
-  console.log('🚀 ~ Drawer ~ userData:');
-
-  console.log('🚀 ~ Drawer ~ role:', role);
-  const adminData = [
+  console.log('🚀 ~ Drawer ~ userData:userData', userData?.role);
+  const companyData = [
     {
       id: 1,
       name: 'Load Board ',
@@ -58,17 +55,37 @@ const Drawer = React.memo(() => {
       iconName: 'hands-helping',
       iconType: FontAwesome5,
     },
-    // {
-    //   id: 3,
-    //   name: 'Setting',
-    //   onPress: () => {
-    //     navigation.navigate('MyJourneys');
-    //   },
-    //   iconName: 'setting',
-    //   iconType: AntDesign,
-    // },
+    {
+      id: 3,
+      name: 'Change Password',
+      onPress: () => {
+        navigation.navigate('MyDrawer', {screen: 'ChangePassword'});
+      },
+      iconName: 'setting',
+      iconType: AntDesign,
+    },
   ];
 
+  const pilotData = [
+    {
+      id: 2,
+      name: 'Help/FAQS',
+      onPress: () => {
+        navigation.navigate('MyDrawer', {screen: 'Help'});
+      },
+      iconName: 'hands-helping',
+      iconType: FontAwesome5,
+    },
+    {
+      id: 3,
+      name: 'Change Password',
+      onPress: () => {
+        navigation.navigate('MyDrawer', {screen: 'ChangePassword'});
+      },
+      iconName: 'setting',
+      iconType: AntDesign,
+    },
+  ];
   const adminData1 = [];
 
   return (
@@ -106,37 +123,57 @@ const Drawer = React.memo(() => {
             paddingHorizontal: moderateScale(15, 0.6),
             paddingVertical: moderateScale(15, 0.6),
           }}>
-          {userData?.role.toLowerCase() == 'company' &&
-            adminData.map(item => {
-              return (
-                <TouchableOpacity
-                  onPress={item?.onPress}
-                  style={styles.row_view}>
-                  <Icon
-                    name={item?.iconName}
-                    as={item?.iconType}
-                    size={moderateScale(15, 0.6)}
-                    color={
-                      userData?.role == 'company'
-                        ? Color.black
-                        : Color.lightGrey
-                    }
-                  />
-                  <CustomText
-                    style={[
-                      styles.text,
-                      {
-                        color:
-                          userData?.role == 'company'
-                            ? Color.black
-                            : Color.lightGrey,
-                      },
-                    ]}>
-                    {item?.name}
-                  </CustomText>
-                </TouchableOpacity>
-              );
-            })}
+          {  userData?.role?.toLowerCase() !== 'pilot' ?  companyData?.map(item => {
+            return (
+              <TouchableOpacity onPress={item?.onPress} style={styles.row_view}>
+                <Icon
+                  name={item?.iconName}
+                  as={item?.iconType}
+                  size={moderateScale(15, 0.6)}
+                  color={
+                    userData?.role == 'company' ? Color.black : Color.lightGrey
+                  }
+                />
+                <CustomText
+                  style={[
+                    styles.text,
+                    {
+                      color:
+                        userData?.role == 'company'
+                          ? Color.black
+                          : Color.lightGrey,
+                    },
+                  ]}>
+                  {item?.name}
+                </CustomText>
+              </TouchableOpacity>
+            );
+          }) :pilotData?.map(item => {
+            return (
+              <TouchableOpacity onPress={item?.onPress} style={styles.row_view}>
+                <Icon
+                  name={item?.iconName}
+                  as={item?.iconType}
+                  size={moderateScale(15, 0.6)}
+                  color={
+                    userData?.role == 'company' ? Color.black : Color.lightGrey
+                  }
+                />
+                <CustomText
+                  style={[
+                    styles.text,
+                    {
+                      color:
+                        userData?.role == 'company'
+                          ? Color.black
+                          : Color.lightGrey,
+                    },
+                  ]}>
+                  {item?.name}
+                </CustomText>
+              </TouchableOpacity>
+            );
+          }) }
           {/* <View style={styles.line} />
           {adminData1.map(item => {
             return (

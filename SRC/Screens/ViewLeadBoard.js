@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   ScrollView,
   StyleSheet,
@@ -28,8 +29,6 @@ const ViewLeadBoard = () => {
   const IsFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
-  console.log('🚀 ~ ViewLeadBoard ~ userData:', userData);
-  console.log('🚀 ~ ViewLeadBoard ~ token:', token);
   const [isLoading, setIsLoading] = useState(false);
   const [leaderData, setLeaderData] = useState([]);
 
@@ -80,7 +79,6 @@ const ViewLeadBoard = () => {
     const url = 'auth/load_list';
     setIsLoading(true);
     const response = await Get(url, token);
-    console.log('🚀 ~ getLoad ~ response:', response?.data?.load_detail);
     setIsLoading(false);
     if (response != undefined) {
       setLeaderData(response?.data?.load_detail);
@@ -107,29 +105,68 @@ const ViewLeadBoard = () => {
           showBack
           menu
         />
-        {/* <CustomText style={styles.heading}>View Leader Board</CustomText> */}
-        <FlatList
-          contentContainerStyle={{
-            alignItems: 'center',
-          }}
-          data={leaderData}
-          renderItem={({item, index}) => {
-            return (
-              <TouchableOpacity
-                onPress={() => {
-                  navigationService.navigate('CreateRoute');
-                }}
-                style={styles.card}>
-                <View style={styles.row}>
-                  <CustomText isBold style={styles.card_heading}>
-                    {item?.user?.company_name}
-                  </CustomText>
-                  <View style={styles.badges}>
-                    <CustomText style={styles.text}>{item?.status}</CustomText>
-                  </View>
-                </View>
-                <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+
+        {isLoading ? (
+          <ActivityIndicator
+            style={{
+              height: '80%',
+              // alignSelf :'center'
+            }}
+            size={'large'}
+            color={Color.white}
+          />
+        ) : (
+          <FlatList
+            contentContainerStyle={{
+              alignItems: 'center',
+              paddingBottom : moderateScale(70,.6)
+            }}
+            data={leaderData}
+            renderItem={({item, index}) => {
+              return (
+                <TouchableOpacity
+                  onPress={() => {
+                    navigationService.navigate('CreateRoute');
+                  }}
+                  style={styles.card}>
                   <View style={styles.row}>
+                    <CustomText isBold style={styles.card_heading}>
+                      {item?.user?.company_name}
+                    </CustomText>
+                    <View style={styles.badges}>
+                      <CustomText style={styles.text}>
+                        {item?.status}
+                      </CustomText>
+                    </View>
+                  </View>
+                  <View
+                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+                    <View style={styles.row}>
+                      <View style={styles.icon_view}>
+                        <Icon
+                          name="map-pin"
+                          as={Feather}
+                          size={moderateScale(12, 0.6)}
+                          color={Color.white}
+                        />
+                      </View>
+                      <CustomText
+                        numberOfLines={2}
+                        style={[
+                          styles.text,
+                          {
+                            width: windowWidth * 0.7,
+                          },
+                        ]}>
+                        {item?.origin?.name}
+                      </CustomText>
+                    </View>
+                  </View>
+                  <View
+                    style={[
+                      styles.row,
+                      //    {marginLeft: moderateScale(10, 0.6)}
+                    ]}>
                     <View style={styles.icon_view}>
                       <Icon
                         name="map-pin"
@@ -138,96 +175,127 @@ const ViewLeadBoard = () => {
                         color={Color.white}
                       />
                     </View>
-                    <CustomText
-                      numberOfLines={2}
-                      style={[
-                        styles.text,
-                        {
-                          width: windowWidth * 0.7,
-                        },
-                      ]}>
-                      {item?.origin?.name}
+                    <CustomText style={styles.text}>
+                      {item?.destination?.name}
                     </CustomText>
                   </View>
-                </View>
-                <View
-                  style={[
-                    styles.row,
-                    //    {marginLeft: moderateScale(10, 0.6)}
-                  ]}>
-                  <View style={styles.icon_view}>
-                    <Icon
-                      name="map-pin"
-                      as={Feather}
-                      size={moderateScale(12, 0.6)}
-                      color={Color.white}
-                    />
+                  <View
+                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+                    <View style={styles.icon_view}>
+                      <Icon
+                        name="title "
+                        as={Fontisto}
+                        size={moderateScale(12, 0.6)}
+                        color={Color.white}
+                      />
+                    </View>
+                    <CustomText style={styles.text}>{item?.title}</CustomText>
                   </View>
-                  <CustomText style={styles.text}>
-                    {item?.destination?.name}
+                  <View
+                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+                    <View style={styles.icon_view}>
+                      <Icon
+                        name="weight"
+                        as={Fontisto}
+                        size={moderateScale(12, 0.6)}
+                        color={Color.white}
+                      />
+                    </View>
+
+                    <CustomText style={styles.text}>{item?.weight}</CustomText>
+                  </View>
+                  <View
+                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+                    <View style={styles.icon_view}>
+                      <Icon
+                        name="date"
+                        as={Fontisto}
+                        size={moderateScale(12, 0.6)}
+                        color={Color.white}
+                      />
+                    </View>
+                    <CustomText style={styles.text}>{item?.type}</CustomText>
+                  </View>
+                  <View
+                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+                    <View style={styles.icon_view}>
+                      <Icon
+                        name="date"
+                        as={Fontisto}
+                        size={moderateScale(12, 0.6)}
+                        color={Color.white}
+                      />
+                    </View>
+                    <CustomText style={styles.text}>{item?.dimension}</CustomText>
+                  </View>
+                  <View
+                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+                    <View style={styles.icon_view}>
+                      <Icon
+                        name="corporate-fare"
+                        as={MaterialIcons}
+                        size={moderateScale(12, 0.6)}
+                        color={Color.white}
+                      />
+                    </View>
+                    <CustomText style={styles.text}>
+                      {'Call For rate'}
+                    </CustomText>
+                  </View>
+                  <View
+                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+                    <View style={styles.icon_view}>
+                      <Icon
+                        name="phone"
+                        as={AntDesign}
+                        size={moderateScale(12, 0.6)}
+                        color={Color.white}
+                      />
+                    </View>
+                    <CustomText style={styles.text}>{item?.contact}</CustomText>
+                  </View>
+                  <View
+                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+                    <View style={styles.icon_view}>
+                      <Icon
+                        name="date"
+                        as={Fontisto}
+                        size={moderateScale(12, 0.6)}
+                        color={Color.white}
+                      />
+                    </View>
+                    <CustomText style={styles.text}>
+                      {moment(item?.created_at).format('l')}
+                    </CustomText>
+                  </View>
+                  <View
+                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+                    <View style={styles.icon_view}>
+                      <Icon
+                        name="clockcircle"
+                        as={AntDesign}
+                        size={moderateScale(12, 0.6)}
+                        color={Color.white}
+                      />
+                    </View>
+                    <CustomText style={styles.text}>
+                      {moment(item?.created_at).format('LT')}
+                    </CustomText>
+                  </View>
+                  <CustomText
+                    style={[
+                      styles.text,
+                      {
+                        marginTop: moderateScale(10, 0.6),
+                      },
+                    ]}>
+                    Lead
                   </CustomText>
-                </View>
-                <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-                  <View style={styles.icon_view}>
-                    <Icon
-                      name="corporate-fare"
-                      as={MaterialIcons}
-                      size={moderateScale(12, 0.6)}
-                      color={Color.white}
-                    />
-                  </View>
-                  <CustomText style={styles.text}>{'Call For rate'}</CustomText>
-                </View>
-                <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-                  <View style={styles.icon_view}>
-                    <Icon
-                      name="phone"
-                      as={AntDesign}
-                      size={moderateScale(12, 0.6)}
-                      color={Color.white}
-                    />
-                  </View>
-                  <CustomText style={styles.text}>{item?.contact}</CustomText>
-                </View>
-                <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-                  <View style={styles.icon_view}>
-                    <Icon
-                      name="date"
-                      as={Fontisto}
-                      size={moderateScale(12, 0.6)}
-                      color={Color.white}
-                    />
-                  </View>
-                  <CustomText style={styles.text}>
-                    {moment(item?.created_at).format('l')}
-                  </CustomText>
-                </View>
-                <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-                  <View style={styles.icon_view}>
-                    <Icon
-                      name="clockcircle"
-                      as={AntDesign}
-                      size={moderateScale(12, 0.6)}
-                      color={Color.white}
-                    />
-                  </View>
-                  <CustomText style={styles.text}>
-                    {moment(item?.created_at).format('LT')}
-                  </CustomText>
-                </View>
-                <CustomText
-                  style={[
-                    styles.text,
-                    {
-                      marginTop: moderateScale(10, 0.6),
-                    },
-                  ]}>
-                  Lead
-                </CustomText>
-              </TouchableOpacity>
-            );
-          }}
-        />
+                </TouchableOpacity>
+              );
+            }}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -253,7 +321,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: windowWidth * 0.8,
-    height: windowHeight * 0.34,
+    height: windowHeight * 0.5,
     backgroundColor: Color.grey,
     borderRadius: moderateScale(20, 0.6),
     marginTop: moderateScale(10, 0.6),

@@ -1,34 +1,32 @@
+import {useNavigation} from '@react-navigation/native';
+import {Formik} from 'formik';
 import React, {useState} from 'react';
-import Color from '../Assets/Utilities/Color';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import {
   ActivityIndicator,
-  ScrollView,
-  View,
-  TouchableOpacity,
-  ImageBackground,
+  Alert,
   Platform,
   ToastAndroid,
-  Alert,
+  View,
 } from 'react-native';
-import CustomText from '../Components/CustomText';
-import CustomButton from '../Components/CustomButton';
-import TextInputWithTitle from '../Components/TextInputWithTitle';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import navigationService from '../navigationService';
-import {Icon} from 'native-base';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {ScaledSheet, moderateScale} from 'react-native-size-matters';
-import {useNavigation} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
-import {Formik} from 'formik';
-import {changePasswordSchema} from '../Constant/schema';
+import Color from '../Assets/Utilities/Color';
 import {Post} from '../Axios/AxiosInterceptorFunction';
+import CustomButton from '../Components/CustomButton';
+import CustomStatusBar from '../Components/CustomStatusBar';
+import CustomText from '../Components/CustomText';
+import Header from '../Components/Header';
+import TextInputWithTitle from '../Components/TextInputWithTitle';
+import {changePasswordSchema} from '../Constant/schema';
+import navigationService from '../navigationService';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 
 const ChangePassword = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const token = useSelector(state => state.authReducer.token);
+  const userRole = useSelector(state => state.commonReducer.selectedRole);
 
   const handleReset = async values => {
     const url = 'auth/change_password';
@@ -44,33 +42,42 @@ const ChangePassword = () => {
       Platform.OS == 'android'
         ? ToastAndroid.show('change password uccessfully', ToastAndroid.SHORT)
         : Alert.alert('change password uccessfully');
-      navigationService.navigate('Home');
+      navigationService.navigate('PostLoadScreen');
     }
   };
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => {
-            navigation.goBack();
-          }}
-          style={styles.back}>
-          <Icon
-            name="arrowleft"
-            as={AntDesign}
-            style={styles.icon2}
-            color={Color.white}
-            size={moderateScale(20, 0.3)}
-            onPress={() => {
-              navigation.goBack();
-            }}
-          />
-        </TouchableOpacity>
-        <CustomText style={styles.headert}>change password</CustomText>
-      </View>
-      <View style={styles.main_container}>
+    <SafeAreaView
+      style={[
+        styles.main_view,
+        {
+          backgroundColor:
+            userRole.toLowerCase() == 'pilot' ? Color.primary : Color.secondary,
+        },
+      ]}>
+      <Header
+        title="change password"
+        headerColor={
+          userRole.toLowerCase() == 'pilot' ? Color.primary : Color.secondary
+        }
+        textstyle={{color: Color.white}}
+        showBack
+        menu
+      />
+      <CustomStatusBar
+        backgroundColor={Color.white}
+        barStyle={'light-content'}
+      />
+      <View
+        style={[
+          styles.mainScreen,
+          {
+            backgroundColor:
+              userRole.toLowerCase() == 'pilot'
+                ? Color.primary
+                : Color.white,
+          },
+        ]}>
         <Formik
           validationSchema={changePasswordSchema}
           initialValues={{
@@ -83,6 +90,12 @@ const ChangePassword = () => {
             return (
               <View style={styles.text_input}>
                 <TextInputWithTitle
+                  titleStlye={{
+                    color:
+                      userRole.toLowerCase() == 'pilot'
+                        ? Color.white
+                        : Color.black,
+                  }}
                   title={'current Password *'}
                   placeholder={'Current Password'}
                   setText={handleChange('currentPassword')}
@@ -105,6 +118,12 @@ const ChangePassword = () => {
                   </CustomText>
                 )}
                 <TextInputWithTitle
+                  titleStlye={{
+                    color:
+                      userRole.toLowerCase() == 'pilot'
+                        ? Color.white
+                        : Color.black,
+                  }}
                   title={'new password *'}
                   titleText={'New Password'}
                   placeholder={'New Password'}
@@ -128,6 +147,12 @@ const ChangePassword = () => {
                   </CustomText>
                 )}
                 <TextInputWithTitle
+                  titleStlye={{
+                    color:
+                      userRole.toLowerCase() == 'pilot'
+                        ? Color.white
+                        : Color.black,
+                  }}
                   title={'confirm new password *'}
                   titleText={'Confirm your new password'}
                   placeholder={'Confirm your new password'}
@@ -165,7 +190,7 @@ const ChangePassword = () => {
                   width={windowWidth * 0.8}
                   height={windowHeight * 0.065}
                   marginTop={moderateScale(20, 0.3)}
-                  bgColor={Color.darkBlue}
+                  bgColor={Color.secondary}
                   isBold
                   elevation
                 />
@@ -174,59 +199,39 @@ const ChangePassword = () => {
           }}
         </Formik>
       </View>
-    </ScrollView>
+    </SafeAreaView>
   );
 };
 
 export default ChangePassword;
 const styles = ScaledSheet.create({
-  main_container: {
+  mainScreen: {
+    width: windowWidth,
+    height: windowHeight * 0.9,
+    backgroundColor: Color.white,
+    alignItems: 'center',
+  },
+  main_view: {
     height: windowHeight,
     width: windowWidth,
-    alignItems: 'center',
-    backgroundColor: 'white',
-    justifyContent: 'center',
   },
 
   text_input: {
+    marginTop: windowHeight * 0.06,
     alignItems: 'center',
     borderWidth: 1,
+    borderColor: '#C32C2745',
     width: windowWidth * 0.9,
-    borderColor: Color.mediumGray,
+    // borderColor: Color.mediumGray,
     height: windowHeight * 0.52,
     borderRadius: 20,
     paddingTop: windowHeight * 0.03,
     paddingHorizontal: moderateScale(20, 0.6),
   },
-  back: {
-    width: moderateScale(35, 0.6),
-    height: moderateScale(35, 0.6),
-    borderRadius: moderateScale(5, 0.6),
-    borderWidth: 0.5,
-    borderColor: '#FFFFFF',
-    zIndex: 1,
-    margin: 5,
-    alignItems: 'center',
-    backgroundColor: Color.themeBlack,
-    justifyContent: 'center',
-  },
+
   schemaText: {
     fontSize: moderateScale(10, 0.6),
     color: 'red',
     alignSelf: 'flex-start',
-  },
-  header: {
-    flexDirection: 'row',
-    width: windowWidth,
-    backgroundColor: 'white',
-    paddingHorizontal: moderateScale(10, 0.6),
-    paddingTop: moderateScale(5, 0.3),
-  },
-  headert: {
-    fontSize: moderateScale(18, 0.6),
-    color: Color.black,
-    width: windowWidth * 0.8,
-    textAlign: 'center',
-    marginTop: moderateScale(8, 0.6),
   },
 });

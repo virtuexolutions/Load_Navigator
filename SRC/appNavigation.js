@@ -237,6 +237,8 @@ export const MyDrawer = () => {
       <DrawerNavigation.Screen name="LoadDetails" component={LoadDetails} />
       <DrawerNavigation.Screen name="PostScreen" component={PostScreen} />
       <DrawerNavigation.Screen name="ViewLeadBoard" component={ViewLeadBoard} />
+      <DrawerNavigation.Screen name="ChangePassword" component={ChangePassword} />
+
 
       <DrawerNavigation.Screen
         name="ServicesScreen"

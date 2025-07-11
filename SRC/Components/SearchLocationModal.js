@@ -1,5 +1,11 @@
 import React, {useEffect, useRef} from 'react';
-import {Keyboard, KeyboardAvoidingView, ScrollView, StyleSheet, View} from 'react-native';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import 'react-native-get-random-values';
 import Modal from 'react-native-modal';
 import PlacesInput from 'react-native-places-input';
@@ -9,7 +15,7 @@ import {windowHeight, windowWidth} from '../Utillity/utils';
 import CustomText from './CustomText';
 
 import {useDispatch} from 'react-redux';
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 
 const SearchLocationModal = ({
   isModalVisible,
@@ -19,14 +25,14 @@ const SearchLocationModal = ({
   setPickupLocation,
   setdropOffLocation,
   userAddress,
-  setState= (state) => {},
+  setState = state => {},
 }) => {
   const dispatch = useDispatch();
   const googlePlacesRef = useRef(null);
   useEffect(() => {}, [userAddress]);
   return (
     <Modal
-    avoidKeyboard={true}
+      avoidKeyboard={true}
       hasBackdrop={true}
       // useNativeDriver
       style={{
@@ -38,16 +44,15 @@ const SearchLocationModal = ({
         setIsModalVisible(false);
       }}>
       {/* > */}
-      <KeyboardAvoidingView 
-      // behavior="padding"
-      keyboardVerticalOffset={100}
-      style={{flex: 1}}
-      >
+      <KeyboardAvoidingView
+        // behavior="padding"
+        keyboardVerticalOffset={100}
+        style={{flex: 1}}>
         {/* <ScrollView 
         // keyboardShouldPersistTaps="always"
         // keyboardDismissMode='on-drag'
         > */}
-        <View style={styles.maincontainer} >
+        <View style={styles.maincontainer}>
           <CustomText
             style={{
               color: Color.themeBlack,
@@ -58,97 +63,95 @@ const SearchLocationModal = ({
             Select Location
           </CustomText>
           <GooglePlacesAutocomplete
-          onFail={error => console.error(error, 'errrrrrorrrr')}
-          placeholder="Search"
-          enablePoweredByContainer={true}
-          nearbyPlacesAPI="GooglePlacesSearch"
-          minLength={2}
-          // suppressDefaultStyles
-          // disableScroll={false}
-          keepResultsAfterBlur={true}
-          timeout={10000}
-          
-          debounce={10}
-          textInputProps={{
-            placeholderTextColor: '#5d5d5d',
-            focusable: true,
-          }}
-          onPress={(data, details = null) => {
-            console.log('Selected data:', data?.description);
-            console.log(
-              'Details:',
-              details?.geometry?.location?.lat,
-              details?.geometry?.location?.lng,
-              data?.description,
-            );
-            const components = details.address_components;
-            const state = components.find(c =>
-              c.types.includes('administrative_area_level_1'),
-            )?.long_name;
-            const city = components.find(c =>
-              c.types.includes('locality'),
-            )?.long_name;
-            const zip = components.find(c =>
-              c.types.includes('postal_code'),
-            )?.long_name;
-            // setZipCode(zip)
-            setState(state)
-            // setCity(city)
- 
-            console.log('======================== >>>>>', state, city, zip);
-            const location = {
-              name: data?.description,
-              lat:  details?.geometry?.location?.lat,
-              lng: details?.geometry?.location?.lng,
-            };
- 
-            console.log('Location ========>>>>', location);
- 
-            if (locationType === 'origin') {
-              setPickupLocation(location);
-              console.log("origin ", location)
-            } else if (locationType === 'destination') {
-              setdropOffLocation(location);
-            } else if (locationType === 'address') {
-              setUserAddress(location);
-            }
-            Keyboard.dismiss();
-            setIsModalVisible(false);
-          }}
-          listViewDisplayed="auto"
-          query={{
-            key: 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8',
-            language: 'en',
-          }}
-          predefinedPlaces={[]}
+            onFail={error => console.error(error, 'errrrrrorrrr')}
+            placeholder="Search"
+            enablePoweredByContainer={true}
+            nearbyPlacesAPI="GooglePlacesSearch"
+            minLength={2}
+            // suppressDefaultStyles
+            // disableScroll={false}
+            keepResultsAfterBlur={true}
+            timeout={10000}
+            debounce={10}
+            textInputProps={{
+              placeholderTextColor: '#5d5d5d',
+              focusable: true,
+            }}
+            onPress={(data, details = null) => {
+              console.log('Selected data:', data?.description);
+              console.log(
+                'Details:',
+                details?.geometry?.location?.lat,
+                details?.geometry?.location?.lng,
+                data?.description,
+              );
+              const components = details.address_components;
+              const state = components.find(c =>
+                c.types.includes('administrative_area_level_1'),
+              )?.long_name;
+              const city = components.find(c =>
+                c.types.includes('locality'),
+              )?.long_name;
+              const zip = components.find(c =>
+                c.types.includes('postal_code'),
+              )?.long_name;
+              // setZipCode(zip)
+              setState(state);
+              // setCity(city)
 
-          isRowScrollable={true}
-          fetchDetails={true}
-          // textInputHidesKeyboard={true}   
-          
-          styles={{
-            textInputContainer: {
-              width: windowWidth * 0.8,
-              marginLeft: moderateScale(5, 0.6),
-            },
-            textInput: {
-              height: windowHeight * 0.06,
-              color: '#5d5d5d',
-              fontSize: 16,
-              borderWidth: 2,
-              borderColor: Color.lightGrey,
-              borderRadius: moderateScale(20, 0.6),
-            },
-            listView: {
-              width: windowWidth * 0.8,
-              marginLeft: moderateScale(5, 0.6),
-              borderColor: Color.veryLightGray,
-            },
-            description: {
-              color: 'black',
-            },
-          }}
-        />
+              console.log('======================== >>>>>', state, city, zip);
+              const location = {
+                name: data?.description,
+                lat: details?.geometry?.location?.lat,
+                lng: details?.geometry?.location?.lng,
+              };
+
+              console.log('Location ========>>>>', location);
+
+              if (locationType === 'origin') {
+                setPickupLocation(location);
+                console.log('origin ', location);
+              } else if (locationType === 'destination') {
+                setdropOffLocation(location);
+              } else if (locationType === 'address') {
+                setUserAddress(location);
+              }
+              Keyboard.dismiss();
+              setIsModalVisible(false);
+            }}
+            listViewDisplayed="auto"
+            query={{
+              key: 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8',
+              language: 'en',
+            }}
+            predefinedPlaces={[]}
+            isRowScrollable={true}
+            fetchDetails={true}
+            // textInputHidesKeyboard={true}
+
+            styles={{
+              textInputContainer: {
+                width: windowWidth * 0.8,
+                marginLeft: moderateScale(5, 0.6),
+              },
+              textInput: {
+                height: windowHeight * 0.06,
+                color: '#5d5d5d',
+                fontSize: 16,
+                borderWidth: 2,
+                borderColor: Color.lightGrey,
+                borderRadius: moderateScale(20, 0.6),
+              },
+              listView: {
+                width: windowWidth * 0.8,
+                marginLeft: moderateScale(5, 0.6),
+                borderColor: Color.veryLightGray,
+              },
+              description: {
+                color: 'black',
+              },
+            }}
+          />
 
           {/* <GooglePlacesAutocomplete
           placeholder="Where to?"
@@ -322,7 +325,7 @@ const SearchLocationModal = ({
             }}
           /> */}
         </View>
-          
+
         {/* </ScrollView> */}
       </KeyboardAvoidingView>
     </Modal>

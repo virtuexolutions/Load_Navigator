@@ -26,7 +26,7 @@ import {Get} from '../Axios/AxiosInterceptorFunction';
 const Help = () => {
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
-
+  const userRole = useSelector(state => state.commonReducer.selectedRole);
   const [serviceSate, setServiceState] = useState('');
   const [escortPosition, setEscortPosition] = useState('');
   const [services, setServices] = useState(['A', 'B']);
@@ -79,10 +79,17 @@ const Help = () => {
     ],
   };
   return (
-    <SafeAreaView style={styles.main_view}>
+    <SafeAreaView
+      style={[
+        styles.main_view,
+        {
+          backgroundColor:
+            userRole.toLowerCase() == 'pilot' ? Color.primary : Color.secondary,
+        },
+      ]}>
       <Header
         title="fAQS"
-        headerColor={Color.secondary}
+        headerColor={userRole.toLowerCase() == 'pilot' ? Color.primary : Color.secondary}
         textstyle={{color: Color.white}}
         showBack
         menu
@@ -92,7 +99,14 @@ const Help = () => {
         barStyle={'light-content'}
       />
 
-      <View style={styles.mainScreen}>
+      <View
+        style={[
+          styles.mainScreen,
+          {
+            backgroundColor:
+              userRole.toLowerCase() == 'pilot' ? Color.primary : Color.white,
+          },
+        ]}>
         <FlatList
           showsVerticalScrollIndicator={false}
           data={dummyFaqs}
@@ -141,11 +155,12 @@ const styles = StyleSheet.create({
   mainScreen: {
     width: windowWidth,
     height: windowHeight * 0.9,
-    backgroundColor: Color.white,
+    // backgroundColor: Color.white,
     alignItems: 'center',
   },
   flatListContainer: {
-    backgroundColor: Color.white,
+    // backgroundColor: Color.white,
+    paddingTop : windowHeight*0.04,
     width: windowWidth * 0.9,
     alignItems: 'center',
     borderRadius: moderateScale(20, 0.3),
@@ -189,7 +204,7 @@ const styles = StyleSheet.create({
   main_view: {
     height: windowHeight,
     width: windowWidth,
-    backgroundColor: Color.secondary,
+
     paddingTop: moderateScale(20, 0.6),
   },
   faq: {
@@ -219,7 +234,7 @@ const styles = StyleSheet.create({
   },
   question: {
     color: Color.secondary,
-    
+
     fontSize: moderateScale(13, 0.6),
   },
   answer: {
