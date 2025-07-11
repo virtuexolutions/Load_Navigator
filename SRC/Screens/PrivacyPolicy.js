@@ -15,66 +15,47 @@ import {Icon} from 'native-base';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Color from '../Assets/Utilities/Color';
 import Header from '../Components/Header';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSelector } from 'react-redux';
 
 const PrivacyPolicy = () => {
   const navigation = useNavigation();
+  const userData = useSelector(state => state.commonReducer.userData);
 
   return (
-    <ScrollView
-      style={{
-        width: windowWidth,
-        minHeight: windowHeight,
-        backgroundColor: Color.white,
-        paddingBottom: moderateScale(40, 0.6),
-      }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          width: windowWidth,
-          backgroundColor: 'white',
-          paddingHorizontal: moderateScale(10, 0.6),
-          marginTop : moderateScale(5,.3)
-        }}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => {
-            navigation.goBack();
-          }}
-          style={styles.back}>
-          <Icon
-            name="arrowleft"
-            as={AntDesign}
-            style={styles.icon2}
-            color={Color.white}
-            size={moderateScale(20, 0.3)}
-            onPress={() => {
-              navigation.goBack();
-            }}
-          />
-        </TouchableOpacity>
-        <CustomText
-          style={{
-            fontSize: moderateScale(18, 0.6),
-            color: Color.black,
-            width: windowWidth * 0.8,
-            textAlign: 'center',
-            paddingTop: moderateScale(8, 0.6),
-          }}>
-          privacy policy
-        </CustomText>
-      </View>
-      {/* <Header title={'privacy Policy'} showBack={true} hideUser={true} /> */}
+    <SafeAreaView
+    // scrollEnabled={false}
+    style={[styles.mainScreen, ]}
+    //   conltentContainerStyle={{
+    //     aignItems: 'center',
+    //   }}
+  >
+    <View style={[styles.main_view, {backgroundColor: userData?.role =='pilot' ? Color.primary : Color.white}]}>
+      <Header
+        title="Privacy Policy"
+        headerColor={userData?.role =='pilot' ? 'transparent' : Color.secondary}
+        textstyle={{color: Color.white}}
+        showBack
+        menu
+      />
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={{
-          height: windowHeight,
-          width: windowWidth,
-        }}>
+          // backgroundColor: 'white',
+          // marginTop: windowHeight * 0.1,
+        }}
+        contentContainerStyle={
+          {
+            // padding : moderateScale(10,0.6),
+          }
+        }>
         <CustomText
           style={{
             marginTop: moderateScale(30, 0.3),
             marginHorizontal: moderateScale(10, 0.3),
-            color: Color.themeBgColor,
+            color: userData?.role == "pilot" ? Color.white : Color.black,
+            // width : windowWidth ,
             textAlign: 'justify',
             fontSize: moderateScale(12, 0.6),
           }}>
@@ -83,26 +64,18 @@ const PrivacyPolicy = () => {
           }
         </CustomText>
       </ScrollView>
-    </ScrollView>
+    </View>
+    </SafeAreaView>
   );
 };
 
 export default PrivacyPolicy;
 
 const styles = ScaledSheet.create({
-  back: {
-    width: moderateScale(35, 0.6),
-    height: moderateScale(35, 0.6),
-    borderRadius: moderateScale(5, 0.6),
-    borderWidth: 0.5,
-    backgroundColor: Color.themeBlack,
-    borderColor: Color.themeBlack,
-    // position: 'absolute',
-    // left: moderateScale(10, 0.6),
-    // top: moderateScale(10, 0.6),
-    zIndex: 1,
-    margin: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
+  mainScreen: {
+    width: windowWidth,
+    height: windowHeight,
+    backgroundColor: Color.primary,
+    aignItems: 'center',
   },
 });

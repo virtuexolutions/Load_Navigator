@@ -64,9 +64,36 @@ const Drawer = React.memo(() => {
       iconName: 'setting',
       iconType: AntDesign,
     },
+    {
+      id: 4,
+      name: 'Terms & Conditions',
+      onPress: () => {
+        navigation.navigate('MyDrawer', {screen: 'TermsAndConditions'});
+      },
+      iconName: 'book-open-page-variant',
+      iconType: MaterialCommunityIcons,
+    },
+    {
+      id: 5,
+      name: 'Privacy Policy',
+      onPress: () => {
+        navigation.navigate('MyDrawer', {screen: 'PrivacyPolicy'});
+      },
+      iconName: 'shield-lock-outline',
+      iconType: MaterialCommunityIcons,
+    },
   ];
 
   const pilotData = [
+    {
+      id: 1,
+      name: 'View Load Board',
+      onPress: () => {
+        navigation.navigate('MyDrawer', {screen: 'ViewLeadBoard'});
+      },
+      iconName: 'clipboard-list',
+      iconType: FontAwesome5,
+    },
     {
       id: 2,
       name: 'Help/FAQS',
@@ -85,6 +112,24 @@ const Drawer = React.memo(() => {
       iconName: 'setting',
       iconType: AntDesign,
     },
+    {
+      id: 4,
+      name: 'Terms & Conditions',
+      onPress: () => {
+        navigation.navigate('MyDrawer', {screen: 'TermsAndConditions'});
+      },
+      iconName: 'book-open-page-variant',
+      iconType: MaterialCommunityIcons,
+    },
+    {
+      id: 5,
+      name: 'Privacy Policy',
+      onPress: () => {
+        navigation.navigate('MyDrawer', {screen: 'PrivacyPolicy'});
+      },
+      iconName: 'shield-lock-outline',
+      iconType: MaterialCommunityIcons,
+    },
   ];
   const adminData1 = [];
 
@@ -97,7 +142,7 @@ const Drawer = React.memo(() => {
           styles.drawer_view,
           {
             backgroundColor:
-              userData?.role != 'company' ? '#292929' : Color.white,
+              userData?.role == 'pilot' ? '#292929' : Color.white,
           },
         ]}>
         <View
@@ -105,7 +150,7 @@ const Drawer = React.memo(() => {
             styles.header_view,
             {
               backgroundColor:
-                userData?.role == 'company' ? Color.secondary : Color.black,
+                userData?.role !== 'pilot' ? Color.secondary : Color.black,
             },
           ]}>
           <View style={styles.image_view}>
@@ -131,7 +176,7 @@ const Drawer = React.memo(() => {
                   as={item?.iconType}
                   size={moderateScale(15, 0.6)}
                   color={
-                    userData?.role == 'company' ? Color.black : Color.lightGrey
+                    userData?.role !== 'pilot' ? Color.black : Color.lightGrey
                   }
                 />
                 <CustomText
@@ -139,7 +184,7 @@ const Drawer = React.memo(() => {
                     styles.text,
                     {
                       color:
-                        userData?.role == 'company'
+                        userData?.role != 'pilot'
                           ? Color.black
                           : Color.lightGrey,
                     },
@@ -156,7 +201,7 @@ const Drawer = React.memo(() => {
                   as={item?.iconType}
                   size={moderateScale(15, 0.6)}
                   color={
-                    userData?.role == 'company' ? Color.black : Color.lightGrey
+                    userData?.role != 'pilot' ? Color.black : Color.lightGrey
                   }
                 />
                 <CustomText
@@ -164,7 +209,7 @@ const Drawer = React.memo(() => {
                     styles.text,
                     {
                       color:
-                        userData?.role == 'company'
+                        userData?.role != 'pilot'
                           ? Color.black
                           : Color.lightGrey,
                     },

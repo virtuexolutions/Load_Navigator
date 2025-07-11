@@ -11,7 +11,9 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {moderateScale} from 'react-native-size-matters';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Color from '../Assets/Utilities/Color';
 import CustomStatusBar from '../Components/CustomStatusBar';
@@ -28,7 +30,7 @@ const LoadBoard = () => {
   const IsFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
-  console.log("🚀 ~ LoadBoard ~ userData:", userData?.company_name)
+  console.log('🚀 ~ LoadBoard ~ userData:', userData?.company_name);
 
   console.log('🚀 ~ ViewLeadBoard ~ token:', token);
   const [isLoading, setIsLoading] = useState(false);
@@ -130,20 +132,20 @@ const LoadBoard = () => {
             keyExtractor={item => item.id.toString()}
             showsVerticalScrollIndicator={false}
             renderItem={({item}) => (
-              <TouchableOpacity 
-              onPress={()=>{
-                 navigationService.navigate('PostScreen' ,{item :item});
-              }} style={styles.recentLoadBoards}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigationService.navigate('PostScreen', {item: item});
+                }}
+                style={styles.recentLoadBoards}>
                 <View style={styles.row_view}>
                   <CustomText isBold style={styles.heading_text}>
                     {userData?.company_name}
-                    
                   </CustomText>
                   <View style={styles.row_view}>
                     <CustomText style={styles.text}>{item?.recency}</CustomText>
                     <TouchableOpacity
                       onPress={() => {
-                        navigationService.navigate('PostScreen' ,{item :item});
+                        navigationService.navigate('PostScreen', {item: item});
                       }}
                       style={styles.btn}>
                       <CustomText
@@ -183,7 +185,7 @@ const LoadBoard = () => {
                       size={moderateScale(13, 0.6)}
                     />
                   </View>
-                  <CustomText  numberOfLines={2} style={styles.details_text}>
+                  <CustomText numberOfLines={2} style={styles.details_text}>
                     {item?.origin?.name}
                   </CustomText>
                 </View>
@@ -200,6 +202,62 @@ const LoadBoard = () => {
                     {item?.destination?.name}
                   </CustomText>
                 </View>
+                {/* Title */}
+                <View style={styles.infoRow}>
+                  <View style={styles.icon_box}>
+                    <Icon
+                      name="format-title"
+                      as={MaterialCommunityIcons}
+                      color={Color.white}
+                      size={moderateScale(13, 0.6)}
+                    />
+                  </View>
+                  <CustomText numberOfLines={2} style={styles.details_text}>
+                    {item?.title}
+                  </CustomText>
+                </View>
+                {/* Type */}
+                <View style={styles.infoRow}>
+                  <View style={styles.icon_box}>
+                    <Icon
+                      name="date"
+                      as={Fontisto}
+                      color={Color.white}
+                      size={moderateScale(13, 0.6)}
+                    />
+                  </View>
+                  <CustomText numberOfLines={2} style={styles.details_text}>
+                    {item?.type}
+                  </CustomText>
+                </View>
+                {/* Weight */}
+                <View style={styles.infoRow}>
+                  <View style={styles.icon_box}>
+                    <Icon
+                      name="weight"
+                      as={FontAwesome5}
+                      color={Color.white}
+                      size={moderateScale(13, 0.6)}
+                    />
+                  </View>
+                  <CustomText numberOfLines={2} style={styles.details_text}>
+                    {item?.weight}
+                  </CustomText>
+                </View>
+                {/* Dimensions */}
+                <View style={styles.infoRow}>
+                  <View style={styles.icon_box}>
+                    <Icon
+                      name="ruler-square"
+                      as={MaterialCommunityIcons}
+                      color={Color.white}
+                      size={moderateScale(13, 0.6)}
+                    />
+                  </View>
+                  <CustomText numberOfLines={2} style={styles.details_text}>
+                    {item?.dimension}
+                  </CustomText>
+                </View>
 
                 {/* Distance */}
                 <View style={styles.infoRow}>
@@ -212,7 +270,7 @@ const LoadBoard = () => {
                     />
                   </View>
                   <CustomText style={styles.details_text}>
-                    {item?.miles } miles
+                    {item?.miles} miles
                   </CustomText>
                 </View>
 

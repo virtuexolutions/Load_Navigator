@@ -16,6 +16,8 @@ import {Icon} from 'native-base';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Header from '../Components/Header';
 import navigationService from '../navigationService';
@@ -183,8 +185,8 @@ const ViewLeadBoard = () => {
                     style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
                     <View style={styles.icon_view}>
                       <Icon
-                        name="title "
-                        as={Fontisto}
+                        name="format-title"
+                        as={MaterialCommunityIcons}
                         size={moderateScale(12, 0.6)}
                         color={Color.white}
                       />
@@ -196,7 +198,7 @@ const ViewLeadBoard = () => {
                     <View style={styles.icon_view}>
                       <Icon
                         name="weight"
-                        as={Fontisto}
+                        as={FontAwesome5}
                         size={moderateScale(12, 0.6)}
                         color={Color.white}
                       />
@@ -220,8 +222,8 @@ const ViewLeadBoard = () => {
                     style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
                     <View style={styles.icon_view}>
                       <Icon
-                        name="date"
-                        as={Fontisto}
+                        name="ruler-square"
+                        as={MaterialCommunityIcons}
                         size={moderateScale(12, 0.6)}
                         color={Color.white}
                       />

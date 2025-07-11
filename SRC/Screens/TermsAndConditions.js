@@ -6,67 +6,48 @@ import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Icon} from 'native-base';
-import {windowWidth} from '../Utillity/utils';
+import {windowHeight, windowWidth} from '../Utillity/utils';
 import {useNavigation} from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSelector } from 'react-redux';
 
 const TermsAndConditions = () => {
   const navigation = useNavigation();
+  const userData = useSelector(state => state.commonReducer.userData);
 
   return (
-    <>
-      <View
-        style={{
-          flexDirection: 'row',
-          width: windowWidth,
-          backgroundColor: 'white',
-          paddingHorizontal: moderateScale(10, 0.6),
-          paddingTop : moderateScale(5,.3)
-        }}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => {
-            navigation.goBack();
-          }}
-          style={styles.back}>
-          <Icon
-            name="arrowleft"
-            as={AntDesign}
-            style={styles.icon2}
-            color={Color.white}
-            size={moderateScale(20, 0.3)}
-            onPress={() => {
-              navigation.goBack();
-            }}
-          />
-        </TouchableOpacity>
-        <CustomText
-          style={{
-            fontSize: moderateScale(18, 0.6),
-            color: Color.black,
-            width: windowWidth * 0.8,
-            textAlign: 'center',
-            paddingTop: moderateScale(8, 0.6),
-          }}>
-          Terms & condition
-        </CustomText>
-      </View>
+    <SafeAreaView
+    // scrollEnabled={false}
+    style={styles.mainScreen}
+    //   conltentContainerStyle={{
+    //     aignItems: 'center',
+    //   }}
+  >
+    <View style={[styles.main_view, {backgroundColor: userData?.role =='pilot' ? Color.primary : Color.white}]}>
+      <Header
+        title="Terms & Conditions"
+        headerColor={ userData?.role == 'pilot' ? 'transparent' : Color.secondary}
+        textstyle={{color: Color.white}}
+        showBack
+        menu
+      />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={{
-          backgroundColor: 'white',
+          // backgroundColor: 'white',
           // marginTop: windowHeight * 0.1,
         }}
         contentContainerStyle={
           {
-            // padding : moderateScale(10,0.6),
+            // paddingBottom : moderateScale(10,0.6),
           }
         }>
         <CustomText
           style={{
             marginTop: moderateScale(30, 0.3),
             marginHorizontal: moderateScale(10, 0.3),
-            color: Color.black,
+            color: userData?.role == 'pilot' ? Color.white : Color.black,
             // width : windowWidth ,
             textAlign: 'justify',
             fontSize: moderateScale(12, 0.6),
@@ -76,13 +57,20 @@ const TermsAndConditions = () => {
           }
         </CustomText>
       </ScrollView>
-    </>
+    </View>
+    </SafeAreaView>
   );
 };
 
 export default TermsAndConditions;
 
 const styles = ScaledSheet.create({
+  mainScreen: {
+    width: windowWidth,
+    height: windowHeight,
+    backgroundColor: Color.primary,
+    aignItems: 'center',
+  },
   back: {
     width: moderateScale(35, 0.6),
     height: moderateScale(35, 0.6),

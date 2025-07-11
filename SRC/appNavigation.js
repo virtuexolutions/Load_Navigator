@@ -30,6 +30,8 @@ import ServicesScreen from './Screens/ServicesScreen';
 import LoadBoard from './Screens/LoadBoard';
 import SelecteArea from './Screens/SelecteArea';
 import Help from './Screens/Help';
+import PrivacyPolicy from './Screens/PrivacyPolicy';
+import TermsAndConditions from './Screens/TermsAndConditions';
 
 enableScreens();
 const AppNavigator = () => {
@@ -238,6 +240,8 @@ export const MyDrawer = () => {
       <DrawerNavigation.Screen name="PostScreen" component={PostScreen} />
       <DrawerNavigation.Screen name="ViewLeadBoard" component={ViewLeadBoard} />
       <DrawerNavigation.Screen name="ChangePassword" component={ChangePassword} />
+      <DrawerNavigation.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
+      <DrawerNavigation.Screen name="TermsAndConditions" component={TermsAndConditions} />
 
 
       <DrawerNavigation.Screen
