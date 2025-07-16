@@ -133,7 +133,7 @@ const ViewLeadBoard = () => {
                   style={styles.card}>
                   <View style={styles.row}>
                     <CustomText isBold style={styles.card_heading}>
-                      {item?.user?.company_name}
+                      {item?.company_name}
                     </CustomText>
                     <View style={styles.badges}>
                       <CustomText style={styles.text}>
@@ -142,7 +142,7 @@ const ViewLeadBoard = () => {
                     </View>
                   </View>
                   <View
-                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+                    style={[{marginTop: moderateScale(20, 0.6)}]}>
                     <View style={styles.row}>
                       <View style={styles.icon_view}>
                         <Icon
@@ -184,16 +184,16 @@ const ViewLeadBoard = () => {
                   <View
                     style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
                     <View style={styles.icon_view}>
-                      <Icon
-                        name="format-title"
-                        as={MaterialCommunityIcons}
+                    <Icon
+                        name="calendar-today"
+                        as={MaterialIcons}
                         size={moderateScale(12, 0.6)}
                         color={Color.white}
                       />
                     </View>
-                    <CustomText style={styles.text}>{item?.title}</CustomText>
+                    <CustomText style={styles.text}>{moment(item?.start_date).format("DD-MM-YYYY")}</CustomText>
                   </View>
-                  <View
+                  {/* <View
                     style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
                     <View style={styles.icon_view}>
                       <Icon
@@ -205,30 +205,30 @@ const ViewLeadBoard = () => {
                     </View>
 
                     <CustomText style={styles.text}>{item?.weight}</CustomText>
+                  </View> */}
+                  <View
+                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+                    <View style={styles.icon_view}>
+                      <Icon
+                        name="height"
+                        as={MaterialIcons}
+                        size={moderateScale(12, 0.6)}
+                        color={Color.white}
+                      />
+                    </View>
+                    <CustomText style={styles.text}>{item?.height}</CustomText>
                   </View>
                   <View
                     style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
                     <View style={styles.icon_view}>
                       <Icon
-                        name="date"
-                        as={Fontisto}
+                        name="chat"
+                        as={MaterialIcons}
                         size={moderateScale(12, 0.6)}
                         color={Color.white}
                       />
                     </View>
-                    <CustomText style={styles.text}>{item?.type}</CustomText>
-                  </View>
-                  <View
-                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-                    <View style={styles.icon_view}>
-                      <Icon
-                        name="ruler-square"
-                        as={MaterialCommunityIcons}
-                        size={moderateScale(12, 0.6)}
-                        color={Color.white}
-                      />
-                    </View>
-                    <CustomText style={styles.text}>{item?.dimension}</CustomText>
+                    <CustomText style={styles.text}>{item?.communication_mode}</CustomText>
                   </View>
                   <View
                     style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
@@ -255,6 +255,18 @@ const ViewLeadBoard = () => {
                       />
                     </View>
                     <CustomText style={styles.text}>{item?.contact}</CustomText>
+                  </View>
+                  <View
+                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+                    <View style={styles.icon_view}>
+                      <Icon
+                        name="attach-money"
+                        as={MaterialIcons}
+                        size={moderateScale(12, 0.6)}
+                        color={Color.white}
+                      />
+                    </View>
+                    <CustomText style={styles.text}>{`${item?.total_rate} (total)` }</CustomText>
                   </View>
                   <View
                     style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
@@ -323,7 +335,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: windowWidth * 0.8,
-    height: windowHeight * 0.5,
+    // height: windowHeight * 0.5,
     backgroundColor: Color.grey,
     borderRadius: moderateScale(20, 0.6),
     marginTop: moderateScale(10, 0.6),
@@ -337,6 +349,7 @@ const styles = StyleSheet.create({
     color: Color.white,
   },
   row: {
+    marginTop: moderateScale(10, 0.6),
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',

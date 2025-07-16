@@ -208,7 +208,9 @@ const DropDownSingleSelect = ({
       console.log( "Selected Item   ",selectedItem, index);
       setItem(selectedItem);
     }}
-    
+onScrollEndReached={() => {
+  
+}}
     renderButton={(selectedItem, isOpened) => {
       return (
         <View style={[styles.dropdownButtonStyle, 
@@ -237,7 +239,7 @@ const DropDownSingleSelect = ({
       );
     }}
     // disa
-    showsVerticalScrollIndicator={false}
+    showsVerticalScrollIndicator={true}
     dropdownStyle={menuStyle ? menuStyle : styles.dropdownMenuStyle}
 
   />

@@ -12,6 +12,7 @@ import {moderateScale} from 'react-native-size-matters';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -203,7 +204,7 @@ const LoadBoard = () => {
                   </CustomText>
                 </View>
                 {/* Title */}
-                <View style={styles.infoRow}>
+                {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
                       name="format-title"
@@ -215,47 +216,47 @@ const LoadBoard = () => {
                   <CustomText numberOfLines={2} style={styles.details_text}>
                     {item?.title}
                   </CustomText>
-                </View>
+                </View> */}
                 {/* Type */}
                 <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
-                      name="date"
-                      as={Fontisto}
+                      name="height"
+                      as={MaterialIcons}
                       color={Color.white}
                       size={moderateScale(13, 0.6)}
                     />
                   </View>
                   <CustomText numberOfLines={2} style={styles.details_text}>
-                    {item?.type}
+                    {item?.height}
                   </CustomText>
                 </View>
                 {/* Weight */}
                 <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
-                      name="weight"
-                      as={FontAwesome5}
+                      name="chat"
+                      as={MaterialIcons}
                       color={Color.white}
                       size={moderateScale(13, 0.6)}
                     />
                   </View>
                   <CustomText numberOfLines={2} style={styles.details_text}>
-                    {item?.weight}
+                    {item?.communication_mode}
                   </CustomText>
                 </View>
                 {/* Dimensions */}
                 <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
-                    <Icon
-                      name="ruler-square"
-                      as={MaterialCommunityIcons}
-                      color={Color.white}
-                      size={moderateScale(13, 0.6)}
-                    />
+                  <Icon
+                        name="calendar-today"
+                        as={MaterialIcons}
+                        size={moderateScale(12, 0.6)}
+                        color={Color.white}
+                      />
                   </View>
                   <CustomText numberOfLines={2} style={styles.details_text}>
-                    {item?.dimension}
+                    {moment(item?.start_date).format("DD-MM-YYYY")}
                   </CustomText>
                 </View>
 
@@ -271,6 +272,20 @@ const LoadBoard = () => {
                   </View>
                   <CustomText style={styles.details_text}>
                     {item?.miles} miles
+                  </CustomText>
+                </View>
+
+                <View style={styles.infoRow}>
+                  <View style={styles.icon_box}>
+                    <Icon
+                        name="attach-money"
+                        as={MaterialIcons}
+                      color={Color.white}
+                      size={moderateScale(13, 0.6)}
+                    />
+                  </View>
+                  <CustomText numberOfLines={2} style={styles.details_text}>
+                    {`${item?.total_rate} (total)` }
                   </CustomText>
                 </View>
 
@@ -318,6 +333,7 @@ const LoadBoard = () => {
                     {moment(item?.created_at).format('l')}
                   </CustomText>
                 </View>
+
 
                 {/* Time Posted */}
                 <View style={styles.infoRow}>

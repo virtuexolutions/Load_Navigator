@@ -60,8 +60,8 @@ const AppNavigator = () => {
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
+          // initialRouteName={"Signup"}
           initialRouteName={firstScreen}
-          // initialRouteName={firstScreen}
           screenOptions={{headerShown: false}}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
           <RootNav.Screen name="CarDirectory" component={CarDirectory} />
@@ -211,7 +211,7 @@ export const MyDrawer = () => {
   return (
     <DrawerNavigation.Navigator
       drawerContent={props => <Drawer {...props} />}
-      initialRouteName={userRole == 'pilot' ? 'SelectRoute' : 'PostLoadScreen'}
+      initialRouteName={userRole == 'pilot' ? 'ViewLeadBoard' : 'PostLoadScreen'}
       screenOptions={{
         headerShown: false,
         drawerStyle: {
@@ -242,6 +242,7 @@ export const MyDrawer = () => {
       <DrawerNavigation.Screen name="ChangePassword" component={ChangePassword} />
       <DrawerNavigation.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
       <DrawerNavigation.Screen name="TermsAndConditions" component={TermsAndConditions} />
+      <DrawerNavigation.Screen name="Profile" component={Profile} />
 
 
       <DrawerNavigation.Screen

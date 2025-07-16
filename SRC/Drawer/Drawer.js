@@ -47,6 +47,15 @@ const Drawer = React.memo(() => {
       iconType: Feather,
     },
     {
+      id: 9,
+      name: 'Profile',
+      onPress: () => {
+        navigation.navigate('MyDrawer', {screen: 'Profile'});
+      },
+      iconName: 'user',
+      iconType: FontAwesome5,
+    },
+    {
       id: 2,
       name: 'Help/FAQS',
       onPress: () => {
@@ -92,6 +101,15 @@ const Drawer = React.memo(() => {
         navigation.navigate('MyDrawer', {screen: 'ViewLeadBoard'});
       },
       iconName: 'clipboard-list',
+      iconType: FontAwesome5,
+    },
+    {
+      id: 9,
+      name: 'Profile',
+      onPress: () => {
+        navigation.navigate('MyDrawer', {screen: 'Profile'});
+      },
+      iconName: 'user',
       iconType: FontAwesome5,
     },
     {
