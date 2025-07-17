@@ -1,6 +1,6 @@
-import {useNavigation} from '@react-navigation/native';
-import {Icon} from 'native-base';
-import React, {useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { Icon } from 'native-base';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -8,19 +8,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {moderateScale} from 'react-native-size-matters';
+import { moderateScale } from 'react-native-size-matters';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
 import CustomButton from '../Components/CustomButton';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
 import navigationService from '../navigationService';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import { windowHeight, windowWidth } from '../Utillity/utils';
 
 const PostLoadScreen = () => {
   const navigation = useNavigation();
@@ -201,7 +201,7 @@ const PostLoadScreen = () => {
                   <View style={styles.row_view}>
                     <CustomText style={styles.text}>Recent</CustomText>
                     <TouchableOpacity style={styles.btn}>
-                      <CustomText style={[styles.text, {color: Color.white}]}>
+                      <CustomText style={[styles.text, { color: Color.white }]}>
                         Open
                       </CustomText>
                     </TouchableOpacity>
@@ -223,7 +223,7 @@ const PostLoadScreen = () => {
                           as={item?.iconType}
                           color={Color.white}
                           size={moderateScale(13, 0.6)}
-                          style={{alignSelf: 'center'}}
+                          style={{ alignSelf: 'center' }}
                         />
                       </View>
                       <CustomText style={styles.details_text}>
@@ -254,7 +254,7 @@ const PostLoadScreen = () => {
                   isBold
                   style={[
                     styles.card_heading,
-                    {marginTop: moderateScale(10, 0.6)},
+                    { marginTop: moderateScale(10, 0.6) },
                   ]}>
                   Welcome! Let's Get Started
                 </CustomText>

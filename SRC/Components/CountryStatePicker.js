@@ -149,7 +149,7 @@ const CountryStatePicker = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: moderateScale(10, 0.6),
+    marginVertical: moderateScale(8, 0.6),
   },
   label: {
     marginBottom: 5,
