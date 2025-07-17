@@ -23,7 +23,6 @@ const Drawer = React.memo(() => {
 
   const role = useSelector(state => state.authReducer.role);
   const userData = useSelector(state => state.commonReducer.userData);
-  console.log('🚀 ~ Drawer ~ userData:userData', userData?.role);
   const companyData = [
     {
       id: 1,

@@ -25,6 +25,7 @@ const SearchLocationModal = ({
   setPickupLocation,
   setdropOffLocation,
   userAddress,
+  placeholder,
   setState = state => {},
 }) => {
   const dispatch = useDispatch();
@@ -60,7 +61,7 @@ const SearchLocationModal = ({
               fontSize: moderateScale(22, 0.6),
             }}
             isBold>
-            Select Location
+            {'Select Location'}
           </CustomText>
           <GooglePlacesAutocomplete
             onFail={error => console.error(error, 'errrrrrorrrr')}
@@ -284,7 +285,6 @@ const SearchLocationModal = ({
               placeholderTextColor: Color.darkGray, // ✅ set here
             }}
             onSelect={(data, details = null) => {
-              console.log("🚀 ~ data:", JSON.stringify(data,null,2))
               const location = {
                 name: data?.result?.formatted_address,
                 lat: data?.result?.geometry?.location?.lat,

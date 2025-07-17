@@ -1,34 +1,32 @@
-import { useNavigation } from '@react-navigation/native';
-import { Icon } from 'native-base';
-import React, { useState } from 'react';
+import {useNavigation} from '@react-navigation/native';
+import {Icon} from 'native-base';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
-import { moderateScale } from 'react-native-size-matters';
+import {moderateScale} from 'react-native-size-matters';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
 import CustomButton from '../Components/CustomButton';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
 import navigationService from '../navigationService';
-import { windowHeight, windowWidth } from '../Utillity/utils';
+import {windowHeight, windowWidth} from '../Utillity/utils';
 
 const PostLoadScreen = () => {
   const navigation = useNavigation();
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
-  console.log('🚀 ~ PostLoadScreen ~ userData:', userData);
 
-  console.log('🚀 ~ PostLoadScreen ~ token:', token);
   const [isVisible, setIsVisible] = useState(false);
   const [isDetails, setIsDetails] = useState(false);
   const [positions, setPositions] = useState({
@@ -146,13 +144,13 @@ const PostLoadScreen = () => {
   return (
     <SafeAreaView style={styles.safe_area_view}>
       <Header
-          textstyle={{
-            color: Color.white,
-          }}
-          title={'Post A Load'}
-          headerColor={Color.secondary}
-          Ismenu
-        />
+        textstyle={{
+          color: Color.white,
+        }}
+        title={'Post A Load'}
+        headerColor={Color.secondary}
+        Ismenu
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         tyle={styles.scroll_view}>
@@ -160,7 +158,6 @@ const PostLoadScreen = () => {
           backgroundColor={Color.white}
           barStyle={'light-content'}
         />
-        
 
         <View style={styles.main_view}>
           <View

@@ -42,7 +42,6 @@ const DropDownSingleSelect = ({
   changeColorOnSelect,
 }) => {
   const [data , setData] = useState([])
-  console.log("🚀 ~ data:", data)
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
 
   useEffect(() => {

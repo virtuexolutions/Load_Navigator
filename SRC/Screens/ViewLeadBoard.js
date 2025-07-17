@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
 import {moderateScale} from 'react-native-size-matters';
@@ -26,6 +26,7 @@ import {useSelector} from 'react-redux';
 import {useIsFocused} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import moment from 'moment';
+import BottomSheet from '../Components/BottomSheet';
 
 const ViewLeadBoard = () => {
   const IsFocused = useIsFocused();
@@ -33,6 +34,7 @@ const ViewLeadBoard = () => {
   const userData = useSelector(state => state.commonReducer.userData);
   const [isLoading, setIsLoading] = useState(false);
   const [leaderData, setLeaderData] = useState([]);
+  const rbref = useRef();
 
   const leadBoard_array = [
     {
@@ -121,29 +123,55 @@ const ViewLeadBoard = () => {
           <FlatList
             contentContainerStyle={{
               alignItems: 'center',
-              paddingBottom : moderateScale(70,.6)
+              paddingBottom: moderateScale(70, 0.6),
             }}
             data={leaderData}
             renderItem={({item, index}) => {
               return (
-                <TouchableOpacity
-                  onPress={() => {
-                    navigationService.navigate('CreateRoute');
-                  }}
-                  style={styles.card}>
-                  <View style={styles.row}>
-                    <CustomText isBold style={styles.card_heading}>
-                      {item?.company_name}
-                    </CustomText>
-                    <View style={styles.badges}>
-                      <CustomText style={styles.text}>
-                        {item?.status}
-                      </CustomText>
-                    </View>
-                  </View>
-                  <View
-                    style={[{marginTop: moderateScale(20, 0.6)}]}>
+                <>
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    // onPress={() => {
+                    //   navigationService.navigate('CreateRoute');
+                    // }}
+                    style={styles.card}>
                     <View style={styles.row}>
+                      <CustomText isBold style={styles.card_heading}>
+                        {item?.company}
+                      </CustomText>
+                      <View style={styles.badges}>
+                        <CustomText style={styles.text}>
+                          {item?.status}
+                        </CustomText>
+                      </View>
+                    </View>
+                    <View style={[{marginTop: moderateScale(20, 0.6)}]}>
+                      <View style={styles.row}>
+                        <View style={styles.icon_view}>
+                          <Icon
+                            name="map-pin"
+                            as={Feather}
+                            size={moderateScale(12, 0.6)}
+                            color={Color.white}
+                          />
+                        </View>
+                        <CustomText
+                          numberOfLines={2}
+                          style={[
+                            styles.text,
+                            {
+                              width: windowWidth * 0.7,
+                            },
+                          ]}>
+                          {item?.origin?.name}
+                        </CustomText>
+                      </View>
+                    </View>
+                    <View
+                      style={[
+                        styles.row,
+                        //    {marginLeft: moderateScale(10, 0.6)}
+                      ]}>
                       <View style={styles.icon_view}>
                         <Icon
                           name="map-pin"
@@ -153,35 +181,29 @@ const ViewLeadBoard = () => {
                         />
                       </View>
                       <CustomText
-                        numberOfLines={2}
                         style={[
                           styles.text,
                           {
                             width: windowWidth * 0.7,
                           },
                         ]}>
-                        {item?.origin?.name}
+                        {item?.destination?.name}
                       </CustomText>
                     </View>
-                  </View>
-                  <View
-                    style={[
-                      styles.row,
-                      //    {marginLeft: moderateScale(10, 0.6)}
-                    ]}>
-                    <View style={styles.icon_view}>
-                      <Icon
-                        name="map-pin"
-                        as={Feather}
-                        size={moderateScale(12, 0.6)}
-                        color={Color.white}
-                      />
-                    </View>
-                    <CustomText style={styles.text}>
-                      {item?.destination?.name}
-                    </CustomText>
-                  </View>
-                  <View
+                    <TouchableOpacity
+                      onPress={() => {
+                        rbref?.current?.open();
+                      }}
+                      style={styles.load_btn}>
+                      <CustomText
+                        style={{
+                          color: Color.white,
+                          fontSize: moderateScale(12, 0.6),
+                        }}>
+                        Load more
+                      </CustomText>
+                    </TouchableOpacity>
+                    {/* <View
                     style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
                     <View style={styles.icon_view}>
                     <Icon
@@ -192,8 +214,8 @@ const ViewLeadBoard = () => {
                       />
                     </View>
                     <CustomText style={styles.text}>{moment(item?.start_date).format("DD-MM-YYYY")}</CustomText>
-                  </View>
-                  {/* <View
+                  </View> */}
+                    {/* <View
                     style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
                     <View style={styles.icon_view}>
                       <Icon
@@ -206,7 +228,7 @@ const ViewLeadBoard = () => {
 
                     <CustomText style={styles.text}>{item?.weight}</CustomText>
                   </View> */}
-                  <View
+                    {/* <View
                     style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
                     <View style={styles.icon_view}>
                       <Icon
@@ -304,8 +326,10 @@ const ViewLeadBoard = () => {
                       },
                     ]}>
                     Lead
-                  </CustomText>
-                </TouchableOpacity>
+                  </CustomText> */}
+                  </TouchableOpacity>
+                  <BottomSheet Rbref={rbref} item={item} />
+                </>
               );
             }}
           />
@@ -335,7 +359,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: windowWidth * 0.8,
-    // height: windowHeight * 0.5,
+    height: windowHeight * 0.25,
     backgroundColor: Color.grey,
     borderRadius: moderateScale(20, 0.6),
     marginTop: moderateScale(10, 0.6),
@@ -378,5 +402,14 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: moderateScale(15, 0.6),
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  load_btn: {
+    backgroundColor: Color.secondary,
+    height: windowHeight * 0.032,
+    marginTop: moderateScale(7, 0.6),
+    width: windowWidth * 0.24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: moderateScale(5, 0.6),
   },
 });

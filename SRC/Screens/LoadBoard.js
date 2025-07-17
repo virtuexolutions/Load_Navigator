@@ -31,66 +31,14 @@ const LoadBoard = () => {
   const IsFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
-  console.log('🚀 ~ LoadBoard ~ userData:', userData?.company_name);
 
-  console.log('🚀 ~ ViewLeadBoard ~ token:', token);
   const [isLoading, setIsLoading] = useState(false);
   const [loadData, setloadData] = useState([]);
-  const data = loadData?.map((item, index) => {
-    console.log('itttttttttttttteeeeeeeeeemmmmmmmmmmmmmm', item);
-  });
-
-  const dummyleads = [
-    {
-      id: 1,
-      company: 'JLS Pilot Car Services',
-      status: 'Open',
-      recency: 'Recent',
-      description: 'Calculating Notifications Sent To Drivers',
-      location: 'Pennsylvania Furnace, PA, USA',
-      estimatedDistanceMi: '609 Mi',
-      ratePerMile: '$5.00/Mi',
-      contact: '(123) 281-6350',
-      date: '04/24/2025',
-      timePosted: 'Less Than A Minute Ago',
-      type: 'Lead',
-    },
-    {
-      id: 2,
-      company: 'JLS Pilot Car Services',
-      status: 'Open',
-      recency: 'Recent',
-      description: 'Calculating Notifications Sent To Drivers',
-      location: 'Pennsylvania Furnace, PA, USA',
-      estimatedDistanceMi: '609 Mi',
-      ratePerMile: '$5.00/Mi',
-      contact: '(123) 281-6350',
-      date: '04/24/2025',
-      timePosted: 'Less Than A Minute Ago',
-      type: 'Lead',
-    },
-    {
-      id: 3,
-      company: 'JLS Pilot Car Services',
-      status: 'Open',
-      recency: 'Recent',
-      description: 'Calculating Notifications Sent To Drivers',
-      location: 'Pennsylvania Furnace, PA, USA',
-      estimatedDistanceMi: '609 Mi',
-      ratePerMile: '$5.00/Mi',
-      contact: '(123) 281-6350',
-      date: '04/24/2025',
-      timePosted: 'Less Than A Minute Ago',
-      type: 'Lead',
-    },
-  ];
 
   const getLoad = async () => {
     const url = 'auth/load_detail';
     setIsLoading(true);
-    console.log('from apiiiiiiiiiiiiiiiiiiii');
     const response = await Get(url, token);
-    //  return  console.log('🚀 ~ getLoad ~ response:=============>>>', response?.data?.load_detail);
     setIsLoading(false);
     if (response != undefined) {
       setloadData(response?.data?.load_detail);
@@ -144,11 +92,7 @@ const LoadBoard = () => {
                   </CustomText>
                   <View style={styles.row_view}>
                     <CustomText style={styles.text}>{item?.recency}</CustomText>
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigationService.navigate('PostScreen', {item: item});
-                      }}
-                      style={styles.btn}>
+                    <TouchableOpacity style={styles.btn}>
                       <CustomText
                         style={{
                           color: Color.white,
@@ -203,6 +147,22 @@ const LoadBoard = () => {
                     {item?.destination?.name}
                   </CustomText>
                 </View>
+
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => {
+                    navigationService.navigate('PostScreen', {item: item});
+                  }}
+                  style={styles.load_more_btn}>
+                  <CustomText
+                    isBold
+                    style={{
+                      color: Color.white,
+                      fontSize: moderateScale(11, 0.6),
+                    }}>
+                    Load more
+                  </CustomText>
+                </TouchableOpacity>
                 {/* Title */}
                 {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
@@ -218,7 +178,7 @@ const LoadBoard = () => {
                   </CustomText>
                 </View> */}
                 {/* Type */}
-                <View style={styles.infoRow}>
+                {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
                       name="height"
@@ -230,9 +190,9 @@ const LoadBoard = () => {
                   <CustomText numberOfLines={2} style={styles.details_text}>
                     {item?.height}
                   </CustomText>
-                </View>
+                </View> */}
                 {/* Weight */}
-                <View style={styles.infoRow}>
+                {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
                       name="chat"
@@ -244,9 +204,9 @@ const LoadBoard = () => {
                   <CustomText numberOfLines={2} style={styles.details_text}>
                     {item?.communication_mode}
                   </CustomText>
-                </View>
+                </View> */}
                 {/* Dimensions */}
-                <View style={styles.infoRow}>
+                {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                   <Icon
                         name="calendar-today"
@@ -258,10 +218,10 @@ const LoadBoard = () => {
                   <CustomText numberOfLines={2} style={styles.details_text}>
                     {moment(item?.start_date).format("DD-MM-YYYY")}
                   </CustomText>
-                </View>
+                </View> */}
 
                 {/* Distance */}
-                <View style={styles.infoRow}>
+                {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
                       as={MaterialCommunityIcons}
@@ -273,9 +233,9 @@ const LoadBoard = () => {
                   <CustomText style={styles.details_text}>
                     {item?.miles} miles
                   </CustomText>
-                </View>
+                </View> */}
 
-                <View style={styles.infoRow}>
+                {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
                         name="attach-money"
@@ -287,10 +247,10 @@ const LoadBoard = () => {
                   <CustomText numberOfLines={2} style={styles.details_text}>
                     {`${item?.total_rate} (total)` }
                   </CustomText>
-                </View>
+                </View> */}
 
                 {/* Rate */}
-                <View style={styles.infoRow}>
+                {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
                       as={FontAwesome}
@@ -302,10 +262,10 @@ const LoadBoard = () => {
                   <CustomText style={styles.details_text}>
                     {item?.rate}
                   </CustomText>
-                </View>
+                </View> */}
 
                 {/* Contact */}
-                <View style={styles.infoRow}>
+                {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
                       as={Ionicons}
@@ -317,10 +277,10 @@ const LoadBoard = () => {
                   <CustomText style={styles.details_text}>
                     {item?.contact}
                   </CustomText>
-                </View>
+                </View> */}
 
                 {/* Date */}
-                <View style={styles.infoRow}>
+                {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
                       as={Ionicons}
@@ -332,11 +292,10 @@ const LoadBoard = () => {
                   <CustomText style={styles.details_text}>
                     {moment(item?.created_at).format('l')}
                   </CustomText>
-                </View>
-
+                </View> */}
 
                 {/* Time Posted */}
-                <View style={styles.infoRow}>
+                {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
                       as={Entypo}
@@ -348,7 +307,7 @@ const LoadBoard = () => {
                   <CustomText style={styles.details_text}>
                     {moment(item?.created_at).format('LT')}
                   </CustomText>
-                </View>
+                </View> */}
               </TouchableOpacity>
             )}
           />
@@ -421,5 +380,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: moderateScale(10, 0.6),
+  },
+  load_more_btn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: windowWidth * 0.22,
+    backgroundColor: Color.secondary,
+    height: windowHeight * 0.03,
+    marginTop: moderateScale(8, 0.6),
+    borderRadius: 10,
   },
 });

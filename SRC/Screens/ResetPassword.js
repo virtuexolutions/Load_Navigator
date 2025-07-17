@@ -44,7 +44,6 @@ const ResetPassword = props => {
       password: values.password,
       confirm_password: values.confirmPassword,
     };
-    console.log("🚀 ~ data:", data)
     setIsLoading(true);
     const response = await Post(url, data, apiHeader());
     setIsLoading(false);

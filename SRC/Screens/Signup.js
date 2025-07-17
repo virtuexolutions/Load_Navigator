@@ -58,6 +58,7 @@ const Signup = props => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedState, setSelectedState] = useState("");
 
+  const [commnuicationMode, setCommunicationMode] = useState('call');
   const [selectedUserType, setSelectedUserType] = useState('');
   const [isSelected, setIsSelected] = useState(false);
 

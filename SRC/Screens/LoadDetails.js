@@ -10,7 +10,7 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {moderateScale} from 'react-native-size-matters';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import Modal from "react-native-modal";
+import Modal from 'react-native-modal';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {useSelector} from 'react-redux';
@@ -34,26 +34,23 @@ const LoadDetails = props => {
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
   const [isMiles, setIsMiles] = useState(false);
-  const [selectedRate, setSelectedRate] = useState('/miles');
+  const [selectedRate, setSelectedRate] = useState('/per miles');
   const [selectedSize, setSelectedSize] = useState('select type');
   const [isSize, setIsSize] = useState(false);
   const [weight, setWeight] = useState('');
   const [dimensions, setDimensions] = useState('');
 
   const HEIGHT_OPTIONS = [
-    'Under 8\'',
-    '8\' – 8\'6" (Standard)',
-    '9\'',
-    '10\'',
-    '11\'',
-    '12\'',
+    "Under 8'",
+    "8' – 8'6\" (Standard)",
+    "9'",
+    "10'",
+    "11'",
+    "12'",
     '13\'6" (Max Legal)',
     'Over 13\'6" (Oversize)',
     'Custom',
   ];
-
-  console.log('🚀 ~ selectedSize:', selectedSize);
-
   const [isLoading, setIsLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [locationType, setLocationType] = useState('');
@@ -65,12 +62,14 @@ const LoadDetails = props => {
   const [distance, setDistance] = useState('');
   const [title, setTitle] = useState(userData?.company_name);
   const [height, setHeight] = useState('');
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState('');
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [contact, setContact] = useState(userData?.contact);
   const [commnuicationMode, setCommunicationMode] = useState('call');
   const [totalRate, setTotalRate] = useState(0);
-  console.log("🚀 ~ commnuicationMode:", commnuicationMode)
+  const [fuelPrice, setFuelPrice] = useState(0);
+  const [tollPrice, setTollPrice] = useState(0);
+
   const [positions, setPositions] = useState([
     'lead',
     'chase',
@@ -172,7 +171,6 @@ const LoadDetails = props => {
     }
   }, [origin, destination]);
 
-
   const postALoad = async () => {
     const body = {
       origin: origin,
@@ -186,15 +184,15 @@ const LoadDetails = props => {
       company: title,
       height: height,
       communication_mode: commnuicationMode,
-      total_rate:totalRate.toFixed(2),
+      total_rate: totalRate.toFixed(2),
       start_date: new Date().toISOString(),
+      toll_price: tollPrice,
+      fuel_price: fuelPrice,
       // title: title,
       // weight: weight,
       // dimension: dimensions,
       // type: selectedSize,
     };
-    //  return   console.log("🚀 ~ postALoad ~ body:", JSON.stringify(body,null,2))
-
     const url = 'auth/load_detail';
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
@@ -218,17 +216,15 @@ const LoadDetails = props => {
     }
   };
 
-useEffect(() => {
-  console.log("🚀 ~ Rate: useEffect runs", Rate, totalRate , selectedRate?.toLocaleLowerCase() == "/km")
-  setTotalRate(
-    selectedRate?.toLowerCase() == "/km"
-    ? parseFloat(Rate) * distance 
-    : selectedRate?.toLowerCase() == "/miles"
-    ? parseFloat(Rate) * (distance * 0.621371)
-    : parseFloat(Rate)
-    )
-    console.log("🚀 ~ Rate: useEffect runs", Rate, totalRate)
-},[Rate, selectedRate]);
+  useEffect(() => {
+    setTotalRate(
+      selectedRate?.toLowerCase() == '/ per km'
+        ? parseFloat(Rate) * distance
+        : selectedRate?.toLowerCase() == '/ per miles'
+        ? parseFloat(Rate) * (distance * 0.621371)
+        : parseFloat(Rate),
+    );
+  }, [Rate, selectedRate]);
 
   return (
     <SafeAreaView style={styles.main_Container}>
@@ -550,11 +546,9 @@ useEffect(() => {
                 </TouchableOpacity>
               );
             })}
-
             <CustomText isBold style={styles.heading_text}>
               Phone Number
             </CustomText>
-
             <TextInputWithTitle
               placeholder={'Phone Number'}
               setText={setContact}
@@ -566,21 +560,24 @@ useEffect(() => {
               fontSize={moderateScale(10, 0.6)}
               borderRadius={30}
               backgroundColor={'transparent'}
-              borderColor={"#333333"}
+              borderColor={'#333333'}
               // color={Color.darkGray}
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
               titleStlye={{right: 10}}
             />
-<Checkbox colorScheme={"red"} value={commnuicationMode} onChange={(isSelected)=>{
-  setCommunicationMode(isSelected ? 'text-only' : 'call');
-}} my={2}>
-        Text-Only Communication
-      </Checkbox>
+            <Checkbox
+              colorScheme={'red'}
+              value={commnuicationMode}
+              onChange={isSelected => {
+                setCommunicationMode(isSelected ? 'text-only' : 'call');
+              }}
+              my={2}>
+              Text-Only Communication
+            </Checkbox>
             <CustomText isBold style={styles.heading_text}>
               Company Name
             </CustomText>
-
             <TextInputWithTitle
               placeholder={'Company Name'}
               setText={setTitle}
@@ -597,53 +594,46 @@ useEffect(() => {
               placeholderColor={Color.mediumGray}
               titleStlye={{right: 10}}
             />
-
-
             <CustomText isBold style={styles.heading_text}>
               Height
             </CustomText>
             <DropDownSingleSelect
-                array={HEIGHT_OPTIONS}
-                item={height}
-                setItem={setHeight}
-                width={windowWidth * 0.9}
-                // placeHolderColor={Color.darkGray}
-                // placeholder={'Ápproval for Admittance'}
-                placeholder={'Height'}
-                dropdownStyle={{
-                  borderBottomWidth: 0,
-                  width: windowWidth * 0.9,
-                  marginTop: 10,
-                }}
-                menuStyle={{    // backgroundColor:Color.red,
-                  // borderColor:Color.mediumGray,
-                  backgroundColor: Color.white,
-                  borderColor: Color.mediumGray,
-                  width: "79.5%",
-                  left:42,
-                  borderWidth:1,
-                  // marginBottom:10,
-                  overflow:"hidden",
-                  // marginTop:moderateScale(16,0.2),
-                  borderBottomRightRadius:moderateScale(15,0.2),
-                  borderBottomLeftRadius:moderateScale(15,0.2),
-                }}
-                  menuTextColor={Color.mediumGray}
-                  changeColorOnSelect={true}
-                btnStyle={{
-                  backgroundColor: 'transparent',
-                  height: windowHeight * 0.057,
-                  borderWidth:1,
-                  bordderColor: Color.white,
-                }}
-              />
-                          <CustomText isBold style={styles.heading_text}>
+              array={HEIGHT_OPTIONS}
+              item={height}
+              setItem={setHeight}
+              width={windowWidth * 0.9}
+              placeholder={'Height'}
+              dropdownStyle={{
+                borderBottomWidth: 0,
+                width: windowWidth * 0.9,
+                marginTop: 10,
+              }}
+              menuStyle={{
+                backgroundColor: Color.white,
+                borderColor: Color.mediumGray,
+                width: '79.5%',
+                left: 42,
+                borderWidth: 1,
+                overflow: 'hidden',
+                borderBottomRightRadius: moderateScale(15, 0.2),
+                borderBottomLeftRadius: moderateScale(15, 0.2),
+              }}
+              menuTextColor={Color.mediumGray}
+              changeColorOnSelect={true}
+              btnStyle={{
+                backgroundColor: 'transparent',
+                height: windowHeight * 0.057,
+                borderWidth: 1,
+                bordderColor: Color.white,
+              }}
+            />
+            <CustomText isBold style={styles.heading_text}>
               Start Date
             </CustomText>
             <TouchableOpacity
-              onPress={() => {
-                setShowCalendarModal(true);
-              }}
+              // onPress={() => {
+              //   setShowCalendarModal(true);
+              // }}
               style={styles.drop}>
               <View
                 style={{
@@ -658,7 +648,7 @@ useEffect(() => {
                       width: '70%',
                     },
                   ]}>
-                  {date}
+                  {date ? date : 'select a date '}
                 </CustomText>
                 <Icon
                   name="keyboard-arrow-down"
@@ -668,10 +658,73 @@ useEffect(() => {
                 />
               </View>
             </TouchableOpacity>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingVertical: moderateScale(10, 0.6),
+                width: windowWidth * 0.8,
+              }}>
+              <CustomButton
+                text={'today'}
+                onPress={() => {
+                  const toDate = new Date();
+                  toDate.toISOString().split('T')[0];
+                  setDate(toDate.toISOString().split('T')[0]);
+                }}
+                fontSize={moderateScale(14, 0.3)}
+                textColor={Color.white}
+                borderRadius={moderateScale(10, 0.3)}
+                width={windowWidth * 0.25}
+                marginTop={moderateScale(10, 0.3)}
+                height={windowHeight * 0.04}
+                bgColor={Color.secondary}
+                style={{
+                  alignSelf: 'flex-start',
+                }}
+                textTransform={'capitalize'}
+              />
+              <CustomButton
+                text={'tomorrow'}
+                onPress={() => {
+                  const tomorrow = new Date();
+                  tomorrow.setDate(tomorrow.getDate() + 1); // now it's a real Date object
+                  const formatted = tomorrow.toISOString().split('T')[0];
+                  setDate(formatted);
+                }}
+                fontSize={moderateScale(14, 0.3)}
+                textColor={Color.white}
+                borderRadius={moderateScale(10, 0.3)}
+                width={windowWidth * 0.25}
+                marginTop={moderateScale(10, 0.3)}
+                height={windowHeight * 0.04}
+                bgColor={Color.secondary}
+                style={{
+                  alignSelf: 'flex-start',
+                }}
+                textTransform={'capitalize'}
+              />
+              <CustomButton
+                text={'custom'}
+                onPress={() => {
+                  setShowCalendarModal(true);
+                }}
+                fontSize={moderateScale(14, 0.3)}
+                textColor={Color.white}
+                borderRadius={moderateScale(10, 0.3)}
+                width={windowWidth * 0.25}
+                marginTop={moderateScale(10, 0.3)}
+                height={windowHeight * 0.04}
+                bgColor={Color.secondary}
+                style={{
+                  alignSelf: 'flex-start',
+                }}
+                textTransform={'capitalize'}
+              />
+            </View>
             {/* <CustomText isBold style={styles.heading_text}>
               weight
             </CustomText> */}
-
             {/* <TextInputWithTitle
               placeholder={'Weight '}
               setText={setWeight}
@@ -787,10 +840,20 @@ useEffect(() => {
                 setIsMiles(!isMiles);
               }}
               style={styles.drop}>
+              <CustomText
+                style={{
+                  color: Color.mediumGray,
+
+                  position: 'absolute',
+                  left: 30,
+                  paddingTop: moderateScale(3, 0.6),
+                }}>
+                $
+              </CustomText>
               <TextInputWithTitle
-                placeholder={'$ 0'}
+                placeholder={'0'}
                 setText={setRate}
-                value={isNaN(Rate) ? "\$ 0" : `$${Rate}`}
+                value={Rate}
                 keyboardType={'numeric'}
                 viewHeight={0.07}
                 viewWidth={0.5}
@@ -804,7 +867,7 @@ useEffect(() => {
               <View
                 style={{
                   flexDirection: 'row',
-                  width: windowWidth * 0.15,
+                  width: windowWidth * 0.22,
                 }}>
                 <CustomText style={styles.drop_text}>{selectedRate}</CustomText>
                 <Icon
@@ -815,25 +878,83 @@ useEffect(() => {
                 />
               </View>
             </TouchableOpacity>
-            {isMiles && (
-              <TouchableOpacity
-                onPress={() => {
-                  setSelectedRate(selectedRate == '/miles' ? '/km' : '/miles');
-                }}
-                style={styles.drop_modal}>
-                <CustomText>
-                  {selectedRate == '/miles' ? '/km' : '/miles'}
-                </CustomText>
-              </TouchableOpacity>
-            )}
-<CustomText isBold style={styles.heading_text}>
-              Total Rate
+            <CustomText isBold style={styles.heading_text}>
+              fuel price
             </CustomText>
-
             <TextInputWithTitle
+              placeholder={'$ 0'}
+              setText={setFuelPrice}
+              value={fuelPrice}
+              keyboardType={'numeric'}
+              viewHeight={0.05}
+              viewWidth={0.9}
+              inputWidth={0.85}
+              borderRadius={30}
+              border={1}
+              backgroundColor={Color.white}
+              borderColor={Color.black}
+              placeholderColor={Color.mediumGray}
+              marginTop={moderateScale(10, 0.6)}
+            />
+            <CustomText isBold style={styles.heading_text}>
+              toll price
+            </CustomText>
+            <TextInputWithTitle
+              // title={'fuel price'}
+              placeholder={'$ 0'}
+              setText={setTollPrice}
+              value={tollPrice}
+              keyboardType={'numeric'}
+              viewHeight={0.05}
+              viewWidth={0.9}
+              inputWidth={0.85}
+              borderRadius={30}
+              border={1}
+              backgroundColor={Color.white}
+              borderColor={Color.black}
+              placeholderColor={Color.mediumGray}
+              marginTop={moderateScale(10, 0.6)}
+            />
+            {isMiles && (
+              <View
+                style={{
+                  borderWidth: 0.5,
+                  borderColor: Color.secondary,
+                  marginVertical: moderateScale(5, 0.6),
+                  borderRadius: moderateScale(10, 0.6),
+                }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setSelectedRate('/Hourly');
+                  }}
+                  style={styles.drop_modal}>
+                  <CustomText>Hourly</CustomText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    setSelectedRate('/flate rate');
+                  }}
+                  style={styles.drop_modal}>
+                  <CustomText>flat rate</CustomText>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    setSelectedRate('/per miles');
+                  }}
+                  style={styles.drop_modal}>
+                  <CustomText>per miles</CustomText>
+                </TouchableOpacity>
+              </View>
+            )}
+            {/* <CustomText isBold style={styles.heading_text}>
+              Total Rate
+            </CustomText> */}
+            {/* <TextInputWithTitle
               placeholder={'Total Rate'}
               setText={setTotalRate}
-              value={isNaN(totalRate) ? "0" : `$${totalRate.toFixed(2).toString(12)}`}
+              value={
+                isNaN(totalRate) ? '0' : `$${totalRate.toFixed(2).toString(12)}`
+              }
               keyboardType={'numeric'}
               viewHeight={0.06}
               viewWidth={0.9}
@@ -846,7 +967,7 @@ useEffect(() => {
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
               titleStlye={{right: 10}}
-            />
+            /> */}
             <CustomButton
               text={
                 isLoading ? (
@@ -891,58 +1012,55 @@ useEffect(() => {
             />
           </View>
           {/* // )} */}
-          <View
-          style={{height:windowHeight * 0.12}}/>
+          <View style={{height: windowHeight * 0.12}} />
         </ScrollView>
-        <Modal onBackdropPress={()=>{
-          setShowCalendarModal(false);
-        }}
-        style={{
-          alignItems: 'center',
-        }}
-        isVisible={showCalendarModal}
-        >
-
-            <Calendar
-              style={{
-                width: windowWidth * 0.8,
-                marginBottom: moderateScale(40, 0.3),
-                // backgroundColor : 'red'
-              }}
-              minDate={moment().format()}
-              onDayPress={day => {
-                setDate(day?.dateString);
-                setShowCalendarModal(false);
-              }}
-              theme={{
-                textSectionTitleColor: Color.secondary,
-                selectedDayBackgroundColor: Color.secondary,
-                selectedDayTextColor: Color.white,
-                todayTextColor: Color.secondary,
-                dayTextColor: Color.black,
-                dayTextColor: Color.black,
-                textDisabledColor: '#d9e1e8',
-                arrowColor: Color.secondary,
-                monthTextColor: Color.veryLightGray,
-                indicatorColor: Color.secondary,
-                textMonthFontWeight: 'bold',
-                textDayHeaderFontWeight: 'bold',
-                textDayFontSize: moderateScale(12, 0.3),
-                textMonthFontSize: moderateScale(16, 0.3),
-                textDayHeaderFontSize: moderateScale(14, 0.3),
-              }}
-              markedDates={{
-                ...{
-                  [date]: {
-                    selected: true,
-                    color: Color.secondary,
-                    textColor: '#000000',
-                    marked: true,
-                  },
+        <Modal
+          onBackdropPress={() => {
+            setShowCalendarModal(false);
+          }}
+          style={{
+            alignItems: 'center',
+          }}
+          isVisible={showCalendarModal}>
+          <Calendar
+            style={{
+              width: windowWidth * 0.8,
+              marginBottom: moderateScale(40, 0.3),
+              // backgroundColor : 'red'
+            }}
+            minDate={moment().format()}
+            onDayPress={day => {
+              setDate(day?.dateString);
+              setShowCalendarModal(false);
+            }}
+            theme={{
+              textSectionTitleColor: Color.secondary,
+              selectedDayBackgroundColor: Color.secondary,
+              selectedDayTextColor: Color.white,
+              todayTextColor: Color.secondary,
+              dayTextColor: Color.black,
+              dayTextColor: Color.black,
+              textDisabledColor: '#d9e1e8',
+              arrowColor: Color.secondary,
+              monthTextColor: Color.veryLightGray,
+              indicatorColor: Color.secondary,
+              textMonthFontWeight: 'bold',
+              textDayHeaderFontWeight: 'bold',
+              textDayFontSize: moderateScale(12, 0.3),
+              textMonthFontSize: moderateScale(16, 0.3),
+              textDayHeaderFontSize: moderateScale(14, 0.3),
+            }}
+            markedDates={{
+              ...{
+                [date]: {
+                  selected: true,
+                  color: Color.secondary,
+                  textColor: '#000000',
+                  marked: true,
                 },
-              }}
-            />
-          
+              },
+            }}
+          />
         </Modal>
         <SearchLocationModal
           locationType={locationType}
@@ -1018,8 +1136,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: moderateScale(19, 0.6),
     borderRadius: moderateScale(20, 0.6),
     borderColor: Color.darkGray,
-    borderWidth: 0.5,
-    marginVertical: moderateScale(5, 0.6),
+    // borderWidth: 0.5,
+    // marginVertical: moderateScale(5, 0.6),
     alignItems: 'flex-end',
     shadowColor: '#000',
   },

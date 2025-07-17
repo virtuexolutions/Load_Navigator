@@ -75,7 +75,7 @@ const LoginScreen = props => {
       dispatch(setSelectedRole(response?.data?.user_info?.role));
       dispatch(setUserData(response?.data?.user_info));
       dispatch(setUserToken({token: response?.data?.token}));
-      
+
       Platform.OS == 'android'
         ? ToastAndroid.show('Login Successfully', ToastAndroid.SHORT)
         : Alert.alert('Login Successfully');
@@ -124,52 +124,58 @@ const LoginScreen = props => {
           }}
         />
       </View>
-      <CustomText isBold style={[styles.text, {paddingVertical:0}]}>
-      {selectedUserType?.toLocaleLowerCase() == "trucking" ?  "Trucking Company" : selectedUserType?.toLocaleLowerCase() == "pilot" ? "Pilot Car" : ""}
-      </CustomText>
+      {/* <CustomText isBold style={[styles.text, {paddingVertical: 0}]}>
+        {selectedUserType?.toLocaleLowerCase() == 'trucking'
+          ? 'Trucking Company'
+          : selectedUserType?.toLocaleLowerCase() == 'pilot'
+          ? 'Pilot Car'
+          : ''}
+      </CustomText> */}
       <CustomText isBold style={styles.text}>
-         Login To Your Account
+        Login To Your Account
       </CustomText>
       <View>
         <>
-        <DropDownSingleSelect
-                array={["Pilot", "Trucking"]}
-                item={selectedUserType}
-                setItem={setSelectedUserType}
-                width={windowWidth * 0.85}
-                // placeHolderColor={Color.darkGray}
-                // placeholder={'Ápproval for Admittance'}
-                placeholder={'Select User Type'}
-                dropdownStyle={{
-                  borderBottomWidth: 0,
-                  width: windowWidth * 0.85,
-                  marginTop: 10,
-                }}
-                menuStyle={{    // backgroundColor:Color.red,
-                  // borderColor:Color.mediumGray,
-                  backgroundColor: Color.black,
-                  borderColor: Color.mediumGray,
-                  width: "79.5%",
-                  left:42,
-                  borderWidth:1,
-                  overflow:"hidden",
-                  marginTop:moderateScale(-6,0.2),
-                  // 
-                  // position:"absolute",
-                  // top:-10,
-                  // borderTopLeftRadius:moderateScale(5,0.2),
-                  // borderTopRightRadius:moderateScale(5,0.2),
-                  borderBottomRightRadius:moderateScale(15,0.2),
-                  borderBottomLeftRadius:moderateScale(15,0.2)}}
-                  menuTextColor={Color.mediumGray}
-                  changeColorOnSelect={true}
-                btnStyle={{
-                  backgroundColor: 'transparent',
-                  height: windowHeight * 0.057,
-                  borderWidth:1,
-                  bordderColor: Color.white,
-                }}
-              />
+          {/* <DropDownSingleSelect
+            array={['Pilot', 'Trucking']}
+            item={selectedUserType}
+            setItem={setSelectedUserType}
+            width={windowWidth * 0.85}
+            // placeHolderColor={Color.darkGray}
+            // placeholder={'Ápproval for Admittance'}
+            placeholder={'Select User Type'}
+            dropdownStyle={{
+              borderBottomWidth: 0,
+              width: windowWidth * 0.85,
+              marginTop: 10,
+            }}
+            menuStyle={{
+              // backgroundColor:Color.red,
+              // borderColor:Color.mediumGray,
+              backgroundColor: Color.black,
+              borderColor: Color.mediumGray,
+              width: '79.5%',
+              left: 42,
+              borderWidth: 1,
+              overflow: 'hidden',
+              marginTop: moderateScale(-6, 0.2),
+              //
+              // position:"absolute",
+              // top:-10,
+              // borderTopLeftRadius:moderateScale(5,0.2),
+              // borderTopRightRadius:moderateScale(5,0.2),
+              borderBottomRightRadius: moderateScale(15, 0.2),
+              borderBottomLeftRadius: moderateScale(15, 0.2),
+            }}
+            menuTextColor={Color.mediumGray}
+            changeColorOnSelect={true}
+            btnStyle={{
+              backgroundColor: 'transparent',
+              height: windowHeight * 0.057,
+              borderWidth: 1,
+              bordderColor: Color.white,
+            }}
+          /> */}
           {/* <TouchableOpacity
             onPress={() => {
               setIsSelected(!isSelected);
@@ -280,7 +286,7 @@ const LoginScreen = props => {
             placeholderColor={Color.mediumGray}
             titleStlye={{right: 10}}
           />
-       
+
           <CustomText
             onPress={() => {
               navigation.navigate('VerifyEmail');
@@ -365,7 +371,7 @@ const styles = StyleSheet.create({
     width: windowWidth * 0.7,
     textAlign: 'center',
   },
- 
+
   forgotpassword: {
     fontSize: moderateScale(10, 0.6),
     color: Color.white,
