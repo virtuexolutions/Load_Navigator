@@ -7,12 +7,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import React, { useEffect, useRef, useState } from 'react';
+import { windowHeight, windowWidth } from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
-import {moderateScale} from 'react-native-size-matters';
+import { moderateScale } from 'react-native-size-matters';
 import CustomText from '../Components/CustomText';
-import {Icon} from 'native-base';
+import { Icon } from 'native-base';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -21,10 +21,10 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Header from '../Components/Header';
 import navigationService from '../navigationService';
-import {Get} from '../Axios/AxiosInterceptorFunction';
-import {useSelector} from 'react-redux';
-import {useIsFocused} from '@react-navigation/native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { Get } from '../Axios/AxiosInterceptorFunction';
+import { useSelector } from 'react-redux';
+import { useIsFocused } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import moment from 'moment';
 import BottomSheet from '../Components/BottomSheet';
 import LeadBoardCard from '../Components/LeadBoardCard';
@@ -102,21 +102,21 @@ const ViewLeadBoard = () => {
 
   useEffect(() => {
     getLoadList();
-  }, [selectedOrigin ,selectedDestination]);
+  }, [selectedOrigin, selectedDestination]);
 
   return (
     <SafeAreaView
       // scrollEnabled={false}
       style={styles.mainScreen}
-      //   conltentContainerStyle={{
-      //     aignItems: 'center',
-      //   }}
+    //   conltentContainerStyle={{
+    //     aignItems: 'center',
+    //   }}
     >
       <View style={styles.main_view}>
         <Header
           title="View Leader Board"
           headerColor={'transparent'}
-          textstyle={{color: Color.white}}
+          textstyle={{ color: Color.white }}
           showBack
           menu
         />
@@ -127,6 +127,7 @@ const ViewLeadBoard = () => {
             justifyContent: 'space-between',
             paddingHorizontal: moderateScale(20, 0.6),
           }}>
+
           <View>
             <CustomText
               style={{
@@ -238,7 +239,7 @@ const ViewLeadBoard = () => {
               paddingBottom: moderateScale(70, 0.6),
             }}
             data={leaderData}
-            renderItem={({item, index}) => {
+            renderItem={({ item, index }) => {
               return <LeadBoardCard item={item} />;
             }}
           />
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
     aignItems: 'center',
   },
   main_view: {
-    // paddingHorizontal: moderateScale(20, 0.6),
+    paddingHorizontal: moderateScale(10, 0.6),
     // paddingVertical: moderateScale(30, 0.6),
   },
   heading: {
