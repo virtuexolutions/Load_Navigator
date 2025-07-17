@@ -33,6 +33,7 @@ import { SetUserRole } from '../Store/slices/auth';
 
 const Signup = props => {
   const selectedArea = props?.route?.params?.selectedArea;
+  console.log("🚀 ~ selectedArea:", selectedArea)
 
   const role = useSelector(state => state.authReducer.role);
 
@@ -45,7 +46,7 @@ const Signup = props => {
   const [email, setEmail] = useState('');
   const [Contact, setContact] = useState('');
   const [company, setcompany] = useState('');
-  const [userAddress, setUserAddress] = useState({});
+  const [userAddress, setUserAddress] = useState('');
   const [mcNumber, setmcNumber] = useState('');
   const [dotNumber, setdotNumber] = useState('');
   const [password, setpassword] = useState('');
@@ -57,9 +58,10 @@ const Signup = props => {
   const [CarDirectory, setCarDirectory] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedState, setSelectedState] = useState("");
+  console.log("🚀 ~ selectedState:", selectedState)
 
   const [commnuicationMode, setCommunicationMode] = useState('call');
-  const [selectedUserType, setSelectedUserType] = useState('');
+  const [selectedUserType, setSelectedUserType] = useState('Driver/Escort');
   const [isSelected, setIsSelected] = useState(false);
 
   const onPressregister = async values => {
@@ -67,9 +69,9 @@ const Signup = props => {
       first_name: firstName,
       last_name: LastName,
       email: email,
-      contact: Contact,
+      contact: `+1${Contact}`,
       company_name: company,
-      address: userAddress?.name,
+      address: userAddress,
       dot_number: dotNumber,
       mc_number: mcNumber,
       password: password,
@@ -78,15 +80,15 @@ const Signup = props => {
       agree_to_terms: Policy,
       selected_area: selectedArea,
       // role: selectedUserType == 'Company' && 'Company',
-      role: selectedUserType,
-      // state: selectedState?.label,
-      state: selectedState,
+      role: selectedUserType == 'Driver/Escort' ? 'Pilot' : 'Truck',
+      state: selectedState?.label,
+      // state: selectedState,
     };
     const body1 = {
       first_name: firstName,
       last_name: LastName,
       email: email,
-      contact: Contact,
+      contact: `+1${Contact}`,
       company_name: company,
       password: password,
       confirm_password: confirmPassword,
@@ -96,14 +98,14 @@ const Signup = props => {
       car_certificate: InsuranceCertificate,
       includeme_car_directory: CarDirectory,
       selected_area: selectedArea,
-      role: selectedUserType,
+ role: selectedUserType == 'Driver/Escort' ? 'Pilot' : 'Truck',
       // role: selectedUserType == 'pilot' && 'Pilot',
       address: userAddress?.name,
-      state: selectedState,
-      // state: selectedState?.label,
+      // state: selectedState,
+      state: selectedState?.label,
     };
 // return console.log("body === > ", JSON.stringify(body, null, 2));
-    for (let key in selectedUserType == 'Trucking' ? body : body1) {
+    for (let key in selectedUserType == 'Load Manager' ? body : body1) {
       if (body[key] == '') {
         return Platform.OS == 'android'
           ? ToastAndroid.show(` ${key} field is empty`, ToastAndroid.SHORT)
@@ -114,7 +116,7 @@ const Signup = props => {
     setIsLoading(true);
     const response = await Post(
       url,
-      selectedUserType == 'Company' ? body : body1,
+      selectedUserType == 'Load Manager' ? body : body1,
       apiHeader(),
     );
     setIsLoading(false);
@@ -165,7 +167,7 @@ const Signup = props => {
           </CustomText>
           <CustomText
             style={{
-              color: Color.white,
+              color: Color.red,
               width: windowWidth * 0.9,
               fontSize: moderateScale(9, 0.6),
               textAlign: 'center',
@@ -254,7 +256,7 @@ const Signup = props => {
             </View>
           )} */}
   <DropDownSingleSelect
-                array={["Pilot", "Trucking"]}
+                array={["Driver/Escort", "Load Manager"]}
                 item={selectedUserType}
                 setItem={setSelectedUserType}
                 width={windowWidth * 0.9}
@@ -343,9 +345,10 @@ const Signup = props => {
             marginTop={moderateScale(10, 0.3)}
             placeholderColor={Color.mediumGray}
             titleStlye={{right: 10}}
+             keyboardType={'email-address'}
           />
           <TextInputWithTitle
-            placeholder={'Phone'}
+            placeholder={'Phone no (1231231234)'}
             setText={setContact}
             value={Contact}
             viewHeight={0.06}
@@ -359,6 +362,7 @@ const Signup = props => {
             placeholderColor={Color.mediumGray}
             titleStlye={{right: 10}}
             maxLength={12}
+            keyboardType={'numeric'}
           />
           <TextInputWithTitle
             placeholder={'Comapny Name'}
@@ -375,7 +379,22 @@ const Signup = props => {
             placeholderColor={Color.mediumGray}
             titleStlye={{right: 10}}
           />
-          <TouchableOpacity
+           <TextInputWithTitle
+            placeholder={'Address'}
+            setText={setUserAddress}
+            value={userAddress}
+            viewHeight={0.06}
+            viewWidth={0.93}
+            inputWidth={0.83}
+            border={1}
+            borderRadius={30}
+            backgroundColor={'transparent'}
+            borderColor={Color.white}
+            marginTop={moderateScale(10, 0.3)}
+            placeholderColor={Color.mediumGray}
+            titleStlye={{right: 10}}
+          />
+          {/* <TouchableOpacity
             onPress={() => {
               setIsModalVisible(true);
             }}
@@ -388,8 +407,8 @@ const Signup = props => {
               }}>
               {userAddress?.name ? userAddress?.name : 'Address'}
             </CustomText>
-          </TouchableOpacity>
-          <View
+          </TouchableOpacity> */}
+          {/* <View
 
             style={styles.address_btn}>
             <CustomText
@@ -400,15 +419,15 @@ const Signup = props => {
               }}>
               {selectedState ? selectedState : 'State'}
             </CustomText>
-          </View>
+          </View> */}
 
-          {/* <CountryStatePicker
-            country={selectedArea == 'Sign Up For Canada' ? 'USA' : 'Canada'}
+          <CountryStatePicker
+            country={selectedArea == 'Sign Up For Canada' ? 'Canada' : 'USA'}
             setSelectedState={setSelectedState}
             selectedState={selectedState}
-          /> */}
+          />
 
-          {selectedUserType != 'Pilot' && (
+          {selectedUserType != 'Driver/Escort' && (
             <TextInputWithTitle
               placeholder={'Dot Number'}
               setText={setdotNumber}
@@ -425,7 +444,7 @@ const Signup = props => {
               titleStlye={{right: 10}}
             />
           )}
-          {selectedUserType != 'Pilot' && (
+          {selectedUserType != 'Driver/Escort' && (
             <TextInputWithTitle
               placeholder={'Mc Number'}
               setText={setmcNumber}
@@ -491,7 +510,7 @@ const Signup = props => {
             }}>
             Password Must Be At Least 8 Characters Long
           </CustomText>
-          {selectedUserType == 'Pilot' && (
+          {selectedUserType == 'Driver/Escort' && (
             <TouchableOpacity
               onPress={() => {
                 setCarDirectory(!CarDirectory);
@@ -529,7 +548,7 @@ const Signup = props => {
               </CustomText>
             </TouchableOpacity>
           )}
-          {selectedUserType == 'Pilot' && (
+          {selectedUserType == 'Driver/Escort' && (
             <TouchableOpacity
               onPress={() => {
                 setInsuranceCertificate(!InsuranceCertificate);
@@ -570,7 +589,7 @@ const Signup = props => {
             </TouchableOpacity>
           )}
 
-          {selectedUserType == 'Pilot' && (
+          {selectedUserType == 'Driver/Escort' && (
             <TextInputWithTitle
               placeholder={'Years Of Experience'}
               setText={setExperience}
@@ -654,7 +673,7 @@ const Signup = props => {
                 marginHorizontal: moderateScale(5, 0.6),
                 lineHeight: moderateScale(10, 0.6),
               }}>
-              {selectedUserType == 'Pilot'
+              {selectedUserType == 'Driver/Escort'
                 ? 'I Agree To The Terms Of Use, Privacy Policy, And Cookies Policy. You May Receive SMS & Email Notifications From Us And Can Opt Out Any Time.'
                 : 'I Agree To The Terms Of Use, Privacy Policy, And Cookies Policy.'}
             </CustomText>
@@ -701,14 +720,14 @@ const Signup = props => {
               navigation.goBack();
             }}
           />
-          <SearchLocationModal
+          {/* <SearchLocationModal
             locationType={'address'}
             isModalVisible={isModalVisible}
             setIsModalVisible={setIsModalVisible}
             setUserAddress={setUserAddress}
             userAddress={userAddress}
             setState={setSelectedState}
-          />
+          /> */}
         </ScrollView>
       </ImageBackground>
     </SafeAreaView>
