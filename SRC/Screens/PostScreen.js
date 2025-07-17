@@ -5,22 +5,23 @@ import {
   Text,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import React, { useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../Components/Header';
 import CustomStatusBar from '../Components/CustomStatusBar';
-import {moderateScale} from 'react-native-size-matters';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import { moderateScale } from 'react-native-size-matters';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
 import CustomButton from '../Components/CustomButton';
 import CustomText from '../Components/CustomText';
 import moment from 'moment';
-import {useSelector} from 'react-redux';
-import {Post, Put} from '../Axios/AxiosInterceptorFunction';
+import { useSelector } from 'react-redux';
+import { Post, Put } from '../Axios/AxiosInterceptorFunction';
 import navigationService from '../navigationService';
 
 const PostScreen = props => {
   const data = props?.route?.params?.item;
+  console.log("🚀 ~ data:", data)
   const token = useSelector(state => state.authReducer.token);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -49,7 +50,7 @@ const PostScreen = props => {
         <Header
           title="Post"
           headerColor={Color.secondary}
-          textstyle={{color: Color.white}}
+          textstyle={{ color: Color.white }}
           showBack
         />
         <CustomStatusBar
@@ -72,6 +73,16 @@ const PostScreen = props => {
               paddingHorizontal: moderateScale(20, 0.6),
               paddingVertical: moderateScale(25, 0.6),
             }}>
+
+            <CustomText isBold
+              style={{
+                fontSize: moderateScale(20, 0.6),
+                color: Color.black,
+                marginVertical: moderateScale(10, 0.6)
+              }}>
+              {data?.company}
+            </CustomText>
+
             <CustomText
               style={{
                 fontSize: moderateScale(15, 0.6),

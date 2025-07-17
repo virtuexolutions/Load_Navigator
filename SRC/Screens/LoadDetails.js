@@ -1,5 +1,5 @@
-import {Checkbox, Icon} from 'native-base';
-import React, {useEffect, useState} from 'react';
+import { Checkbox, Icon } from 'native-base';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -7,23 +7,23 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {moderateScale} from 'react-native-size-matters';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { moderateScale } from 'react-native-size-matters';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Modal from 'react-native-modal';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import { Post } from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText';
-import {Calendar} from 'react-native-calendars';
+import { Calendar } from 'react-native-calendars';
 import Header from '../Components/Header';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
 import navigationService from '../navigationService';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 import SearchLocationModal from '../Components/SearchLocationModal';
 import haversine from 'haversine-distance';
 import DropDownSingleSelect from '../Components/DropDownSingleSelect';
@@ -49,8 +49,8 @@ const LoadDetails = props => {
     "11'",
     "12'",
     '13\'6" (Max Legal)',
-    'Over 13\'6" (Oversize)',
     'Custom',
+    'Over 13\'6" (Oversize)',
   ];
   const [isLoading, setIsLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -62,6 +62,7 @@ const LoadDetails = props => {
   const [selectedRequirement, setSelectedRequirement] = useState([]);
   const [distance, setDistance] = useState('');
   const [title, setTitle] = useState(userData?.company_name);
+  const [customHeight, setCustomHeight] = useState();
   const [height, setHeight] = useState('');
   const [date, setDate] = useState('');
   const [showCalendarModal, setShowCalendarModal] = useState(false);
@@ -183,7 +184,7 @@ const LoadDetails = props => {
       miles: distance,
       contact: contact,
       company: title,
-      height: height,
+      height: height === 'Custom' ? customHeight : height,
       communication_mode: commnuicationMode,
       total_rate: totalRate.toFixed(2),
       start_date: new Date().toISOString(),
@@ -222,8 +223,8 @@ const LoadDetails = props => {
       selectedRate?.toLowerCase() == '/ per km'
         ? parseFloat(Rate) * distance
         : selectedRate?.toLowerCase() == '/ per miles'
-        ? parseFloat(Rate) * (distance * 0.621371)
-        : parseFloat(Rate),
+          ? parseFloat(Rate) * (distance * 0.621371)
+          : parseFloat(Rate),
     );
   }, [Rate, selectedRate]);
 
@@ -233,7 +234,7 @@ const LoadDetails = props => {
         <Header
           title="load details"
           headerColor={Color.secondary}
-          textstyle={{color: Color.white}}
+          textstyle={{ color: Color.white }}
           showBack
           menu
         />
@@ -498,7 +499,7 @@ const LoadDetails = props => {
               isBold
               style={[
                 styles.heading_text,
-                {marginBottom: moderateScale(10, 0.6)},
+                { marginBottom: moderateScale(10, 0.6) },
               ]}>
               Additional requirements
             </CustomText>
@@ -564,8 +565,9 @@ const LoadDetails = props => {
               borderColor={'#333333'}
               // color={Color.darkGray}
               marginTop={moderateScale(10, 0.3)}
+              keyboardType={'numeric'}
               placeholderColor={Color.mediumGray}
-              titleStlye={{right: 10}}
+              titleStlye={{ right: 10 }}
             />
             <Checkbox
               colorScheme={'red'}
@@ -593,7 +595,7 @@ const LoadDetails = props => {
               borderColor={Color.darkGray}
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
-              titleStlye={{right: 10}}
+              titleStlye={{ right: 10 }}
             />
             <CustomText isBold style={styles.heading_text}>
               Height
@@ -608,7 +610,7 @@ const LoadDetails = props => {
                 borderBottomWidth: 0,
                 width: windowWidth * 0.9,
                 marginTop: 10,
-                borderRadius : 10
+                borderRadius: 10
               }}
               menuStyle={{
                 backgroundColor: Color.white,
@@ -617,8 +619,6 @@ const LoadDetails = props => {
                 left: 42,
                 borderWidth: 1,
                 overflow: 'hidden',
-                // borderBottomRightRadius: moderateScale(15, 0.2),
-                // borderBottomLeftRadius: moderateScale(15, 0.2),
               }}
               menuTextColor={Color.mediumGray}
               changeColorOnSelect={true}
@@ -627,9 +627,28 @@ const LoadDetails = props => {
                 height: windowHeight * 0.057,
                 borderWidth: 1,
                 bordderColor: Color.white,
-                borderRadius : 10
+                borderRadius: 10
               }}
             />
+            {height === 'Custom' && (
+              <TextInputWithTitle
+                placeholder={'Enter Height'}
+                setText={setCustomHeight}
+                value={customHeight}
+                viewHeight={0.06}
+                viewWidth={0.9}
+                inputWidth={0.82}
+                border={1}
+                fontSize={moderateScale(10, 0.6)}
+                borderRadius={10}
+                backgroundColor={'transparent'}
+                borderColor={Color.darkGray}
+                marginTop={moderateScale(10, 0.3)}
+                placeholderColor={Color.mediumGray}
+                titleStlye={{ right: 10 }}
+                keyboardType={'numeric'}
+              />
+            )}
             <CustomText isBold style={styles.heading_text}>
               Start Date
             </CustomText>
@@ -675,7 +694,7 @@ const LoadDetails = props => {
                   toDate.toISOString().split('T')[0];
                   setDate(toDate.toISOString().split('T')[0]);
                 }}
-                fontSize={moderateScale(14, 0.3)}
+                fontSize={moderateScale(12, 0.3)}
                 textColor={Color.white}
                 borderRadius={moderateScale(10, 0.3)}
                 width={windowWidth * 0.25}
@@ -695,7 +714,7 @@ const LoadDetails = props => {
                   const formatted = tomorrow.toISOString().split('T')[0];
                   setDate(formatted);
                 }}
-                fontSize={moderateScale(14, 0.3)}
+                fontSize={moderateScale(12, 0.3)}
                 textColor={Color.white}
                 borderRadius={moderateScale(10, 0.3)}
                 width={windowWidth * 0.25}
@@ -712,7 +731,7 @@ const LoadDetails = props => {
                 onPress={() => {
                   setShowCalendarModal(true);
                 }}
-                fontSize={moderateScale(14, 0.3)}
+                fontSize={moderateScale(12, 0.3)}
                 textColor={Color.white}
                 borderRadius={moderateScale(10, 0.3)}
                 width={windowWidth * 0.25}
@@ -1022,7 +1041,7 @@ const LoadDetails = props => {
             />
           </View>
           {/* // )} */}
-          <View style={{height: windowHeight * 0.12}} />
+          <View style={{ height: windowHeight * 0.12 }} />
         </ScrollView>
         <Modal
           onBackdropPress={() => {

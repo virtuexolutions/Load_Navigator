@@ -1,6 +1,6 @@
-import {useNavigation} from '@react-navigation/native';
-import {Formik} from 'formik';
-import React, {useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { Formik } from 'formik';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -10,23 +10,24 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {ScaledSheet, moderateScale} from 'react-native-size-matters';
-import {useDispatch, useSelector} from 'react-redux';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScaledSheet, moderateScale } from 'react-native-size-matters';
+import { useDispatch, useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import { Post } from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import {changePasswordSchema} from '../Constant/schema';
+import { changePasswordSchema } from '../Constant/schema';
 import navigationService from '../navigationService';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 import CountryStatePicker from '../Components/CountryStatePicker';
 import SearchLocationModal from '../Components/SearchLocationModal';
-import {Checkbox} from 'native-base';
-import {setUserData} from '../Store/slices/common';
+import { Checkbox, Icon } from 'native-base';
+import { setUserData } from '../Store/slices/common';
+import AntDesign from 'react-native-vector-icons/AntDesign'
 const Profile = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -46,6 +47,7 @@ const Profile = () => {
   const [userAddress, setUserAddress] = useState(userData?.address || '');
   const [selectedState, setSelectedState] = useState(userData?.state || '');
   const [Experience, setExperience] = useState(userData?.experience || '');
+  const [phoneError, setPhoneError] = useState('')
   const [selectedCountry, setSelectedCountry] = useState(
     userData?.selected_area == 'Sign Up For Canada' ? 'Canada' : 'USA',
   );
@@ -53,6 +55,53 @@ const Profile = () => {
   const [InsuranceCertificate, setInsuranceCertificate] = useState(
     userData?.car_certificate || '',
   );
+  const [selectedPosition, setSelectedPosition] = useState([]);
+
+
+  const positionOptions = [
+    {
+      id: 1,
+      text: 'Lead',
+    },
+    {
+      id: 2,
+      text: 'Chase',
+      key: 'chase',
+    },
+    {
+      id: 3,
+      text: 'High Pole',
+      key: 'pole',
+    },
+    {
+      id: 4,
+      text: 'Steer',
+      key: 'steer',
+    },
+    {
+      id: 5,
+      text: 'Route Survey',
+      key: 'survey',
+    },
+    {
+      id: 6,
+      text: 'Third Car',
+      key: 'thirdCar',
+    },
+    {
+      id: 7,
+      text: 'Fourth Car',
+      key: 'fourthCar',
+    },
+  ];
+
+
+  const isValidCanadianNumber = (phone) => {
+    const regex = /^\+1\d{10}$/;
+    return regex.test(phone);
+  };
+
+
 
   // const updateProfile = async () => {
   //   const body = {
@@ -78,7 +127,7 @@ const Profile = () => {
   //   };
   //   const response = await Post(
   //     url,
-  //     userData?.role.toLowerCase() == 'pilot' ? body1 : body,
+  //     userData?.role== 'pilot' ? body1 : body,
   //     apiHeader(token),
   //   );
   //   if (response != undefined) {
@@ -109,7 +158,7 @@ const Profile = () => {
   //     state: selectedState,
   //   };
   //   return console.log("body === > ", JSON.stringify(body1, null, 2));
-  //   for (let key in userData?.role.toLowerCase() == 'pilot' ? body1 : body) {
+  //   for (let key in userData?.role== 'pilot' ? body1 : body) {
   //     if (body[key] == '') {
   //       return Platform.OS == 'android'
   //       ? ToastAndroid.show(` ${key} field is empty`, ToastAndroid.SHORT)
@@ -137,6 +186,7 @@ const Profile = () => {
       address: userAddress?.name,
       // role: selectedUserType,
       state: selectedState,
+      escort_positions: []
     };
 
     const body1 = {
@@ -149,9 +199,10 @@ const Profile = () => {
       includeme_car_directory: includeme,
       address: userAddress,
       state: selectedState,
+      escort_positions: selectedPosition
     };
 
-    const isPilot = userData?.role.toLowerCase() === 'pilot';
+    const isPilot = userData?.role === 'pilot';
     const selectedBody = isPilot ? body1 : body;
 
     console.log('body === > ', JSON.stringify(selectedBody, null, 2)); // ✅
@@ -167,6 +218,7 @@ const Profile = () => {
     const url = 'auth/profile';
     setIsLoading(true);
     const response = await Post(url, selectedBody, apiHeader(token));
+    console.log(response?.data, '============================>')
     setIsLoading(false);
 
     if (response?.data !== undefined) {
@@ -186,7 +238,7 @@ const Profile = () => {
         styles.main_view,
         {
           backgroundColor:
-            userData?.role.toLowerCase() == 'pilot'
+            userData?.role == 'pilot'
               ? Color.primary
               : Color.secondary,
         },
@@ -194,11 +246,11 @@ const Profile = () => {
       <Header
         title="Profile"
         headerColor={
-          userData?.role?.toLowerCase() == 'pilot'
+          userData?.role == 'pilot'
             ? Color.primary
             : Color.secondary
         }
-        textstyle={{color: Color.white}}
+        textstyle={{ color: Color.white }}
         showBack
         menu
       />
@@ -211,7 +263,7 @@ const Profile = () => {
           styles.mainScreen,
           {
             backgroundColor:
-              userData?.role.toLowerCase() == 'pilot'
+              userData?.role == 'pilot'
                 ? Color.primary
                 : Color.white,
           },
@@ -222,12 +274,12 @@ const Profile = () => {
             paddingBottom: moderateScale(70, 0.6),
           }}
           style={styles.text_input}>
-          {userData?.role?.toLowerCase() == 'pilot' ? (
+          {userData?.role == 'pilot' ? (
             <>
               <TextInputWithTitle
                 titleStlye={{
                   color:
-                    userData?.role.toLowerCase() == 'pilot'
+                    userData?.role == 'pilot'
                       ? Color.white
                       : Color.black,
                 }}
@@ -251,7 +303,7 @@ const Profile = () => {
               <TextInputWithTitle
                 titleStlye={{
                   color:
-                    userData?.role.toLowerCase() == 'pilot'
+                    userData?.role == 'pilot'
                       ? Color.white
                       : Color.black,
                 }}
@@ -278,7 +330,7 @@ const Profile = () => {
               <TextInputWithTitle
                 titleStlye={{
                   color:
-                    userData?.role.toLowerCase() == 'pilot'
+                    userData?.role == 'pilot'
                       ? Color.white
                       : Color.black,
                 }}
@@ -305,7 +357,7 @@ const Profile = () => {
           <TextInputWithTitle
             titleStlye={{
               color:
-                userData?.role.toLowerCase() == 'pilot'
+                userData?.role == 'pilot'
                   ? Color.white
                   : Color.black,
             }}
@@ -330,14 +382,23 @@ const Profile = () => {
           <TextInputWithTitle
             titleStlye={{
               color:
-                userData?.role.toLowerCase() == 'pilot'
+                userData?.role == 'pilot'
                   ? Color.white
                   : Color.black,
             }}
             title={'Contact'}
             titleText={'Contact'}
             placeholder={'Contact'}
-            setText={setContact}
+            setText={(text) => {
+              setContact(text);
+              if (text.length === 0) {
+                setPhoneError('Phone number is required');
+              } else if (!isValidCanadianNumber(text)) {
+                setPhoneError('Enter valid Canadian number e.g. +1XXXXXXXXXX');
+              } else {
+                setPhoneError('');
+              }
+            }}
             value={Contact}
             secureText={false}
             viewHeight={0.06}
@@ -350,8 +411,13 @@ const Profile = () => {
             marginTop={moderateScale(10, 0.3)}
             color={Color.black}
             placeholderColor={Color.veryLightGray}
-            // disabled
+          // disabled
           />
+          {phoneError !== '' && (
+            <CustomText style={{ color: 'red', marginTop: 5, marginLeft: 15, textAlign: 'left', width: '90%', fontSize: moderateScale(9, 0.6) }}>
+              {phoneError}
+            </CustomText>
+          )}
           <CustomText
             style={{
               fontSize: moderateScale(12, 0.6),
@@ -359,7 +425,7 @@ const Profile = () => {
               width: windowWidth * 0.68,
               paddingTop: moderateScale(10, 0.6),
               color:
-                userData?.role.toLowerCase() == 'pilot'
+                userData?.role == 'pilot'
                   ? Color.white
                   : Color.black,
             }}>
@@ -384,7 +450,7 @@ const Profile = () => {
             style={{
               // alignSelf: 'flex-start',
               color:
-                userData?.role?.toLowerCase() == 'pilot'
+                userData?.role == 'pilot'
                   ? Color.white
                   : Color.darkGray,
               paddingVertical: moderateScale(10, 0.6),
@@ -411,11 +477,11 @@ const Profile = () => {
               {selectedState}
             </CustomText>
           </View>
-          {userData?.role.toLowerCase() == 'pilot' && (
+          {userData?.role == 'pilot' && (
             <TextInputWithTitle
               titleStlye={{
                 color:
-                  userData?.role.toLowerCase() == 'pilot'
+                  userData?.role == 'pilot'
                     ? Color.white
                     : Color.black,
               }}
@@ -433,13 +499,74 @@ const Profile = () => {
               borderColor={'#000'}
               backgroundColor={Color.white}
               marginTop={moderateScale(10, 0.3)}
+              marginBottom={moderateScale(10, 0.6)}
               color={Color.black}
               placeholderColor={Color.veryLightGray}
-              // disabled
+            // disabled
             />
           )}
-          {userData?.role.toLowerCase() == 'pilot' && (
+          {userData?.role == 'pilot' && (
             <>
+              <CustomText
+                isBold
+                style={{
+                  // alignSelf: 'flex-start',
+                  color:
+                    userData?.role == 'pilot'
+                      ? Color.white
+                      : Color.darkGray,
+                  paddingVertical: moderateScale(10, 0.6),
+                  width: windowWidth * 0.68,
+                }}>
+                Select Escort Position
+              </CustomText>
+              {positionOptions?.map(item => {
+                const isActive = selectedPosition?.includes(item?.text);
+                return (
+                  <TouchableOpacity
+                    key={item.id}
+                    onPress={() => {
+                      if (selectedPosition?.includes(item?.text)) {
+                        setSelectedPosition(prev =>
+                          prev.filter(pos => pos !== item?.text),
+                        );
+                      } else {
+                        setSelectedPosition(prev => [...prev, item?.text]);
+                      }
+                    }}
+                    style={[
+                      styles.row_view,
+                      {
+                        width: windowWidth * 0.8,
+                        alignItems: 'flex-start',
+                        justifyContent: 'flex-start',
+                        marginBottom: moderateScale(7, 0.6),
+                        marginLeft: moderateScale(10, 0.6),
+                      },
+                    ]}>
+                    <View
+                      style={[
+                        styles.box,
+                        {
+                          borderWidth: 1,
+                          borderColor: isActive ? Color.secondary : 'black',
+                          backgroundColor: isActive
+                            ? Color.secondary
+                            : Color.white,
+                        },
+                      ]}>
+                      <Icon
+                        name="check"
+                        as={AntDesign}
+                        size={moderateScale(14, 0.6)}
+                        color={Color.white}
+                      />
+                    </View>
+                    <CustomText style={styles.text}>{item.text}</CustomText>
+                  </TouchableOpacity>
+
+                );
+              })}
               <Checkbox
                 style={{
                   alignItems: 'flex-start',
@@ -449,7 +576,7 @@ const Profile = () => {
                 onChange={isSelected => {
                   setIncludeMe(!includeme);
                 }}
-                _text={{color: Color.white, fontSize: moderateScale(13, 0.6)}}
+                _text={{ color: Color.white, fontSize: moderateScale(13, 0.6) }}
                 my={2}>
                 Include Me In The Pilot Car Directory {'         '}
               </Checkbox>
@@ -459,7 +586,7 @@ const Profile = () => {
                 onChange={isSelected => {
                   setInsurance(!Insurance);
                 }}
-                _text={{color: Color.white, fontSize: moderateScale(13, 0.6)}}
+                _text={{ color: Color.white, fontSize: moderateScale(13, 0.6) }}
                 my={2}
                 style={{
                   color: 'white',
@@ -472,7 +599,7 @@ const Profile = () => {
             style_dropDown={{
               height: windowHeight * 0.06,
               backgroundColor:
-                userData?.role?.toLowerCase() == 'pilot'
+                userData?.role?== 'pilot'
                   ? Color.white
                   : 'transparent',
               width: windowWidth * 0.8,
@@ -561,5 +688,20 @@ const styles = ScaledSheet.create({
     justifyContent: 'center',
     paddingHorizontal: moderateScale(15, 0.6),
     backgroundColor: Color.white,
+  },
+  row_view: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  box: {
+    height: moderateScale(16, 0.6),
+    width: moderateScale(16, 0.6),
+    marginRight: moderateScale(6, 0.6),
+    borderRadius: moderateScale(4, 0.6),
+  },
+  text: {
+    fontSize: moderateScale(12, 0.6),
+    color: Color.white
   },
 });

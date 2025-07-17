@@ -1,6 +1,6 @@
-import {useNavigation} from '@react-navigation/native';
-import {Icon} from 'native-base';
-import React, {useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { Icon } from 'native-base';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -12,11 +12,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {moderateScale, ScaledSheet} from 'react-native-size-matters';
+import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import { Post } from '../Axios/AxiosInterceptorFunction';
 import CountryStatePicker from '../Components/CountryStatePicker';
 import CustomButton from '../Components/CustomButton';
 import CustomStatusBar from '../Components/CustomStatusBar';
@@ -24,10 +24,10 @@ import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
 import SearchLocationModal from '../Components/SearchLocationModal';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import {setUserToken} from '../Store/slices/auth-slice';
-import {setUserData} from '../Store/slices/common';
+import { setUserToken } from '../Store/slices/auth-slice';
+import { setUserData } from '../Store/slices/common';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 import DropDownSingleSelect from '../Components/DropDownSingleSelect';
 import { SetUserRole } from '../Store/slices/auth';
 
@@ -125,17 +125,23 @@ const Signup = props => {
         ? ToastAndroid.show('Sign up successfully', ToastAndroid.SHORT)
         : Alert.alert('Sign up successfully');
       dispatch(setUserData(response?.data?.user_info));
-      dispatch(setUserToken({token: response?.data?.token}));
+      dispatch(setUserToken({ token: response?.data?.token }));
       dispatch(SetUserRole(response?.data?.user_info?.role));
     }
   };
   const dummyarray = [
-    {id: 1, name: 'Search Engine'},
-    {id: 2, name: 'Social Media'},
-    {id: 3, name: 'Word Of Mouth'},
-    {id: 4, name: 'App Store'},
-    {id: 5, name: 'Other'},
+    { id: 1, name: 'Search Engine' },
+    { id: 2, name: 'Social Media' },
+    { id: 3, name: 'Word Of Mouth' },
+    { id: 4, name: 'App Store' },
+    { id: 5, name: 'Other' },
   ];
+
+  const isValidCanadianNumber = (phone) => {
+    const regex = /^\+1\d{10}$/;
+    return regex.test(phone);
+  };
+
 
   return (
     <SafeAreaView>
@@ -313,7 +319,7 @@ const Signup = props => {
               borderColor={Color.white}
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
-              titleStlye={{right: 10}}
+              titleStlye={{ right: 10 }}
             />
             <TextInputWithTitle
               placeholder={'LastName'}
@@ -328,7 +334,7 @@ const Signup = props => {
               borderColor={Color.white}
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
-              titleStlye={{right: 10}}
+              titleStlye={{ right: 10 }}
             />
           </View>
           <TextInputWithTitle
@@ -360,10 +366,15 @@ const Signup = props => {
             borderColor={Color.white}
             marginTop={moderateScale(10, 0.3)}
             placeholderColor={Color.mediumGray}
-            titleStlye={{right: 10}}
+            titleStlye={{ right: 10 }}
             maxLength={12}
             keyboardType={'numeric'}
           />
+          {/* {phoneError !== '' && (
+            <CustomText style={{ color: 'red', marginTop: 5, marginLeft: 15, textAlign: 'left', width: '90%', fontSize: moderateScale(9, 0.6) }}>
+              {phoneError}
+            </CustomText>
+          )} */}
           <TextInputWithTitle
             placeholder={'Comapny Name'}
             setText={setcompany}
@@ -377,7 +388,7 @@ const Signup = props => {
             borderColor={Color.white}
             marginTop={moderateScale(10, 0.3)}
             placeholderColor={Color.mediumGray}
-            titleStlye={{right: 10}}
+            titleStlye={{ right: 10 }}
           />
            <TextInputWithTitle
             placeholder={'Address'}
@@ -441,7 +452,7 @@ const Signup = props => {
               borderColor={Color.white}
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
-              titleStlye={{right: 10}}
+              titleStlye={{ right: 10 }}
             />
           )}
           {selectedUserType != 'Driver/Escort' && (
@@ -458,7 +469,7 @@ const Signup = props => {
               borderColor={Color.white}
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
-              titleStlye={{right: 10}}
+              titleStlye={{ right: 10 }}
             />
           )}
           <View
@@ -481,7 +492,7 @@ const Signup = props => {
               borderColor={Color.white}
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
-              titleStlye={{right: 10}}
+              titleStlye={{ right: 10 }}
             />
             <TextInputWithTitle
               secureText={true}
@@ -497,7 +508,7 @@ const Signup = props => {
               borderColor={Color.white}
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
-              titleStlye={{right: 10}}
+              titleStlye={{ right: 10 }}
             />
           </View>
           <CustomText
@@ -603,7 +614,7 @@ const Signup = props => {
               borderColor={Color.white}
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
-              titleStlye={{right: 10}}
+              titleStlye={{ right: 10 }}
             />
           )}
           <CustomText
