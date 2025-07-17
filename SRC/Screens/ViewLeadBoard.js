@@ -27,6 +27,8 @@ import {useIsFocused} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import moment from 'moment';
 import BottomSheet from '../Components/BottomSheet';
+import LeadBoardCard from '../Components/LeadBoardCard';
+import CountryStatePicker from '../Components/CountryStatePicker';
 
 const ViewLeadBoard = () => {
   const IsFocused = useIsFocused();
@@ -34,6 +36,13 @@ const ViewLeadBoard = () => {
   const userData = useSelector(state => state.commonReducer.userData);
   const [isLoading, setIsLoading] = useState(false);
   const [leaderData, setLeaderData] = useState([]);
+  const [selectedOrigin, setSelectedOrigin] = useState('');
+  console.log("🚀 ~ ViewLeadBoard ~ selectedOrigin:", selectedOrigin)
+  const [selectedDestination, setselectedDestination] = useState('');
+
+  const [selectedCountry, setSelectedCountry] = useState(
+    userData?.selected_area == 'Sign Up For Canada' ? 'Canada' : 'USA',
+  );
   const rbref = useRef();
 
   const leadBoard_array = [
@@ -80,9 +89,11 @@ const ViewLeadBoard = () => {
   ];
 
   const getLoadList = async () => {
-    const url = 'auth/load_list';
+    const url = `auth/load_list?origin=${selectedOrigin?.label}&destination=${selectedDestination?.label}`;
     setIsLoading(true);
+    console.log("🚀 ~ getLoadList ~ url:", url)
     const response = await Get(url, token);
+    console.log("🚀 ~ getLoadList ~ response:", response?.data)
     setIsLoading(false);
     if (response != undefined) {
       setLeaderData(response?.data?.load_detail);
@@ -91,7 +102,7 @@ const ViewLeadBoard = () => {
 
   useEffect(() => {
     getLoadList();
-  }, [IsFocused]);
+  }, [selectedOrigin ,selectedDestination]);
 
   return (
     <SafeAreaView
@@ -109,7 +120,108 @@ const ViewLeadBoard = () => {
           showBack
           menu
         />
+        <View
+          style={{
+            flexDirection: 'row',
+            width: windowWidth,
+            justifyContent: 'space-between',
+            paddingHorizontal: moderateScale(20, 0.6),
+          }}>
+          <View>
+            <CustomText
+              style={{
+                fontSize: moderateScale(10, 0.6),
+                color: Color.white,
+              }}>
+              Origin
+            </CustomText>
+            <CountryStatePicker
+              style_dropDown={{
+                height: windowHeight * 0.06,
+                backgroundColor: 'transparent',
+                width: windowWidth * 0.43,
+                borderWidth: 0.5,
+                justifyContent: 'center',
 
+                paddingHorizontal: moderateScale(15, 0.6),
+                borderColor: Color.mediumGray,
+                borderRadius: moderateScale(10, 0.6),
+              }}
+              country={
+                userData?.selected_area == 'Sign Up For Canada'
+                  ? 'Canada'
+                  : 'USA'
+              }
+              setSelectedState={setSelectedOrigin}
+              selectedState={selectedOrigin}
+              placeHolder={''}
+            />
+          </View>
+          <View>
+            <CustomText
+              style={{
+                fontSize: moderateScale(10, 0.6),
+                color: Color.white,
+              }}>
+              destination
+            </CustomText>
+            <CountryStatePicker
+              style_dropDown={{
+                height: windowHeight * 0.06,
+                backgroundColor: 'transparent',
+                width: windowWidth * 0.43,
+                borderWidth: 0.5,
+                justifyContent: 'center',
+
+                paddingHorizontal: moderateScale(15, 0.6),
+                borderColor: Color.mediumGray,
+                borderRadius: moderateScale(10, 0.6),
+              }}
+              country={
+                userData?.selected_area == 'Sign Up For Canada'
+                  ? 'Canada'
+                  : 'USA'
+              }
+              setSelectedState={setselectedDestination}
+              selectedState={selectedDestination}
+              placeHolder={''}
+            />
+          </View>
+        </View>
+        {/* <View
+          style={{
+            paddingVertical: moderateScale(10, 0.6),
+            paddingHorizontal: moderateScale(20, 0.6),
+          }}>
+          <CustomText
+            style={{
+              color: Color.white,
+              fontSize: moderateScale(18, 0.6),
+            }}>
+            Filter
+          </CustomText>
+          <TouchableOpacity
+            onPress={() => {}}
+            style={{
+              backgroundColor: 'red',
+              paddingVertical: moderateScale(10, 0.6),
+              width: windowWidth * 0.1,
+              height: windowWidth * 0.1,
+              borderRadius: (windowWidth * 0.1) / 2,
+              alignItems: 'center',
+              position: 'absolute',
+              right: 10,
+              // top: 80,
+              // zIndex: 1,
+            }}>
+            <Icon
+              name="filter"
+              size={moderateScale(17, 0.6)}
+              color={Color.white}
+              as={Feather}
+            />
+          </TouchableOpacity>
+        </View> */}
         {isLoading ? (
           <ActivityIndicator
             style={{
@@ -127,210 +239,7 @@ const ViewLeadBoard = () => {
             }}
             data={leaderData}
             renderItem={({item, index}) => {
-              return (
-                <>
-                  <TouchableOpacity
-                    activeOpacity={0.9}
-                    // onPress={() => {
-                    //   navigationService.navigate('CreateRoute');
-                    // }}
-                    style={styles.card}>
-                    <View style={styles.row}>
-                      <CustomText isBold style={styles.card_heading}>
-                        {item?.company}
-                      </CustomText>
-                      <View style={styles.badges}>
-                        <CustomText style={styles.text}>
-                          {item?.status}
-                        </CustomText>
-                      </View>
-                    </View>
-                    <View style={[{marginTop: moderateScale(20, 0.6)}]}>
-                      <View style={styles.row}>
-                        <View style={styles.icon_view}>
-                          <Icon
-                            name="map-pin"
-                            as={Feather}
-                            size={moderateScale(12, 0.6)}
-                            color={Color.white}
-                          />
-                        </View>
-                        <CustomText
-                          numberOfLines={2}
-                          style={[
-                            styles.text,
-                            {
-                              width: windowWidth * 0.7,
-                            },
-                          ]}>
-                          {item?.origin?.name}
-                        </CustomText>
-                      </View>
-                    </View>
-                    <View
-                      style={[
-                        styles.row,
-                        //    {marginLeft: moderateScale(10, 0.6)}
-                      ]}>
-                      <View style={styles.icon_view}>
-                        <Icon
-                          name="map-pin"
-                          as={Feather}
-                          size={moderateScale(12, 0.6)}
-                          color={Color.white}
-                        />
-                      </View>
-                      <CustomText
-                        style={[
-                          styles.text,
-                          {
-                            width: windowWidth * 0.7,
-                          },
-                        ]}>
-                        {item?.destination?.name}
-                      </CustomText>
-                    </View>
-                    <TouchableOpacity
-                      onPress={() => {
-                        rbref?.current?.open();
-                      }}
-                      style={styles.load_btn}>
-                      <CustomText
-                        style={{
-                          color: Color.white,
-                          fontSize: moderateScale(12, 0.6),
-                        }}>
-                        Load more
-                      </CustomText>
-                    </TouchableOpacity>
-                    {/* <View
-                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-                    <View style={styles.icon_view}>
-                    <Icon
-                        name="calendar-today"
-                        as={MaterialIcons}
-                        size={moderateScale(12, 0.6)}
-                        color={Color.white}
-                      />
-                    </View>
-                    <CustomText style={styles.text}>{moment(item?.start_date).format("DD-MM-YYYY")}</CustomText>
-                  </View> */}
-                    {/* <View
-                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-                    <View style={styles.icon_view}>
-                      <Icon
-                        name="weight"
-                        as={FontAwesome5}
-                        size={moderateScale(12, 0.6)}
-                        color={Color.white}
-                      />
-                    </View>
-
-                    <CustomText style={styles.text}>{item?.weight}</CustomText>
-                  </View> */}
-                    {/* <View
-                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-                    <View style={styles.icon_view}>
-                      <Icon
-                        name="height"
-                        as={MaterialIcons}
-                        size={moderateScale(12, 0.6)}
-                        color={Color.white}
-                      />
-                    </View>
-                    <CustomText style={styles.text}>{item?.height}</CustomText>
-                  </View>
-                  <View
-                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-                    <View style={styles.icon_view}>
-                      <Icon
-                        name="chat"
-                        as={MaterialIcons}
-                        size={moderateScale(12, 0.6)}
-                        color={Color.white}
-                      />
-                    </View>
-                    <CustomText style={styles.text}>{item?.communication_mode}</CustomText>
-                  </View>
-                  <View
-                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-                    <View style={styles.icon_view}>
-                      <Icon
-                        name="corporate-fare"
-                        as={MaterialIcons}
-                        size={moderateScale(12, 0.6)}
-                        color={Color.white}
-                      />
-                    </View>
-                    <CustomText style={styles.text}>
-                      {'Call For rate'}
-                    </CustomText>
-                  </View>
-                  <View
-                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-                    <View style={styles.icon_view}>
-                      <Icon
-                        name="phone"
-                        as={AntDesign}
-                        size={moderateScale(12, 0.6)}
-                        color={Color.white}
-                      />
-                    </View>
-                    <CustomText style={styles.text}>{item?.contact}</CustomText>
-                  </View>
-                  <View
-                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-                    <View style={styles.icon_view}>
-                      <Icon
-                        name="attach-money"
-                        as={MaterialIcons}
-                        size={moderateScale(12, 0.6)}
-                        color={Color.white}
-                      />
-                    </View>
-                    <CustomText style={styles.text}>{`${item?.total_rate} (total)` }</CustomText>
-                  </View>
-                  <View
-                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-                    <View style={styles.icon_view}>
-                      <Icon
-                        name="date"
-                        as={Fontisto}
-                        size={moderateScale(12, 0.6)}
-                        color={Color.white}
-                      />
-                    </View>
-                    <CustomText style={styles.text}>
-                      {moment(item?.created_at).format('l')}
-                    </CustomText>
-                  </View>
-                  <View
-                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-                    <View style={styles.icon_view}>
-                      <Icon
-                        name="clockcircle"
-                        as={AntDesign}
-                        size={moderateScale(12, 0.6)}
-                        color={Color.white}
-                      />
-                    </View>
-                    <CustomText style={styles.text}>
-                      {moment(item?.created_at).format('LT')}
-                    </CustomText>
-                  </View>
-                  <CustomText
-                    style={[
-                      styles.text,
-                      {
-                        marginTop: moderateScale(10, 0.6),
-                      },
-                    ]}>
-                    Lead
-                  </CustomText> */}
-                  </TouchableOpacity>
-                  <BottomSheet Rbref={rbref} item={item} />
-                </>
-              );
+              return <LeadBoardCard item={item} />;
             }}
           />
         )}

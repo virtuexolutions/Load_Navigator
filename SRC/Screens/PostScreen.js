@@ -87,15 +87,45 @@ const PostScreen = props => {
               {moment(data?.created_at).startOf('hour').fromNow()}
             </CustomText>
             <CustomText style={styles.heading}>status</CustomText>
-            <CustomText style={styles.value}>{data?.status}</CustomText>
+            <CustomText
+              style={[
+                styles.value,
+                {
+                  width: moderateScale(60, 0.6),
+                  backgroundColor:
+                    data?.status.toLowerCase() == 'cover'
+                      ? Color.green
+                      : 'rgba(243, 10, 10, 1)',
+                  // justifyContent: 'center',
+                  // alignItems: 'center',
+                  textAlign: 'center',
+                  borderRadius: moderateScale(20, 0.6),
+                  Color: Color.white,
+                  // marginLeft: moderateScale(10, 0.6),
+                },
+              ]}>
+              {data?.status}
+            </CustomText>
             <CustomText style={styles.heading}>Load Date</CustomText>
             <CustomText style={styles.value}>
               {moment(data?.created_at).format('L')}
             </CustomText>
             <CustomText style={styles.heading}>Phone</CustomText>
-            <CustomText style={styles.value}>
+            <CustomText
+              style={[
+                styles.value,
+                {
+                  color: Color.secondary,
+                },
+              ]}>
               {data?.contact}
-              {`(${data?.communication_mode})`}
+              <CustomText
+                style={[
+                  styles.value,
+                  {
+                    marginleft: moderateScale(10, 6),
+                  },
+                ]}>{`(${data?.communication_mode})`}</CustomText>
             </CustomText>
             <CustomText style={styles.heading}>Origin</CustomText>
             <CustomText style={styles.value}>{data?.origin?.name}</CustomText>
@@ -105,7 +135,8 @@ const PostScreen = props => {
             </CustomText>
 
             <CustomText style={styles.heading}>Est. Mileage</CustomText>
-            <CustomText style={styles.value}>{data?.miles}</CustomText>
+            <CustomText
+              style={styles.value}>{`${data?.miles} miles`}</CustomText>
             <CustomText style={styles.heading}>start date</CustomText>
             <CustomText style={styles.value}>
               {moment(data?.start_date).format('L')}
@@ -114,14 +145,14 @@ const PostScreen = props => {
             <CustomText style={styles.value}>{`$${data?.rate}`}</CustomText>
             <CustomText style={styles.heading}>height</CustomText>
             <CustomText style={styles.value}>{`$${data?.height}`}</CustomText>
-            <CustomText style={styles.heading}>fuel price</CustomText>
+            {/* <CustomText style={styles.heading}>fuel price</CustomText>
             <CustomText style={styles.value}>
               {`$${data?.fuel_price}`}
             </CustomText>
             <CustomText style={styles.heading}>toll price</CustomText>
             <CustomText style={styles.value}>
               {`$${data?.toll_price}`}
-            </CustomText>
+            </CustomText> */}
           </View>
           <View
             style={{
@@ -190,7 +221,7 @@ const styles = StyleSheet.create({
     // paddingHorizontal : moderateScale(10,.6)
   },
   heading: {
-    fontSize: moderateScale(15, 0.6),
+    fontSize: moderateScale(16, 0.6),
     color: Color.black,
     paddingTop: moderateScale(12, 0.6),
   },
