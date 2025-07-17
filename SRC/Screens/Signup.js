@@ -358,6 +358,7 @@ const Signup = props => {
             marginTop={moderateScale(10, 0.3)}
             placeholderColor={Color.mediumGray}
             titleStlye={{right: 10}}
+            maxLength={12}
           />
           <TextInputWithTitle
             placeholder={'Comapny Name'}
