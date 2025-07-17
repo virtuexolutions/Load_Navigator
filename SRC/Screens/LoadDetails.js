@@ -33,6 +33,7 @@ const LoadDetails = props => {
   const isPostDetails = props?.route?.params?.isPostDetails;
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
+  console.log('🚀 ~ userData:', userData);
   const [isMiles, setIsMiles] = useState(false);
   const [selectedRate, setSelectedRate] = useState('/per miles');
   const [selectedSize, setSelectedSize] = useState('select type');
@@ -186,8 +187,8 @@ const LoadDetails = props => {
       communication_mode: commnuicationMode,
       total_rate: totalRate.toFixed(2),
       start_date: new Date().toISOString(),
-      toll_price: tollPrice,
-      fuel_price: fuelPrice,
+      // toll_price: tollPrice,
+      // fuel_price: fuelPrice,
       // title: title,
       // weight: weight,
       // dimension: dimensions,
@@ -384,7 +385,7 @@ const LoadDetails = props => {
                 borderColor: '#C32C2745',
                 width: windowWidth * 0.9,
                 paddingHorizontal: moderateScale(10, 0.6),
-                borderRadius: moderateScale(20, 0.6),
+                borderRadius: moderateScale(10, 0.6),
                 height: windowHeight * 0.22,
               }}>
               <CustomText isBold style={styles.heading_text}>
@@ -558,7 +559,7 @@ const LoadDetails = props => {
               inputWidth={0.82}
               border={1}
               fontSize={moderateScale(10, 0.6)}
-              borderRadius={30}
+              borderRadius={10}
               backgroundColor={'transparent'}
               borderColor={'#333333'}
               // color={Color.darkGray}
@@ -587,7 +588,7 @@ const LoadDetails = props => {
               inputWidth={0.82}
               border={1}
               fontSize={moderateScale(10, 0.6)}
-              borderRadius={30}
+              borderRadius={10}
               backgroundColor={'transparent'}
               borderColor={Color.darkGray}
               marginTop={moderateScale(10, 0.3)}
@@ -607,6 +608,7 @@ const LoadDetails = props => {
                 borderBottomWidth: 0,
                 width: windowWidth * 0.9,
                 marginTop: 10,
+                borderRadius : 10
               }}
               menuStyle={{
                 backgroundColor: Color.white,
@@ -615,8 +617,8 @@ const LoadDetails = props => {
                 left: 42,
                 borderWidth: 1,
                 overflow: 'hidden',
-                borderBottomRightRadius: moderateScale(15, 0.2),
-                borderBottomLeftRadius: moderateScale(15, 0.2),
+                // borderBottomRightRadius: moderateScale(15, 0.2),
+                // borderBottomLeftRadius: moderateScale(15, 0.2),
               }}
               menuTextColor={Color.mediumGray}
               changeColorOnSelect={true}
@@ -625,12 +627,13 @@ const LoadDetails = props => {
                 height: windowHeight * 0.057,
                 borderWidth: 1,
                 bordderColor: Color.white,
+                borderRadius : 10
               }}
             />
             <CustomText isBold style={styles.heading_text}>
               Start Date
             </CustomText>
-            <TouchableOpacity
+            <View
               // onPress={() => {
               //   setShowCalendarModal(true);
               // }}
@@ -650,14 +653,14 @@ const LoadDetails = props => {
                   ]}>
                   {date ? date : 'select a date '}
                 </CustomText>
-                <Icon
+                {/* <Icon
                   name="keyboard-arrow-down"
                   as={MaterialIcons}
                   size={moderateScale(20, 0.6)}
                   color={Color.black}
-                />
+                /> */}
               </View>
-            </TouchableOpacity>
+            </View>
             <View
               style={{
                 flexDirection: 'row',
@@ -867,10 +870,17 @@ const LoadDetails = props => {
               <View
                 style={{
                   flexDirection: 'row',
+                  // padding : moderateScale(10,.6)
                   width: windowWidth * 0.22,
                 }}>
                 <CustomText style={styles.drop_text}>{selectedRate}</CustomText>
                 <Icon
+                  style={{
+                    width: windowWidth * 0.1,
+                    textAlign: 'center',
+                    position: 'absolute',
+                    right: 0,
+                  }}
                   name="keyboard-arrow-down"
                   as={MaterialIcons}
                   size={moderateScale(20, 0.6)}
@@ -878,7 +888,7 @@ const LoadDetails = props => {
                 />
               </View>
             </TouchableOpacity>
-            <CustomText isBold style={styles.heading_text}>
+            {/* <CustomText isBold style={styles.heading_text}>
               fuel price
             </CustomText>
             <TextInputWithTitle
@@ -914,7 +924,7 @@ const LoadDetails = props => {
               borderColor={Color.black}
               placeholderColor={Color.mediumGray}
               marginTop={moderateScale(10, 0.6)}
-            />
+            /> */}
             {isMiles && (
               <View
                 style={{
@@ -1118,7 +1128,7 @@ const styles = StyleSheet.create({
     width: windowWidth * 0.9,
     height: windowHeight * 0.05,
     borderWidth: 0.9,
-    borderRadius: moderateScale(20, 0.6),
+    borderRadius: moderateScale(10, 0.6),
     borderColor: Color.darkGray,
     marginTop: moderateScale(10, 0.6),
     alignItems: 'center',
@@ -1143,7 +1153,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     borderWidth: 0.3,
-    borderRadius: moderateScale(30, 0.6),
+    borderRadius: moderateScale(10, 0.6),
     width: windowWidth * 0.84,
     height: windowHeight * 0.055,
     marginVertical: moderateScale(5, 0.6),

@@ -87,7 +87,9 @@ const CountryStatePicker = ({
   selectedState,
   setSelectedState,
   style_dropDown,
+  placeHolder,
 }) => {
+  console.log("🚀 ~ selectedState:", selectedState)
   const [modalVisible, setModalVisible] = useState(false);
   const [stateList, setStateList] = useState([]);
 
@@ -172,8 +174,9 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(14, 0.6),
     color: Color.mediumGray,
   },
-  overlay: {marginTop :windowHeight*0.28, 
-  // height : windowHeight *0.,
+  overlay: {
+    marginTop: windowHeight * 0.28,
+    // height : windowHeight *0.,
     // flex: 1,
     // paddingtop  : windowHeight *0.3,
     // justifyContent: 'space-between',

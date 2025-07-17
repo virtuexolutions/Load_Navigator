@@ -34,6 +34,7 @@ const BottomSheet = ({Rbref, setRbRef, item}) => {
       <View
         style={{
           alignItems: 'center',
+
           backgroundColor: Color.white,
         }}>
         <View
@@ -43,6 +44,7 @@ const BottomSheet = ({Rbref, setRbRef, item}) => {
             height: windowHeight * 0.01,
             borderRadius: 10,
             marginTop: moderateScale(10, 0.6),
+            // backgroundColor :'red'
           }}></View>
         <CustomText
           style={{
@@ -55,7 +57,7 @@ const BottomSheet = ({Rbref, setRbRef, item}) => {
         </CustomText>
         <View
           style={{
-            paddingHorizontal: moderateScale(20, 0.6),
+            paddingHorizontal: moderateScale(35, 0.6),
           }}>
           <View
           // style={[{marginTop: moderateScale(10, 0.6)}]}
@@ -202,28 +204,6 @@ const BottomSheet = ({Rbref, setRbRef, item}) => {
             <CustomText style={styles.text}>
               {moment(item?.created_at).format('LT')}
             </CustomText>
-          </View>
-          <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-            <View style={styles.icon_view}>
-              <Icon
-                name="clockcircle"
-                as={AntDesign}
-                size={moderateScale(12, 0.6)}
-                color={Color.white}
-              />
-            </View>
-            <CustomText style={styles.text}>{item?.fuel_price}</CustomText>
-          </View>
-          <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-            <View style={styles.icon_view}>
-              <Icon
-                name="toll"
-                as={MaterialIcons}
-                size={moderateScale(12, 0.6)}
-                color={Color.white}
-              />
-            </View>
-            <CustomText style={styles.text}>{item?.toll_price}</CustomText>
           </View>
         </View>
         <CustomButton
