@@ -1,5 +1,7 @@
-import { Checkbox, Icon } from 'native-base';
-import React, { useEffect, useState } from 'react';
+import {useNavigation} from '@react-navigation/native';
+import moment from 'moment';
+import {Checkbox, Icon} from 'native-base';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   ScrollView,
@@ -7,39 +9,38 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { moderateScale } from 'react-native-size-matters';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import {Calendar} from 'react-native-calendars';
 import Modal from 'react-native-modal';
-import Entypo from 'react-native-vector-icons/Entypo';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {moderateScale} from 'react-native-size-matters';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import { Post } from '../Axios/AxiosInterceptorFunction';
+import {Post} from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText';
-import { Calendar } from 'react-native-calendars';
-import Header from '../Components/Header';
-import TextInputWithTitle from '../Components/TextInputWithTitle';
-import navigationService from '../navigationService';
-import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
-import SearchLocationModal from '../Components/SearchLocationModal';
-import haversine from 'haversine-distance';
 import DropDownSingleSelect from '../Components/DropDownSingleSelect';
-import moment from 'moment';
+import Header from '../Components/Header';
+import SearchLocationModal from '../Components/SearchLocationModal';
+import TextInputWithTitle from '../Components/TextInputWithTitle';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 
 const LoadDetails = props => {
+  const navigationN = useNavigation();
   const isPostDetails = props?.route?.params?.isPostDetails;
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
-  console.log('🚀 ~ userData:', userData);
   const [isMiles, setIsMiles] = useState(false);
   const [selectedRate, setSelectedRate] = useState('/per miles');
   const [selectedSize, setSelectedSize] = useState('select type');
   const [isSize, setIsSize] = useState(false);
   const [weight, setWeight] = useState('');
   const [dimensions, setDimensions] = useState('');
+  const [originState, setOriginState] = useState('');
+  const [destinationState, setdestinationState] = useState('');
+
 
   const HEIGHT_OPTIONS = [
     "Under 8'",
@@ -71,6 +72,7 @@ const LoadDetails = props => {
   const [totalRate, setTotalRate] = useState(0);
   const [fuelPrice, setFuelPrice] = useState(0);
   const [tollPrice, setTollPrice] = useState(0);
+  const [description, setDescription] = useState('');
 
   const [positions, setPositions] = useState([
     'lead',
@@ -182,19 +184,17 @@ const LoadDetails = props => {
       rate: Rate + selectedRate,
       status: 'pending',
       miles: distance,
-      contact: contact,
+      contact: contact.slice(0, 2) == '+1' ? contact : `+1${contact}`,
       company: title,
       height: height === 'Custom' ? customHeight : height,
       communication_mode: commnuicationMode,
       total_rate: totalRate.toFixed(2),
       start_date: new Date().toISOString(),
-      // toll_price: tollPrice,
-      // fuel_price: fuelPrice,
-      // title: title,
-      // weight: weight,
-      // dimension: dimensions,
-      // type: selectedSize,
+      description: description,
+      origin_state:originState,
+      destination_state :destinationState,
     };
+  // return  console.log("🚀 ~ postALoad ~ body:", JSON.stringify(body ,null ,2))
     const url = 'auth/load_detail';
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
@@ -214,7 +214,7 @@ const LoadDetails = props => {
       setSelectedSize('');
       setSelectedRate('');
 
-      navigationService.navigate('PostLoadScreen');
+      navigationN.goBack();
     }
   };
 
@@ -223,8 +223,8 @@ const LoadDetails = props => {
       selectedRate?.toLowerCase() == '/ per km'
         ? parseFloat(Rate) * distance
         : selectedRate?.toLowerCase() == '/ per miles'
-          ? parseFloat(Rate) * (distance * 0.621371)
-          : parseFloat(Rate),
+        ? parseFloat(Rate) * (distance * 0.621371)
+        : parseFloat(Rate),
     );
   }, [Rate, selectedRate]);
 
@@ -234,9 +234,9 @@ const LoadDetails = props => {
         <Header
           title="load details"
           headerColor={Color.secondary}
-          textstyle={{ color: Color.white }}
+          textstyle={{color: Color.white}}
           showBack
-          menu
+          // menu
         />
         <CustomStatusBar
           backgroundColor={Color.white}
@@ -248,124 +248,6 @@ const LoadDetails = props => {
             paddingBottom: moderateScale(70, 0.6),
           }}
           showsVerticalScrollIndicator={false}>
-          {/* <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: moderateScale(20, 0.3),
-              paddingVertical: moderateScale(15, 0.3),
-              backgroundColor: Color.secondary,
-              alignItems: 'center',
-              justifyContent : 'space-between'
-            }}>
-            <CustomText style={{
-                fontSize : moder
-            }}>load details</CustomText>
-            <Icon
-              name="menu"
-              as={Ionicons}
-              size={moderateScale(20, 0.6)}
-              color={Color.white}
-            />
-          </View> */}
-          {/* {isPostDetails ? (
-            <View>
-              <View style={styles.header}>
-                <CustomText
-                  isBold
-                  style={{
-                    color: Color.white,
-                    fontSize: moderateScale(18, 0.6),
-                  }}>
-                  Post A Load
-                </CustomText>
-                <Icon name="cross" as={Entypo} />
-              </View>
-              <View
-                style={{
-                  paddingTop: moderateScale(20, 0.6),
-                  paddingHorizontal: moderateScale(20, 0.6),
-                }}>
-                <CustomText isBold style={styles.heading_text}>
-                  Posted
-                </CustomText>
-                <CustomText style={styles.text}>
-                  Less Than a minute ago
-                </CustomText>
-                <CustomText isBold style={styles.heading_text}>
-                  status
-                </CustomText>
-                <CustomText style={styles.text}>Open</CustomText>
-                <CustomText isBold style={styles.heading_text}>
-                  Alert
-                </CustomText>
-                <CustomText style={styles.text}>
-                  Calculating notifications sent to drivers
-                </CustomText>
-                <CustomText isBold style={styles.heading_text}>
-                  Load Date
-                </CustomText>
-                <CustomText style={styles.text}>04/24/2025</CustomText>
-                <CustomText isBold style={styles.heading_text}>
-                  Phone
-                </CustomText>
-                <CustomText style={styles.text}>(123) 281-6351</CustomText>
-                <CustomText isBold style={styles.heading_text}>
-                  Origin
-                </CustomText>
-                <CustomText style={styles.text}>
-                  Pennsylvania Furance, PA, USA
-                </CustomText>
-                <CustomText isBold style={styles.heading_text}>
-                  Destination
-                </CustomText>
-                <CustomText style={styles.text}>Furance, SC, USA</CustomText>
-                <CustomText isBold style={styles.heading_text}>
-                  Est. Mileage
-                </CustomText>
-                <CustomText style={styles.text}>609 mi</CustomText>
-                <CustomText isBold style={styles.heading_text}>
-                  Rate
-                </CustomText>
-                <CustomText style={styles.text}>$5.00/mi</CustomText>
-                <CustomButton
-                  text={'Mark Covered '}
-                  onPress={() => {
-                    setIsPost(true);
-                    setIsModalVisible(false);
-                    navigationService.navigate('CarDirectory');
-                  }}
-                  fontSize={moderateScale(14, 0.3)}
-                  textColor={Color.white}
-                  borderRadius={moderateScale(30, 0.3)}
-                  width={windowWidth * 0.58}
-                  marginTop={moderateScale(15, 0.3)}
-                  height={windowHeight * 0.055}
-                  bgColor={Color.secondary}
-                  style={{
-                    alignSelf: 'flex-start',
-                  }}
-                  textTransform={'capitalize'}
-                />
-                <CustomButton
-                  text={'Cancle'}
-                  onPress={() => setIsModalVisible(false)}
-                  fontSize={moderateScale(14, 0.3)}
-                  textColor={Color.black}
-                  borderRadius={moderateScale(30, 0.3)}
-                  width={windowWidth * 0.58}
-                  height={windowHeight * 0.055}
-                  bgColor={Color.white}
-                  marginTop={moderateScale(10, 0.3)}
-                  borderColor={Color.black}
-                  borderWidth={1}
-                  style={{
-                    alignSelf: 'flex-start',
-                  }}
-                  textTransform={'capitalize'}
-                />
-              </View>
-            </View>
-          ) : ( */}
           <View
             style={{
               paddingHorizontal: moderateScale(20, 0.6),
@@ -378,7 +260,6 @@ const LoadDetails = props => {
                 },
               ]}>
               <View style={styles.box} />
-              {/* <CustomText style={styles.text}>Text only</CustomText> */}
             </View>
             <View
               style={{
@@ -499,7 +380,7 @@ const LoadDetails = props => {
               isBold
               style={[
                 styles.heading_text,
-                { marginBottom: moderateScale(10, 0.6) },
+                {marginBottom: moderateScale(10, 0.6)},
               ]}>
               Additional requirements
             </CustomText>
@@ -567,7 +448,7 @@ const LoadDetails = props => {
               marginTop={moderateScale(10, 0.3)}
               keyboardType={'numeric'}
               placeholderColor={Color.mediumGray}
-              titleStlye={{ right: 10 }}
+              titleStlye={{right: 10}}
             />
             <Checkbox
               colorScheme={'red'}
@@ -595,7 +476,7 @@ const LoadDetails = props => {
               borderColor={Color.darkGray}
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
-              titleStlye={{ right: 10 }}
+              titleStlye={{right: 10}}
             />
             <CustomText isBold style={styles.heading_text}>
               Height
@@ -610,7 +491,7 @@ const LoadDetails = props => {
                 borderBottomWidth: 0,
                 width: windowWidth * 0.9,
                 marginTop: 10,
-                borderRadius: 10
+                borderRadius: 10,
               }}
               menuStyle={{
                 backgroundColor: Color.white,
@@ -627,7 +508,7 @@ const LoadDetails = props => {
                 height: windowHeight * 0.057,
                 borderWidth: 1,
                 bordderColor: Color.white,
-                borderRadius: 10
+                borderRadius: 10,
               }}
             />
             {height === 'Custom' && (
@@ -645,7 +526,7 @@ const LoadDetails = props => {
                 borderColor={Color.darkGray}
                 marginTop={moderateScale(10, 0.3)}
                 placeholderColor={Color.mediumGray}
-                titleStlye={{ right: 10 }}
+                titleStlye={{right: 10}}
                 keyboardType={'numeric'}
               />
             )}
@@ -683,9 +564,10 @@ const LoadDetails = props => {
             <View
               style={{
                 flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingVertical: moderateScale(10, 0.6),
-                width: windowWidth * 0.8,
+                gap: moderateScale(20, 0.6),
+                paddingTop: moderateScale(15, 0.6),
+                width: windowWidth * 0.9,
+                flexWrap: 'wrap',
               }}>
               <CustomButton
                 text={'today'}
@@ -697,7 +579,6 @@ const LoadDetails = props => {
                 fontSize={moderateScale(12, 0.3)}
                 textColor={Color.white}
                 borderRadius={moderateScale(10, 0.3)}
-                width={windowWidth * 0.25}
                 marginTop={moderateScale(10, 0.3)}
                 height={windowHeight * 0.04}
                 bgColor={Color.secondary}
@@ -717,7 +598,7 @@ const LoadDetails = props => {
                 fontSize={moderateScale(12, 0.3)}
                 textColor={Color.white}
                 borderRadius={moderateScale(10, 0.3)}
-                width={windowWidth * 0.25}
+                // width={windowWidth * 0.28}
                 marginTop={moderateScale(10, 0.3)}
                 height={windowHeight * 0.04}
                 bgColor={Color.secondary}
@@ -734,7 +615,6 @@ const LoadDetails = props => {
                 fontSize={moderateScale(12, 0.3)}
                 textColor={Color.white}
                 borderRadius={moderateScale(10, 0.3)}
-                width={windowWidth * 0.25}
                 marginTop={moderateScale(10, 0.3)}
                 height={windowHeight * 0.04}
                 bgColor={Color.secondary}
@@ -744,109 +624,7 @@ const LoadDetails = props => {
                 textTransform={'capitalize'}
               />
             </View>
-            {/* <CustomText isBold style={styles.heading_text}>
-              weight
-            </CustomText> */}
-            {/* <TextInputWithTitle
-              placeholder={'Weight '}
-              setText={setWeight}
-              value={weight}
-              viewHeight={0.06}
-              viewWidth={0.9}
-              inputWidth={0.82}
-              border={1}
-              fontSize={moderateScale(10, 0.6)}
-              borderRadius={30}
-              backgroundColor={'transparent'}
-              borderColor={Color.darkGray}
-              marginTop={moderateScale(10, 0.3)}
-              placeholderColor={Color.mediumGray}
-              titleStlye={{right: 10}}
-            />
-            <CustomText isBold style={styles.heading_text}>
-              dimensions
-            </CustomText>
 
-            <TextInputWithTitle
-              placeholder={'Dimension'}
-              setText={setDimensions}
-              value={dimensions}
-              viewHeight={0.06}
-              viewWidth={0.9}
-              inputWidth={0.82}
-              border={1}
-              fontSize={moderateScale(10, 0.6)}
-              borderRadius={30}
-              backgroundColor={'transparent'}
-              borderColor={Color.darkGray}
-              marginTop={moderateScale(10, 0.3)}
-              placeholderColor={Color.mediumGray}
-              titleStlye={{right: 10}}
-            />
-            <CustomText isBold style={styles.heading_text}>
-              type
-            </CustomText>
-            <TouchableOpacity
-              onPress={() => {
-                setIsSize(!isSize);
-              }}
-              style={styles.drop}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  width: '100%',
-                  justifyContent: 'space-between',
-                }}>
-                <CustomText
-                  style={[
-                    styles.drop_text,
-                    {
-                      width: '70%',
-                    },
-                  ]}>
-                  {selectedSize}
-                </CustomText>
-                <Icon
-                  name="keyboard-arrow-down"
-                  as={MaterialIcons}
-                  size={moderateScale(20, 0.6)}
-                  color={Color.black}
-                />
-              </View>
-            </TouchableOpacity>
-            {isSize && (
-              <View
-                onPress={() => {}}
-                style={[
-                  styles.drop_modal,
-                  {
-                    alignItems: 'flex-start',
-                  },
-                ]}>
-                <CustomText
-                  onPress={() => {
-                    setSelectedSize('overweight');
-                    setIsSize(false);
-                  }}
-                  style={{
-                    fontSize: moderateScale(14, 0.6),
-                    width: '100%',
-                  }}>
-                  overweight
-                </CustomText>
-                <CustomText
-                  onPress={() => {
-                    setSelectedSize('oversize');
-                    setIsSize(false);
-                  }}
-                  style={{
-                    fontSize: moderateScale(14, 0.6),
-                    width: '100%',
-                  }}>
-                  oversize
-                </CustomText>
-              </View>
-            )} */}
             <CustomText isBold style={styles.heading_text}>
               Rate
               <CustomText
@@ -889,14 +667,11 @@ const LoadDetails = props => {
               <View
                 style={{
                   flexDirection: 'row',
-                  // padding : moderateScale(10,.6)
-                  width: windowWidth * 0.22,
+                  width: windowWidth * 0.24,
                 }}>
                 <CustomText style={styles.drop_text}>{selectedRate}</CustomText>
                 <Icon
                   style={{
-                    width: windowWidth * 0.1,
-                    textAlign: 'center',
                     position: 'absolute',
                     right: 0,
                   }}
@@ -907,43 +682,7 @@ const LoadDetails = props => {
                 />
               </View>
             </TouchableOpacity>
-            {/* <CustomText isBold style={styles.heading_text}>
-              fuel price
-            </CustomText>
-            <TextInputWithTitle
-              placeholder={'$ 0'}
-              setText={setFuelPrice}
-              value={fuelPrice}
-              keyboardType={'numeric'}
-              viewHeight={0.05}
-              viewWidth={0.9}
-              inputWidth={0.85}
-              borderRadius={30}
-              border={1}
-              backgroundColor={Color.white}
-              borderColor={Color.black}
-              placeholderColor={Color.mediumGray}
-              marginTop={moderateScale(10, 0.6)}
-            />
-            <CustomText isBold style={styles.heading_text}>
-              toll price
-            </CustomText>
-            <TextInputWithTitle
-              // title={'fuel price'}
-              placeholder={'$ 0'}
-              setText={setTollPrice}
-              value={tollPrice}
-              keyboardType={'numeric'}
-              viewHeight={0.05}
-              viewWidth={0.9}
-              inputWidth={0.85}
-              borderRadius={30}
-              border={1}
-              backgroundColor={Color.white}
-              borderColor={Color.black}
-              placeholderColor={Color.mediumGray}
-              marginTop={moderateScale(10, 0.6)}
-            /> */}
+
             {isMiles && (
               <View
                 style={{
@@ -975,28 +714,36 @@ const LoadDetails = props => {
                 </TouchableOpacity>
               </View>
             )}
-            {/* <CustomText isBold style={styles.heading_text}>
-              Total Rate
-            </CustomText> */}
-            {/* <TextInputWithTitle
-              placeholder={'Total Rate'}
-              setText={setTotalRate}
-              value={
-                isNaN(totalRate) ? '0' : `$${totalRate.toFixed(2).toString(12)}`
-              }
-              keyboardType={'numeric'}
-              viewHeight={0.06}
+
+            <CustomText isBold style={styles.heading_text}>
+              description {''}
+              <CustomText
+                style={{
+                  fontSize: moderateScale(10, 0.6),
+                  color: Color.darkGray,
+                }}>
+                (Optional)
+              </CustomText>
+            </CustomText>
+            <TextInputWithTitle
+              multiline={true}
+              secureText={false}
+              placeholder={'Description'}
+              setText={setDescription}
+              value={description}
+              viewHeight={0.15}
               viewWidth={0.9}
               inputWidth={0.82}
               border={1}
               fontSize={moderateScale(10, 0.6)}
-              borderRadius={30}
               backgroundColor={'transparent'}
               borderColor={Color.darkGray}
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
               titleStlye={{right: 10}}
-            /> */}
+              color={Color.btn_Color}
+              borderRadius={moderateScale(25, 0.3)}
+            />
             <CustomButton
               text={
                 isLoading ? (
@@ -1007,9 +754,6 @@ const LoadDetails = props => {
               }
               onPress={() => {
                 postALoad();
-                // navigationService.navigate('PostLoadScreen');
-                // //   setIsPost(true);
-                //   setIsModalVisible(false);
               }}
               fontSize={moderateScale(14, 0.3)}
               textColor={Color.white}
@@ -1040,8 +784,8 @@ const LoadDetails = props => {
               textTransform={'capitalize'}
             />
           </View>
-          {/* // )} */}
-          <View style={{ height: windowHeight * 0.12 }} />
+
+          <View style={{height: windowHeight * 0.12}} />
         </ScrollView>
         <Modal
           onBackdropPress={() => {
@@ -1055,7 +799,6 @@ const LoadDetails = props => {
             style={{
               width: windowWidth * 0.8,
               marginBottom: moderateScale(40, 0.3),
-              // backgroundColor : 'red'
             }}
             minDate={moment().format()}
             onDayPress={day => {
@@ -1098,6 +841,9 @@ const LoadDetails = props => {
           setIsModalVisible={setIsModalVisible}
           setPickupLocation={setOrigin}
           setdropOffLocation={setDestination}
+          // setState={}
+          setOriginState={setOriginState}
+          setdestinationState={setdestinationState}
         />
       </View>
     </SafeAreaView>

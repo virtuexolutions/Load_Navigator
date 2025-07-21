@@ -1,5 +1,5 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import navigationService from '../navigationService';
 import CustomText from './CustomText';
 import {Icon} from 'native-base';
@@ -20,115 +20,135 @@ import {useIsFocused} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import {Get} from '../Axios/AxiosInterceptorFunction';
 import moment from 'moment';
+import BottomSheet from './BottomSheet';
 
 const LoadBoardCard = ({item}) => {
   const userData = useSelector(state => state.commonReducer.userData);
-  const isRecent = createdAt => {
+  const rbref = useRef();
+  const [isRecent, setIsRecent] = useState(false);
+
+  useEffect(() => {
     const THREE_HOURS = 3 * 60 * 60 * 1000; // 3 hours in ms
     const now = new Date();
-    const createdTime = new Date(item?.createdAt);
+    const createdTime = new Date(item?.created_at);
     const recent = now - createdTime <= THREE_HOURS;
-    console.log('🚀 ~ isRecent ~ createdTime:============', recent);
-  };
+    setIsRecent(recent);
+  }, []);
+
   return (
-    <View style={styles.recentLoadBoards}>
-      <View style={styles.row_view}>
-        <CustomText isBold style={styles.heading_text}>
-          {userData?.company_name}
-        </CustomText>
+    <>
+      <View style={styles.recentLoadBoards}>
         <View style={styles.row_view}>
-          <CustomText style={styles.text}>{item?.recency}</CustomText>
-          <TouchableOpacity
-            style={[
-              styles.btn,
-              {
-                backgroundColor:
-                  item?.status.toLowerCase() == 'cover'
-                    ? Color.green
-                    : 'rgba(243, 10, 10, 1)',
-              },
-            ]}>
-            <CustomText
-              style={{
-                color: Color.white,
-                fontSize: moderateScale(10, 0.6),
-              }}>
-              {item?.status}
-            </CustomText>
-          </TouchableOpacity>
-        </View>
-      </View>
+          <CustomText isBold style={styles.heading_text}>
+            {userData?.company_name}
+          </CustomText>
+          <View style={styles.row_view}>
+            <CustomText style={styles.text}>{item?.recency}</CustomText>
+            {isRecent && (
+              <CustomText
+                style={{
+                  color: Color.black,
+                  fontSize: moderateScale(10, 0.6),
+                  backgroundColor :Color.lightGrey,
+                  // padding : moderateScale(3,.6),
+                  paddingHorizontal :moderateScale(5,.6) ,
+                  borderRadius : moderateScale(10,.6)
+                }}>
+                recent
+              </CustomText>
+            )}
 
-      {/* Description */}
-      <View style={styles.infoRow}>
-        <View style={styles.icon_box}>
-          <Icon
-            as={MaterialCommunityIcons}
-            name="message-reply-text"
-            color={Color.white}
-            size={moderateScale(13, 0.6)}
-          />
+            <TouchableOpacity
+              style={[
+                styles.btn,
+                {
+                  backgroundColor:
+                    item?.status.toLowerCase() == 'cover'
+                      ? Color.green
+                      : 'yellow',
+                },
+              ]}>
+              <CustomText
+                style={{
+                  color: Color.black,
+                  fontSize: moderateScale(10, 0.6),
+                }}>
+                {item?.status.toLowerCase() == 'cover' ? 'Covered' : 'Open'}
+              </CustomText>
+            </TouchableOpacity>
+          </View>
         </View>
-        <CustomText style={styles.details_text}>
-          {/* {item?.description} */}
-          Calculating Notifications Sent To Drivers
-        </CustomText>
-      </View>
 
-      {/* Location */}
-      <View
-        style={{
-          flexDirection: 'row',
-        }}>
-        <View
-          style={[
-            styles.infoRow,
-            {
-              width: windowWidth * 0.4,
-            },
-          ]}>
+        {/* Description */}
+        <View style={styles.infoRow}>
           <View style={styles.icon_box}>
             <Icon
-              as={Entypo}
-              name="location-pin"
+              as={MaterialCommunityIcons}
+              name="message-reply-text"
               color={Color.white}
               size={moderateScale(13, 0.6)}
             />
           </View>
-          <CustomText numberOfLines={1} style={styles.details_text}>
-            {item?.origin?.name}
+          <CustomText style={styles.details_text}>
+            {/* {item?.description} */}
+            Calculating Notifications Sent To Drivers
           </CustomText>
         </View>
+
+        {/* Location */}
         <View
-          style={[
-            styles.infoRow,
-            {
-              width: windowWidth * 0.35,
-            },
-          ]}>
+          style={{
+            flexDirection: 'row',
+          }}>
           <View
             style={[
-              styles.icon_box,
+              styles.infoRow,
               {
-                backgroundColor: Color.white,
-                // backgroundColor: Color.mediumGray,
+                width: windowWidth * 0.4,
               },
             ]}>
-            <Icon
-              as={Feather}
-              name="arrow-right"
-              color={Color.darkGray}
-              size={moderateScale(13, 0.6)}
-            />
+            <View style={styles.icon_box}>
+              <Icon
+                as={Entypo}
+                name="location-pin"
+                color={Color.white}
+                size={moderateScale(13, 0.6)}
+              />
+            </View>
+            <CustomText numberOfLines={1} style={styles.details_text}>
+              {item?.origin?.name}
+            </CustomText>
           </View>
-          <CustomText numberOfLines={1} style={styles.details_text}>
-            {item?.destination?.name}
-          </CustomText>
+          <View
+            style={[
+              styles.infoRow,
+              {
+                width: windowWidth * 0.35,
+              },
+            ]}>
+            <View
+              style={[
+                styles.icon_box,
+                {
+                  backgroundColor: Color.white,
+                  // backgroundColor: Color.mediumGray,
+                },
+              ]}>
+              <Icon
+                as={Feather}
+                name="arrow-right"
+                color={Color.darkGray}
+                size={moderateScale(13, 0.6)}
+              />
+            </View>
+            <CustomText numberOfLines={1} style={styles.details_text}>
+              {item?.destination?.name}
+            </CustomText>
+          </View>
         </View>
-      </View>
 
-      {/* Title */}
-      {/* <View style={styles.infoRow}>
+        {/* Title */}
+        {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
                       name="format-title"
@@ -141,8 +161,8 @@ const LoadBoardCard = ({item}) => {
                     {item?.title}
                   </CustomText>
                 </View> */}
-      {/* Type */}
-      {/* <View style={styles.infoRow}>
+        {/* Type */}
+        {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
                       name="height"
@@ -155,8 +175,8 @@ const LoadBoardCard = ({item}) => {
                     {item?.height}
                   </CustomText>
                 </View> */}
-      {/* Weight */}
-      {/* <View style={styles.infoRow}>
+        {/* Weight */}
+        {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
                       name="chat"
@@ -169,35 +189,37 @@ const LoadBoardCard = ({item}) => {
                     {item?.communication_mode}
                   </CustomText>
                 </View> */}
-      {/* Dimensions */}
-      <View style={styles.infoRow}>
-        <View style={styles.icon_box}>
-          <Icon
-            name="calendar-today"
-            as={MaterialIcons}
-            size={moderateScale(12, 0.6)}
-            color={Color.white}
-          />
+        {/* Dimensions */}
+        <View style={styles.infoRow}>
+          <View style={styles.icon_box}>
+            <Icon
+              name="calendar-today"
+              as={MaterialIcons}
+              size={moderateScale(12, 0.6)}
+              color={Color.white}
+            />
+          </View>
+          <CustomText numberOfLines={2} style={styles.details_text}>
+            {moment(item?.start_date).format('DD-MM-YYYY')}
+          </CustomText>
         </View>
-        <CustomText numberOfLines={2} style={styles.details_text}>
-          {moment(item?.start_date).format('DD-MM-YYYY')}
-        </CustomText>
-      </View>
 
-      {/* Distance */}
-      <View style={styles.infoRow}>
-        <View style={styles.icon_box}>
-          <Icon
-            as={MaterialCommunityIcons}
-            name="map-marker-distance"
-            color={Color.white}
-            size={moderateScale(13, 0.6)}
-          />
+        {/* Distance */}
+        <View style={styles.infoRow}>
+          <View style={styles.icon_box}>
+            <Icon
+              as={MaterialCommunityIcons}
+              name="map-marker-distance"
+              color={Color.white}
+              size={moderateScale(13, 0.6)}
+            />
+          </View>
+          <CustomText style={styles.details_text}>
+            {item?.miles} miles
+          </CustomText>
         </View>
-        <CustomText style={styles.details_text}>{item?.miles} miles</CustomText>
-      </View>
 
-      {/* <View style={styles.infoRow}>
+        {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
                         name="attach-money"
@@ -211,8 +233,8 @@ const LoadBoardCard = ({item}) => {
                   </CustomText>
                 </View> */}
 
-      {/* Rate */}
-      {/* <View style={styles.infoRow}>
+        {/* Rate */}
+        {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
                       as={FontAwesome}
@@ -226,8 +248,8 @@ const LoadBoardCard = ({item}) => {
                   </CustomText>
                 </View> */}
 
-      {/* Contact */}
-      {/* <View style={styles.infoRow}>
+        {/* Contact */}
+        {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
                       as={Ionicons}
@@ -241,8 +263,8 @@ const LoadBoardCard = ({item}) => {
                   </CustomText>
                 </View> */}
 
-      {/* Date */}
-      {/* <View style={styles.infoRow}>
+        {/* Date */}
+        {/* <View style={styles.infoRow}>
                   <View style={styles.icon_box}>
                     <Icon
                       as={Ionicons}
@@ -256,37 +278,41 @@ const LoadBoardCard = ({item}) => {
                   </CustomText>
                 </View> */}
 
-      {/* Time Posted */}
-      <View style={styles.infoRow}>
-        <View style={styles.icon_box}>
-          <Icon
-            as={Entypo}
-            name="clock"
-            color={Color.white}
-            size={moderateScale(13, 0.6)}
-          />
+        {/* Time Posted */}
+        <View style={styles.infoRow}>
+          <View style={styles.icon_box}>
+            <Icon
+              as={Entypo}
+              name="clock"
+              color={Color.white}
+              size={moderateScale(13, 0.6)}
+            />
+          </View>
+          <CustomText style={styles.details_text}>
+            {moment(item?.created_at).format('LT')}
+          </CustomText>
         </View>
-        <CustomText style={styles.details_text}>
-          {moment(item?.created_at).format('LT')}
-        </CustomText>
+
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => {
+            rbref?.current?.open();
+            // navigationService.navigate('PostScreen', {item: item});
+          }}
+          style={styles.load_more_btn}>
+          <CustomText
+            isBold
+            style={{
+              color: Color.white,
+              fontSize: moderateScale(11, 0.6),
+            }}>
+            Load more
+          </CustomText>
+        </TouchableOpacity>
       </View>
 
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={() => {
-          navigationService.navigate('PostScreen', {item: item});
-        }}
-        style={styles.load_more_btn}>
-        <CustomText
-          isBold
-          style={{
-            color: Color.white,
-            fontSize: moderateScale(11, 0.6),
-          }}>
-          Load more
-        </CustomText>
-      </TouchableOpacity>
-    </View>
+      <BottomSheet Rbref={rbref} item={item} />
+    </>
   );
 };
 

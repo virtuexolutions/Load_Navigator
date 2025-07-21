@@ -27,6 +27,8 @@ const SearchLocationModal = ({
   userAddress,
   placeholder,
   setState = state => {},
+  setdestinationState,
+  setOriginState,
 }) => {
   const dispatch = useDispatch();
   const googlePlacesRef = useRef(null);
@@ -98,6 +100,8 @@ const SearchLocationModal = ({
               )?.long_name;
               // setZipCode(zip)
               setState(state);
+              setOriginState(state);
+              setdestinationState(state);
               // setCity(city)
 
               console.log('======================== >>>>>', state, city, zip);

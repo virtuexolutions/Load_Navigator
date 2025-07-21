@@ -35,7 +35,6 @@ const LoadBoard = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [loadData, setloadData] = useState([]);
-
   const getLoad = async () => {
     const url = 'auth/load_detail';
     setIsLoading(true);
@@ -56,7 +55,7 @@ const LoadBoard = () => {
         title="Load Board Details"
         headerColor={Color.secondary}
         textstyle={{color: Color.white}}
-        showBack
+        // showBack
         menu
       />
       <CustomStatusBar
@@ -81,9 +80,26 @@ const LoadBoard = () => {
             data={loadData}
             keyExtractor={item => item.id.toString()}
             showsVerticalScrollIndicator={false}
-            renderItem={({item}) => (
-              <LoadBoardCard item={item}/>
-            )}
+            renderItem={({item}) =>{ return <LoadBoardCard item={item} />}}
+            ListEmptyComponent={
+              <View
+                style={{
+                  width: windowWidth,
+
+                  height: windowHeight * 0.5,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <CustomText
+                  style={{
+                    color: Color.black,
+                    width: windowWidth * 0.5,
+                    textAlign: 'center',
+                  }}>
+                  No data Uploaded yet!
+                </CustomText>
+              </View>
+            }
           />
         )}
       </View>

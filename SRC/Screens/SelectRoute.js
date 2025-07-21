@@ -9,8 +9,8 @@ import CustomText from '../Components/CustomText';
 import {useSelector} from 'react-redux';
 
 const SelectRoute = () => {
-  const role = useSelector(state => state.authReducer.role);
-  console.log("🚀 ~ SelectRoute ~ role:", role)
+  const userRole = useSelector(state => state.commonReducer.selectedRole);
+  console.log('🚀 ~ SelectRoute ~ role:', userRole);
 
   return (
     <ImageBackground
@@ -34,7 +34,7 @@ const SelectRoute = () => {
           bottom: 0,
         }}>
         <CustomButton
-          text={'Create A Route' }
+          text={'Create A Route'}
           textColor={Color.white}
           height={windowHeight * 0.07}
           borderColor={Color.white}
@@ -42,13 +42,15 @@ const SelectRoute = () => {
           borderRadius={moderateScale(30, 0.6)}
           width={windowWidth * 0.85}
           onPress={() => {
-          
-              navigationService.navigate('CreateRoute');
-          
+            navigationService.navigate('CreateRoute');
           }}
         />
         <CustomButton
-          text={ 'View Leader Board'}
+          text={
+            userRole.toLowerCase() == 'pilot'
+              ? 'View Leader Board'
+              : 'Post a Load'
+          }
           marginTop={moderateScale(10, 0.6)}
           textColor={Color.white}
           height={windowHeight * 0.07}
@@ -57,9 +59,9 @@ const SelectRoute = () => {
           borderRadius={moderateScale(30, 0.6)}
           width={windowWidth * 0.85}
           onPress={() => {
-          
-              navigationService.navigate('ViewLeadBoard');
-           
+            userRole.toLowerCase() == 'pilot'
+              ? navigationService.navigate('ViewLeadBoard')
+              : navigationService.navigate('PostLoadScreen');
           }}
         />
       </View>

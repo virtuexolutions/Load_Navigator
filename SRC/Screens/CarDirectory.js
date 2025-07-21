@@ -169,7 +169,7 @@ const CarDirectory = () => {
         title="Pilot Car Directory"
         headerColor={Color.secondary}
         textstyle={{ color: Color.white }}
-        showBack
+        // showBack
         menu
       />
       <CustomStatusBar

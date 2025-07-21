@@ -69,7 +69,7 @@ const Menu = () => {
         title="Menu"
         headerColor={Color.primary}
         textstyle={{ color: Color.white }}
-        showBack
+        // showBack
       />
       <ScrollView
         style={styles.mainScreen}

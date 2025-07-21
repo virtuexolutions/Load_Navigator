@@ -265,24 +265,7 @@ const PostLoadScreen = () => {
               </>
             )}
           </View>
-          <CustomButton
-            text={'Create a Route'}
-            // onPress={() => navigationService.navigate('LoadDetails')}
-            fontSize={moderateScale(14, 0.3)}
-            textColor={Color.white}
-            borderRadius={moderateScale(30, 0.3)}
-            width={windowWidth * 0.8}
-            marginTop={moderateScale(50, 0.3)}
-            height={windowHeight * 0.065}
-            bgColor={Color.secondary}
-            style={{
-              alignSelf: 'center',
-            }}
-            onPress={() => {
-              navigationService.navigate('CreateRoute');
-            }}
-            textTransform={'capitalize'}
-          />
+        
         </View>
 
         {/* <SideBarModal

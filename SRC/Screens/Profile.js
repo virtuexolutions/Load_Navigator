@@ -33,7 +33,9 @@ const Profile = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const token = useSelector(state => state.authReducer.token);
+  console.log("🚀 ~ Profile ~ token:", token)
   const userData = useSelector(state => state.commonReducer.userData);
+    const  userRole = useSelector(state => state.commonReducer.selectedRole);
   console.log("🚀 ~ Profile ~ userData:", userData)
   const [email, setEmail] = useState(userData?.email || '');
   const [Contact, setContact] = useState(userData?.contact || '');
@@ -103,79 +105,6 @@ const Profile = () => {
 
 
 
-  // const updateProfile = async () => {
-  //   const body = {
-  //     first_name: firstName,
-  //     //     last_name: LastName,
-  //     //     email: email,
-  //     contact: Contact,
-  //     company_name: company,
-  //     address: userAddress,
-  //     role: selectedUserType,
-  //     state: selectedState,
-  //   };
-  //   const body1 = {
-  //     first_name: firstName,
-  //     last_name: LastName,
-  //     email: email,
-  //     contact: Contact,
-  //     experience: Experience,
-  //     car_certificate: InsuranceCertificate,
-  //     includeme_car_directory: includeme,
-  //     address: userAddress,
-  //     state: selectedState,
-  //   };
-  //   const response = await Post(
-  //     url,
-  //     userData?.role== 'pilot' ? body1 : body,
-  //     apiHeader(token),
-  //   );
-  //   if (response != undefined) {
-  //   }
-  // };
-
-  // const updateProfile = async () => {
-
-  //   const body = {
-  //     first_name: firstName,
-  //     last_name: LastName,
-  //     email: email,
-  //     contact: Contact,
-  //     company_name: company,
-  //     address: userAddress,
-  //     role: selectedUserType,
-  //     state: selectedState,
-  //   };
-  //   const body1 = {
-  //     first_name: firstName,
-  //     last_name: LastName,
-  //     email: email,
-  //     contact: Contact,
-  //     experience: Experience,
-  //     car_certificate: InsuranceCertificate,
-  //     includeme_car_directory: includeme,
-  //     address: userAddress,
-  //     state: selectedState,
-  //   };
-  //   return console.log("body === > ", JSON.stringify(body1, null, 2));
-  //   for (let key in userData?.role== 'pilot' ? body1 : body) {
-  //     if (body[key] == '') {
-  //       return Platform.OS == 'android'
-  //       ? ToastAndroid.show(` ${key} field is empty`, ToastAndroid.SHORT)
-  //       : Alert.alert(` ${key} field is empty`);
-  //     }
-  //   }
-  //   const url = 'auth/profile';
-  //   setIsLoading(true);
-  //   const response = await Post(url, body, apiHeader(token));
-  //   setIsLoading(false);
-  //   if (response?.data != undefined) {
-  //     Platform.OS == 'android'
-  //       ? ToastAndroid.show('change password uccessfully', ToastAndroid.SHORT)
-  //       : Alert.alert('change password uccessfully');
-  //     navigationService.navigate('PostLoadScreen');
-  //   }
-  // };
   const updateProfile = async () => {
     const body = {
       // first_name: firstName,
@@ -202,23 +131,22 @@ const Profile = () => {
       escort_positions: selectedPosition
     };
 
-    const isPilot = userData?.role === 'pilot';
+       console.log('body === > ', JSON.stringify(selectedBody, null, 2)); // ✅
+    const isPilot =  userRole.toLowerCase() === 'pilot';
     const selectedBody = isPilot ? body1 : body;
 
-    console.log('body === > ', JSON.stringify(selectedBody, null, 2)); // ✅
-
+    
     for (let key in selectedBody) {
       if (selectedBody[key] === '') {
         return Platform.OS === 'android'
-          ? ToastAndroid.show(` ${key} field is empty`, ToastAndroid.SHORT)
-          : Alert.alert(` ${key} field is empty`);
+        ? ToastAndroid.show(` ${key} field is empty`, ToastAndroid.SHORT)
+        : Alert.alert(` ${key} field is empty`);
       }
     }
-
+    
     const url = 'auth/profile';
     setIsLoading(true);
     const response = await Post(url, selectedBody, apiHeader(token));
-    console.log(response?.data, '============================>')
     setIsLoading(false);
 
     if (response?.data !== undefined) {
@@ -238,7 +166,7 @@ const Profile = () => {
         styles.main_view,
         {
           backgroundColor:
-            userData?.role == 'pilot'
+             userRole.toLowerCase() == 'pilot'
               ? Color.primary
               : Color.secondary,
         },
@@ -246,12 +174,12 @@ const Profile = () => {
       <Header
         title="Profile"
         headerColor={
-          userData?.role == 'pilot'
+           userRole.toLowerCase() == 'pilot'
             ? Color.primary
             : Color.secondary
         }
         textstyle={{ color: Color.white }}
-        showBack
+        // showBack
         menu
       />
       <CustomStatusBar
@@ -263,7 +191,7 @@ const Profile = () => {
           styles.mainScreen,
           {
             backgroundColor:
-              userData?.role == 'pilot'
+               userRole.toLowerCase() == 'pilot'
                 ? Color.primary
                 : Color.white,
           },
@@ -274,12 +202,12 @@ const Profile = () => {
             paddingBottom: moderateScale(70, 0.6),
           }}
           style={styles.text_input}>
-          {userData?.role == 'pilot' ? (
+          { userRole.toLowerCase() == 'pilot' ? (
             <>
               <TextInputWithTitle
                 titleStlye={{
                   color:
-                    userData?.role == 'pilot'
+                     userRole.toLowerCase() == 'pilot'
                       ? Color.white
                       : Color.black,
                 }}
@@ -303,7 +231,7 @@ const Profile = () => {
               <TextInputWithTitle
                 titleStlye={{
                   color:
-                    userData?.role == 'pilot'
+                     userRole.toLowerCase() == 'pilot'
                       ? Color.white
                       : Color.black,
                 }}
@@ -330,7 +258,7 @@ const Profile = () => {
               <TextInputWithTitle
                 titleStlye={{
                   color:
-                    userData?.role == 'pilot'
+                     userRole.toLowerCase() == 'pilot'
                       ? Color.white
                       : Color.black,
                 }}
@@ -357,7 +285,7 @@ const Profile = () => {
           <TextInputWithTitle
             titleStlye={{
               color:
-                userData?.role == 'pilot'
+                 userRole.toLowerCase() == 'pilot'
                   ? Color.white
                   : Color.black,
             }}
@@ -382,7 +310,7 @@ const Profile = () => {
           <TextInputWithTitle
             titleStlye={{
               color:
-                userData?.role == 'pilot'
+                 userRole.toLowerCase() == 'pilot'
                   ? Color.white
                   : Color.black,
             }}
@@ -425,7 +353,7 @@ const Profile = () => {
               width: windowWidth * 0.68,
               paddingTop: moderateScale(10, 0.6),
               color:
-                userData?.role == 'pilot'
+                 userRole.toLowerCase() == 'pilot'
                   ? Color.white
                   : Color.black,
             }}>
@@ -450,7 +378,7 @@ const Profile = () => {
             style={{
               // alignSelf: 'flex-start',
               color:
-                userData?.role == 'pilot'
+                 userRole.toLowerCase() == 'pilot'
                   ? Color.white
                   : Color.darkGray,
               paddingVertical: moderateScale(10, 0.6),
@@ -477,11 +405,11 @@ const Profile = () => {
               {selectedState}
             </CustomText>
           </View>
-          {userData?.role == 'pilot' && (
+          { userRole.toLowerCase() == 'pilot' && (
             <TextInputWithTitle
               titleStlye={{
                 color:
-                  userData?.role == 'pilot'
+                   userRole.toLowerCase() == 'pilot'
                     ? Color.white
                     : Color.black,
               }}
@@ -505,14 +433,14 @@ const Profile = () => {
             // disabled
             />
           )}
-          {userData?.role == 'pilot' && (
+          { userRole.toLowerCase() == 'pilot' && (
             <>
               <CustomText
                 isBold
                 style={{
                   // alignSelf: 'flex-start',
                   color:
-                    userData?.role == 'pilot'
+                     userRole.toLowerCase() == 'pilot'
                       ? Color.white
                       : Color.darkGray,
                   paddingVertical: moderateScale(10, 0.6),
@@ -599,7 +527,7 @@ const Profile = () => {
             style_dropDown={{
               height: windowHeight * 0.06,
               backgroundColor:
-                userData?.role?== 'pilot'
+                 userRole.toLowerCase()?== 'pilot'
                   ? Color.white
                   : 'transparent',
               width: windowWidth * 0.8,

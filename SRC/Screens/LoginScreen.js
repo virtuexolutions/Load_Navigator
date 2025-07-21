@@ -72,6 +72,7 @@ const LoginScreen = props => {
     const response = await Post(url, body, apiHeader());
     setIsLoading(false);
     if (response != undefined) {
+    // return  console.log('darta =====>' , response?.data?.user_info)
       dispatch(setSelectedRole(response?.data?.user_info?.role));
       dispatch(setUserData(response?.data?.user_info));
       dispatch(setUserToken({token: response?.data?.token}));

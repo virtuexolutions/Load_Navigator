@@ -1,10 +1,10 @@
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {createDrawerNavigator} from '@react-navigation/drawer';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
-import { enableScreens } from 'react-native-screens';
-import { moderateScale } from 'react-native-size-matters';
-import { useSelector } from 'react-redux';
+import {enableScreens} from 'react-native-screens';
+import {moderateScale} from 'react-native-size-matters';
+import {useSelector} from 'react-redux';
 import Drawer from './Drawer/Drawer';
 import navigationService from './navigationService';
 import ChangePassword from './Screens/ChangePassword';
@@ -38,8 +38,6 @@ const AppNavigator = () => {
   const isGoalCreated = useSelector(state => state.authReducer.isGoalCreated);
   const walkThrough = useSelector(state => state.authReducer.userWalkThrough);
   console.log('🚀 ~ AppNavigator ~ walkThrough:', walkThrough);
-  const role = useSelector(state => state.authReducer.role);
-  console.log('🚀 ~ AppNavigator ~ role:', role);
   const isVerified = useSelector(state => state.authReducer.isVerified);
   const token = useSelector(state => state.authReducer.token);
   console.log('🚀 ~ AppNavigator ~ token:', token);
@@ -52,8 +50,8 @@ const AppNavigator = () => {
       walkThrough == false
         ? 'WalkThroughScreen'
         : token != null
-          ? 'MyDrawer'
-          : 'SelecteArea';
+        ? 'MyDrawer'
+        : 'SelecteArea';
 
     console.log('asdasdfasdf token ================>', firstScreen, token);
 
@@ -62,7 +60,7 @@ const AppNavigator = () => {
         <RootNav.Navigator
           // initialRouteName={"Signup"}
           initialRouteName={firstScreen}
-          screenOptions={{ headerShown: false }}>
+          screenOptions={{headerShown: false}}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
           <RootNav.Screen name="CarDirectory" component={CarDirectory} />
           <RootNav.Screen name="Alerts" component={Alerts} />
@@ -203,17 +201,16 @@ const AppNavigator = () => {
 //   );
 // };
 
+
 export const MyDrawer = () => {
   const DrawerNavigation = createDrawerNavigator();
   const firstScreen = 'HomeScreen';
   const userRole = useSelector(state => state.commonReducer.selectedRole);
-  const userData = useSelector(state => state.commonReducer.userData);
-
   console.log('🚀 ~ MyDrawer ~ userRole======================:', userRole);
   return (
     <DrawerNavigation.Navigator
       drawerContent={props => <Drawer {...props} />}
-      initialRouteName={userData?.role?.toLowerCase()  == 'pilot' ? 'ViewLeadBoard' : 'PostLoadScreen'}
+      initialRouteName={'SelectRoute'}
       screenOptions={{
         headerShown: false,
         drawerStyle: {
@@ -222,23 +219,20 @@ export const MyDrawer = () => {
           // borderBottomRightRadius: moderateScale(120, 0.6),
         },
       }}>
-      {userData?.role?.toLowerCase() == 'pilot' ? (
-
+      {/* {userRole.toLowerCase() == 'pilot' ? ( */}
+       
         <DrawerNavigation.Screen name="SelectRoute" component={SelectRoute} />
-        // <DrawerNavigation.Screen
-        //   name="PostLoadScreen"
-        //   component={PostLoadScreen}
-        // />
-      ) : (
+        
+       {/* ) : ( */}
         <DrawerNavigation.Screen
-          name="PostLoadScreen"
-          component={PostLoadScreen}
-        />
-      )}
+        name="PostLoadScreen"
+        component={PostLoadScreen}
+      />
+      {/* )} */}
       <DrawerNavigation.Screen name="Help" component={Help} />
       <DrawerNavigation.Screen name="LoadBoard" component={LoadBoard} />
       <DrawerNavigation.Screen name="CarDirectory" component={CarDirectory} />
-      <DrawerNavigation.Screen name="LoadDetails" component={LoadDetails} />
+      {/* <DrawerNavigation.Screen name="LoadDetails" component={LoadDetails} /> */}
       <DrawerNavigation.Screen name="PostScreen" component={PostScreen} />
       <DrawerNavigation.Screen name="ViewLeadBoard" component={ViewLeadBoard} />
       <DrawerNavigation.Screen name="ChangePassword" component={ChangePassword} />

@@ -91,7 +91,7 @@ const Help = () => {
         title="fAQS"
         headerColor={userRole.toLowerCase() == 'pilot' ? Color.primary : Color.secondary}
         textstyle={{color: Color.white}}
-        showBack
+        // showBack
         menu
       />
       <CustomStatusBar

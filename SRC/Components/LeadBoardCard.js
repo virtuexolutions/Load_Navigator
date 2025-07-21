@@ -1,32 +1,17 @@
-import {
-  ActivityIndicator,
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
-import Color from '../Assets/Utilities/Color';
-import {moderateScale} from 'react-native-size-matters';
-import CustomText from '../Components/CustomText';
+import {useIsFocused} from '@react-navigation/native';
+import moment from 'moment';
 import {Icon} from 'native-base';
+import React, {useRef, useState} from 'react';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {moderateScale} from 'react-native-size-matters';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Fontisto from 'react-native-vector-icons/Fontisto';
-import Header from '../Components/Header';
-import navigationService from '../navigationService';
-import {Get} from '../Axios/AxiosInterceptorFunction';
 import {useSelector} from 'react-redux';
-import {useIsFocused} from '@react-navigation/native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import moment from 'moment';
+import Color from '../Assets/Utilities/Color';
 import BottomSheet from '../Components/BottomSheet';
+import CustomText from '../Components/CustomText';
+import {windowHeight, windowWidth} from '../Utillity/utils';
 
 const LeadBoardCard = ({item}) => {
   const IsFocused = useIsFocused();
@@ -47,8 +32,19 @@ const LeadBoardCard = ({item}) => {
           <CustomText isBold style={styles.card_heading}>
             {item?.company}
           </CustomText>
-          <View style={styles.badges}>
-            <CustomText style={styles.text}>{item?.status}</CustomText>
+          <View
+            style={[
+              styles.badges,
+              {
+                backgroundColor:
+                  item?.status.toLowerCase() == 'cover'
+                    ? Color.green
+                    : 'yellow',
+              },
+            ]}>
+            <CustomText style={styles.text}>
+              {item?.status.toLowerCase() == 'cover' ? 'Covered' : 'Open'}
+            </CustomText>
           </View>
         </View>
         {/* <View> */}
@@ -250,10 +246,6 @@ const styles = StyleSheet.create({
     backgroundColor: Color.primary,
     aignItems: 'center',
   },
-  main_view: {
-    // paddingHorizontal: moderateScale(20, 0.6),
-    // paddingVertical: moderateScale(30, 0.6),
-  },
   heading: {
     fontSize: moderateScale(20, 0.6),
     color: Color.white,
@@ -261,7 +253,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: windowWidth * 0.8,
-    height: windowHeight * 0.285,
+    height: windowHeight * 0.29,
     backgroundColor: Color.grey,
     borderRadius: moderateScale(20, 0.6),
     marginTop: moderateScale(10, 0.6),
@@ -291,7 +283,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: moderateScale(12, 0.6),
     marginLeft: moderateScale(5, 0.6),
-    color: Color.white,
+    color: Color.black,
     // backgroundColor :'red'
   },
   badges: {

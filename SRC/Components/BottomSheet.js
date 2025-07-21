@@ -11,11 +11,15 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 // import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Fontisto from 'react-native-vector-icons/Fontisto';
+// import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import {Icon} from 'native-base';
 import moment from 'moment';
+import {useSelector} from 'react-redux';
 
 const BottomSheet = ({Rbref, setRbRef, item}) => {
+  console.log("🚀 ~ BottomSheet ~ item:", item)
+  const userRole = useSelector(state => state.commonReducer.selectedRole);
   return (
     <RBSheet
       // closeOnDragDown={true}
@@ -28,7 +32,10 @@ const BottomSheet = ({Rbref, setRbRef, item}) => {
         container: {
           borderTopRightRadius: 30,
           borderTopLeftRadius: 30,
-          height: windowHeight * 0.54,
+          height:
+            userRole.toLowerCase() == 'pilot'
+              ? windowHeight * 0.6
+              : windowHeight * 0.67,
         },
       }}>
       <View
@@ -46,15 +53,41 @@ const BottomSheet = ({Rbref, setRbRef, item}) => {
             marginTop: moderateScale(10, 0.6),
             // backgroundColor :'red'
           }}></View>
-        <CustomText
+        <View
           style={{
-            width: windowWidth * 0.6,
-            fontSize: moderateScale(17, 0.6),
-            textAlign: 'center',
+            flexDirection: 'row',
+            width: windowWidth * 0.9,
+            paddingHorizontal: moderateScale(10, 0.6),
+            justifyContent: 'space-between',
             paddingTop: moderateScale(10, 0.6),
           }}>
-          {item?.company}
-        </CustomText>
+          <CustomText
+            numberOfLines={2}
+            style={{
+              fontSize: moderateScale(16, 0.6),
+              color: Color.black,
+              width: windowWidth * 0.7,
+            }}>
+            {item?.company}
+          </CustomText>
+          <CustomText
+            style={{
+              fontSize: moderateScale(11, 0.6),
+              textAlign: 'center',
+              marginTop: moderateScale(5, 0.6),
+              paddingTop: moderateScale(2, 0.6),
+              backgroundColor:
+                item?.status.toLowerCase() == 'cover' ? Color.green : 'yellow',
+              width: moderateScale(50, 0.6),
+              height: windowHeight * 0.025,
+              // justifyContent: 'center',
+              // alignItems: 'center',
+              borderRadius: moderateScale(20, 0.6),
+              marginLeft: moderateScale(10, 0.6),
+            }}>
+            {item?.status.toLowerCase() == 'cover' ? 'Covered' : 'Open'}
+          </CustomText>
+        </View>
         <View
           style={{
             paddingHorizontal: moderateScale(35, 0.6),
@@ -109,18 +142,18 @@ const BottomSheet = ({Rbref, setRbRef, item}) => {
               {moment(item?.start_date).format('DD-MM-YYYY')}
             </CustomText>
           </View>
-          {/* <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+          <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
             <View style={styles.icon_view}>
               <Icon
-                name="weight"
-                as={FontAwesome5}
+                name="paragraph"
+                as={Fontisto}
                 size={moderateScale(12, 0.6)}
                 color={Color.white}
               />
             </View>
 
-            <CustomText style={styles.text}>{item?.weight}</CustomText>
-          </View> */}
+            <CustomText numberOfLines={2} style={styles.text}>{item?.description}</CustomText>
+          </View>
           <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
             <View style={styles.icon_view}>
               <Icon
@@ -206,17 +239,48 @@ const BottomSheet = ({Rbref, setRbRef, item}) => {
             </CustomText>
           </View>
         </View>
-        <CustomButton
-          text={'create route'}
-          textColor={Color.white}
-          width={windowWidth * 0.8}
-          height={windowHeight * 0.05}
-          marginTop={moderateScale(15, 0.3)}
-          onPress={() => {}}
-          bgColor={Color.secondary}
-          borderRadius={moderateScale(30, 0.3)}
-          fontSize={moderateScale(15, 0.3)}
-        />
+        {userRole.toLowerCase() == 'pilot' ? (
+          <CustomButton
+            text={'create route'}
+            textColor={Color.white}
+            width={windowWidth * 0.8}
+            height={windowHeight * 0.05}
+            marginTop={moderateScale(15, 0.3)}
+            onPress={() => {}}
+            bgColor={Color.secondary}
+            borderRadius={moderateScale(30, 0.3)}
+            fontSize={moderateScale(15, 0.3)}
+          />
+        ) : (
+          <>
+            <CustomButton
+              text={'Mark Covered '}
+              textColor={Color.white}
+              width={windowWidth * 0.8}
+              height={windowHeight * 0.05}
+              marginTop={moderateScale(15, 0.3)}
+              onPress={() => {}}
+              bgColor={Color.secondary}
+              borderRadius={moderateScale(30, 0.3)}
+              fontSize={moderateScale(15, 0.3)}
+            />
+            <CustomButton
+              text={'cancel'}
+              textColor={Color.black}
+              width={windowWidth * 0.8}
+              height={windowHeight * 0.05}
+              marginTop={moderateScale(15, 0.3)}
+              onPress={() => {
+                Rbref?.current?.close();
+              }}
+              bgColor={Color.white}
+              borderWidth={1}
+              borderColor={Color.black}
+              borderRadius={moderateScale(30, 0.3)}
+              fontSize={moderateScale(15, 0.3)}
+            />
+          </>
+        )}
       </View>
     </RBSheet>
   );
