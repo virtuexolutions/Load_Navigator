@@ -26,7 +26,16 @@ const LoadBoardCard = ({item}) => {
   const userData = useSelector(state => state.commonReducer.userData);
   const rbref = useRef();
   const [isRecent, setIsRecent] = useState(false);
-
+  const emailVerified = useSelector(state => state.authReducer.emailVerified);
+  const numberVerified = useSelector(state => state.authReducer.numberVerified);
+  const [loadStatus, setLoadStatus] = useState(item?.status);
+  console.log('🚀 ~ LoadBoardCard ~ loadStatus:', loadStatus);
+  const origin =
+    typeof item?.origin === 'string' ? JSON.parse(item?.origin) : item.origin;
+  const destination =
+    typeof item?.destination === 'string'
+      ? JSON.parse(item?.destination)
+      : item?.destination;
   useEffect(() => {
     const THREE_HOURS = 3 * 60 * 60 * 1000; // 3 hours in ms
     const now = new Date();
@@ -38,10 +47,15 @@ const LoadBoardCard = ({item}) => {
   return (
     <>
       <View style={styles.recentLoadBoards}>
-        <View style={styles.row_view}>
-          <CustomText isBold style={styles.heading_text}>
-            {userData?.company_name}
-          </CustomText>
+        <View
+          style={[
+            styles.row_view,
+            {
+              position: 'absolute',
+              paddingTop: moderateScale(10, 0.6),
+              right: 10,
+            },
+          ]}>
           <View style={styles.row_view}>
             <CustomText style={styles.text}>{item?.recency}</CustomText>
             {isRecent && (
@@ -49,10 +63,10 @@ const LoadBoardCard = ({item}) => {
                 style={{
                   color: Color.black,
                   fontSize: moderateScale(10, 0.6),
-                  backgroundColor :Color.lightGrey,
+                  backgroundColor: Color.lightGrey,
                   // padding : moderateScale(3,.6),
-                  paddingHorizontal :moderateScale(5,.6) ,
-                  borderRadius : moderateScale(10,.6)
+                  paddingHorizontal: moderateScale(5, 0.6),
+                  borderRadius: moderateScale(10, 0.6),
                 }}>
                 recent
               </CustomText>
@@ -63,7 +77,8 @@ const LoadBoardCard = ({item}) => {
                 styles.btn,
                 {
                   backgroundColor:
-                    item?.status.toLowerCase() == 'cover'
+                    // item?.status.toLowerCase() == 'cover'
+                    loadStatus.toLowerCase() == 'cover'
                       ? Color.green
                       : 'yellow',
                 },
@@ -73,10 +88,31 @@ const LoadBoardCard = ({item}) => {
                   color: Color.black,
                   fontSize: moderateScale(10, 0.6),
                 }}>
-                {item?.status.toLowerCase() == 'cover' ? 'Covered' : 'Open'}
+                {/* {item?.status.toLowerCase() == 'cover' ? 'Covered' : 'Open'} */}
+                {loadStatus.toLowerCase() == 'cover' ? 'Covered' : 'Open'}
               </CustomText>
             </TouchableOpacity>
           </View>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+          }}>
+          <CustomText numberOfLines={1} isBold style={styles.heading_text}>
+            {userData?.company_name}
+          </CustomText>
+          {emailVerified == true && numberVerified == true && (
+            <Icon
+              style={{
+                marginTop: moderateScale(16, 0.6),
+                marginHorizontal: moderateScale(5, 0.6),
+              }}
+              as={MaterialIcons}
+              name="verified"
+              color={Color.blue}
+              size={moderateScale(13, 0.6)}
+            />
+          )}
         </View>
 
         {/* Description */}
@@ -116,7 +152,7 @@ const LoadBoardCard = ({item}) => {
               />
             </View>
             <CustomText numberOfLines={1} style={styles.details_text}>
-              {item?.origin?.name}
+              {origin?.name}
             </CustomText>
           </View>
           <View
@@ -142,7 +178,7 @@ const LoadBoardCard = ({item}) => {
               />
             </View>
             <CustomText numberOfLines={1} style={styles.details_text}>
-              {item?.destination?.name}
+              {destination?.name}
             </CustomText>
           </View>
         </View>
@@ -311,7 +347,12 @@ const LoadBoardCard = ({item}) => {
         </TouchableOpacity>
       </View>
 
-      <BottomSheet Rbref={rbref} item={item} />
+      <BottomSheet
+        Rbref={rbref}
+        setLoadStatus={setLoadStatus}
+        item={item}
+        loadStatus={loadStatus}
+      />
     </>
   );
 };
@@ -337,6 +378,9 @@ const styles = StyleSheet.create({
   heading_text: {
     fontSize: moderateScale(18, 0.6),
     color: Color.secondary,
+    paddingHorizontal: moderateScale(5, 0.6),
+    paddingVertical: moderateScale(10, 0.6),
+    // width: windowWidth * 0.45,
   },
   text: {
     fontSize: moderateScale(10, 0.6),

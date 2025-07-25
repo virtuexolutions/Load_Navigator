@@ -9,6 +9,9 @@ const initialState = {
   isGoalCreated: false,
   role: '',
   user_type: '',
+  numberVerified: false,
+  emailVerified: false,
+  pm_type: '',
 };
 
 export const AuthSlice = createSlice({
@@ -16,8 +19,8 @@ export const AuthSlice = createSlice({
   initialState: initialState,
   reducers: {
     setUserToken: (state, action) => {
-      state.token = action?.payload?.token
-      console.log('================ >>>' , action?.payload)
+      state.token = action?.payload?.token;
+      console.log('================ >>>', action?.payload);
     },
     setUserType(state, action) {
       state.user_type = action.payload;
@@ -32,13 +35,20 @@ export const AuthSlice = createSlice({
       state.token = action?.payload;
     },
     setUserLogoutAuth(state, action) {
-    //  return console.log("🚀 ~ setUserLogoutAuth ~ state:", state)
       state.token = null;
       state.fcmToken = null;
     },
+    setIsMobileVerified(state, action) {
+      state.numberVerified = action.payload;
+    },
+    setIsEmailVerified(state, action) {
+      state.emailVerified = action.payload;
+    },
     setWalkThrough(state, action) {
       state.userWalkThrough = action.payload;
-      console.log('🚀 ~ setWalkThrough ~ action.payload:', action.payload);
+    },
+    setPm_Type(state, action) {
+      state.pm_type = action.payload;
     },
   },
 });
@@ -51,6 +61,9 @@ export const {
   setWalkThrough,
   SetUserRole,
   setUserType,
+  setIsMobileVerified,
+  setIsEmailVerified,
+  setPm_Type,
 } = AuthSlice.actions;
 
 export default AuthSlice.reducer;

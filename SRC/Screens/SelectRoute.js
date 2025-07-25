@@ -5,7 +5,6 @@ import CustomButton from '../Components/CustomButton';
 import {moderateScale} from 'react-native-size-matters';
 import navigationService from '../navigationService';
 import Color from '../Assets/Utilities/Color';
-import CustomText from '../Components/CustomText';
 import {useSelector} from 'react-redux';
 
 const SelectRoute = () => {
@@ -49,7 +48,7 @@ const SelectRoute = () => {
           text={
             userRole.toLowerCase() == 'pilot'
               ? 'View Leader Board'
-              : 'Post a Load'
+              : 'View Load Board'
           }
           marginTop={moderateScale(10, 0.6)}
           textColor={Color.white}

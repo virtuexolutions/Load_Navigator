@@ -152,7 +152,7 @@ const ViewLeadBoard = () => {
           <FlatList
             contentContainerStyle={{
               alignItems: 'center',
-              paddingBottom: moderateScale(70, 0.6),
+              paddingBottom: moderateScale(150, 0.6),
             }}
             data={leaderData}
             renderItem={({item, index}) => {

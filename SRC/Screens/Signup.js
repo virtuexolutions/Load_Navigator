@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import {Icon} from 'native-base';
+import {Checkbox, Icon} from 'native-base';
 import React, {useState} from 'react';
 import {
   ActivityIndicator,
@@ -29,7 +29,12 @@ import {setSelectedRole, setUserData} from '../Store/slices/common';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import DropDownSingleSelect from '../Components/DropDownSingleSelect';
-import {SetUserRole} from '../Store/slices/auth';
+import {
+  setIsEmailVerified,
+  setIsMobileVerified,
+  SetUserRole,
+} from '../Store/slices/auth';
+import navigationService from '../navigationService';
 
 const Signup = props => {
   const selectedArea = props?.route?.params?.selectedArea;
@@ -57,7 +62,8 @@ const Signup = props => {
   const [commnuicationMode, setCommunicationMode] = useState('call');
   const [selectedUserType, setSelectedUserType] = useState('Pilot Cars');
   const [isSelected, setIsSelected] = useState(false);
-
+  const [isNotified, setIsNotified] = useState(false);
+  const [insuranceNumber, setInsuranceNumber] = useState(false);
   const onPressregister = async values => {
     const body = {
       first_name: firstName,
@@ -65,7 +71,7 @@ const Signup = props => {
       email: email,
       contact: `+1${Contact}`,
       company_name: company,
-      address: userAddress,
+      address: userAddress?.name,
       dot_number: dotNumber,
       mc_number: mcNumber,
       password: password,
@@ -74,7 +80,11 @@ const Signup = props => {
       agree_to_terms: Policy,
       selected_area: selectedArea,
       role: 'company',
-      state: selectedState?.label,
+      state: selectedState,
+      // include_me_directory :
+      is_notified: isNotified,
+      lat: userAddress?.lat,
+      lng: userAddress?.lng,
     };
     const body1 = {
       first_name: firstName,
@@ -91,10 +101,18 @@ const Signup = props => {
       includeme_car_directory: CarDirectory,
       selected_area: selectedArea,
       role: 'pilot',
-      address: userAddress,
-      state: selectedState?.label,
+      address: userAddress?.name,
+      state: selectedState,
+      is_notified: isNotified,
+      lat: userAddress?.lat,
+      lng: userAddress?.lng,
     };
-
+    console.log(
+      '================= >>>>>>>>>>>>',
+      selectedUserType == 'Trucking company'
+        ? JSON.stringify(body, null, 2)
+        : JSON.stringify(body1, null, 2),
+    );
     for (let key in selectedUserType == 'Trucking company' ? body : body1) {
       if (body[key] == '') {
         return Platform.OS == 'android'
@@ -109,15 +127,20 @@ const Signup = props => {
       selectedUserType == 'Trucking company' ? body : body1,
       apiHeader(),
     );
-    console.log("🚀 ~ response:", response?.data)
     setIsLoading(false);
     if (response != undefined) {
       Platform.OS == 'android'
         ? ToastAndroid.show('Sign up successfully', ToastAndroid.SHORT)
         : Alert.alert('Sign up successfully');
       dispatch(setUserData(response?.data?.user_info));
-      dispatch(setUserToken({token: response?.data?.token}));
+    dispatch(setUserToken({token: response?.data?.token}));
       dispatch(setSelectedRole(response?.data?.user_info?.role));
+      // dispatch(
+      //   setIsEmailVerified(response?.data?.user_info?.is_email_verified),
+      // );
+      // dispatch(
+      //   setIsMobileVerified(response?.data?.user_info?.is_number_verified),
+      // );
     }
   };
   const dummyarray = [
@@ -382,7 +405,7 @@ const Signup = props => {
             placeholderColor={Color.mediumGray}
             titleStlye={{right: 10}}
           />
-          <TextInputWithTitle
+          {/* <TextInputWithTitle
             placeholder={'Address'}
             setText={setUserAddress}
             value={userAddress}
@@ -396,8 +419,8 @@ const Signup = props => {
             marginTop={moderateScale(10, 0.3)}
             placeholderColor={Color.mediumGray}
             titleStlye={{right: 10}}
-          />
-          {/* <TouchableOpacity
+          /> */}
+          <TouchableOpacity
             onPress={() => {
               setIsModalVisible(true);
             }}
@@ -410,10 +433,8 @@ const Signup = props => {
               }}>
               {userAddress?.name ? userAddress?.name : 'Address'}
             </CustomText>
-          </TouchableOpacity> */}
-          {/* <View
-
-            style={styles.address_btn}>
+          </TouchableOpacity>
+          <View style={styles.address_btn}>
             <CustomText
               numberOfLines={1}
               style={{
@@ -422,13 +443,13 @@ const Signup = props => {
               }}>
               {selectedState ? selectedState : 'State'}
             </CustomText>
-          </View> */}
+          </View>
 
-          <CountryStatePicker
+          {/* <CountryStatePicker
             country={selectedArea == 'Sign Up For Canada' ? 'Canada' : 'USA'}
             setSelectedState={setSelectedState}
             selectedState={selectedState}
-          />
+          /> */}
 
           {selectedUserType != 'Pilot Cars' && (
             <TextInputWithTitle
@@ -524,12 +545,12 @@ const Signup = props => {
               }}>
               <View
                 style={{
-                  width: windowWidth * 0.035,
-                  height: windowWidth * 0.035,
+                  width: windowWidth * 0.04,
+                  height: windowWidth * 0.04,
                   borderWidth: 1,
                   borderColor: Color.white,
                   alignItems: 'center',
-                  backgroundColor: CarDirectory ? Color.red : 'transparent',
+                  backgroundColor: CarDirectory ? Color.red : 'white',
                 }}>
                 {CarDirectory && (
                   <Icon
@@ -559,18 +580,19 @@ const Signup = props => {
               style={{
                 flexDirection: 'row',
                 width: windowWidth * 0.93,
+                marginVertical: moderateScale(5, 0.6),
               }}>
               <View
-                style={{
-                  width: windowWidth * 0.035,
-                  height: windowWidth * 0.035,
-                  borderWidth: 1,
-                  borderColor: Color.white,
-                  alignItems: 'center',
-                  backgroundColor: InsuranceCertificate
-                    ? Color.red
-                    : 'transparent',
-                }}>
+                style={[
+                  {
+                    width: windowWidth * 0.04,
+                    height: windowWidth * 0.04,
+                    borderWidth: 1,
+                    borderColor: Color.white,
+                    alignItems: 'center',
+                    backgroundColor: InsuranceCertificate ? Color.red : 'white',
+                  },
+                ]}>
                 {InsuranceCertificate && (
                   <Icon
                     as={AntDesign}
@@ -590,6 +612,24 @@ const Signup = props => {
                 I Have Pilot Car Certifications And Insurance
               </CustomText>
             </TouchableOpacity>
+          )}
+          {selectedUserType == 'Pilot Cars' && InsuranceCertificate && (
+            <TextInputWithTitle
+              placeholder={'Insurance Number'}
+              setText={setInsuranceNumber}
+              value={insuranceNumber}
+              viewHeight={0.06}
+              viewWidth={0.93}
+              inputWidth={0.83}
+              border={1}
+              borderRadius={30}
+              backgroundColor={'transparent'}
+              borderColor={Color.white}
+              marginTop={moderateScale(10, 0.3)}
+              placeholderColor={Color.mediumGray}
+              titleStlye={{right: 10}}
+              // keyboardType={}
+            />
           )}
 
           {selectedUserType == 'Pilot Cars' && (
@@ -656,7 +696,7 @@ const Signup = props => {
               style={[
                 styles.check_box,
                 {
-                  backgroundColor: Policy ? Color.red : 'transparent',
+                  backgroundColor: Policy ? Color.red : 'white',
                 },
               ]}>
               {Policy && (
@@ -681,6 +721,40 @@ const Signup = props => {
                 : 'I Agree To The Terms Of Use, Privacy Policy, And Cookies Policy.'}
             </CustomText>
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setIsNotified(!isNotified);
+            }}
+            style={styles.row}>
+            <View
+              style={[
+                styles.check_box,
+                {
+                  backgroundColor: isNotified ? Color.red : 'white',
+                  marginVertical: moderateScale(5, 0.6),
+                },
+              ]}>
+              {isNotified && (
+                <Icon
+                  as={AntDesign}
+                  name="check"
+                  size={moderateScale(12, 0.6)}
+                  color={Color.white}
+                />
+              )}
+            </View>
+            <CustomText
+              style={{
+                width: windowWidth * 0.8,
+                fontSize: moderateScale(9, 0.6),
+                color: Color.white,
+                marginHorizontal: moderateScale(5, 0.6),
+                marginVertical: moderateScale(5, 0.6),
+                // lineHeight: moderateScale(10, 0.6),
+              }}>
+              send me notification on text or email
+            </CustomText>
+          </TouchableOpacity>
 
           <CustomButton
             text={
@@ -702,6 +776,8 @@ const Signup = props => {
             textTransform={'capitalize'}
             elevation={true}
             onPress={() => {
+              // navigationService.navigate('VerificationScreen');
+              // // navigationService.navigate('VerificationScreen')
               onPressregister();
             }}
           />
@@ -723,14 +799,15 @@ const Signup = props => {
               navigation.goBack();
             }}
           />
-          {/* <SearchLocationModal
+          <SearchLocationModal
             locationType={'address'}
             isModalVisible={isModalVisible}
             setIsModalVisible={setIsModalVisible}
             setUserAddress={setUserAddress}
             userAddress={userAddress}
             setState={setSelectedState}
-          /> */}
+            fromSignup={true}
+          />
         </ScrollView>
       </ImageBackground>
     </SafeAreaView>
@@ -772,11 +849,13 @@ const styles = ScaledSheet.create({
     paddingHorizontal: moderateScale(15, 0.6),
   },
   check_box: {
-    width: windowWidth * 0.035,
-    height: windowWidth * 0.035,
-    borderWidth: 1,
-    borderColor: Color.white,
+    width: windowWidth * 0.04,
+    height: windowWidth * 0.04,
+    borderWidth: 1.5,
+    borderColor: Color.veryLightGray,
     alignItems: 'center',
+    borderRadius: 2,
+    // borderWidth :
   },
   row: {
     flexDirection: 'row',

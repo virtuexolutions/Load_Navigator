@@ -8,8 +8,9 @@ import { background, color, position } from 'native-base/lib/typescript/theme/st
 import { mode } from 'native-base/lib/typescript/theme/tools';
 import Color from '../Assets/Utilities/Color';
 import { useDispatch } from 'react-redux';
-import { SetUserRole } from '../Store/slices/auth';
+// import { SetUserRole } from '../Store/slices/auth';
 import navigationService from '../navigationService';
+import { SetUserRole } from '../Store/slices/auth-slice';
 
 const StartScreen = () => {
   const dispatch = useDispatch()

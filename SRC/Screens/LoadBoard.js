@@ -22,16 +22,17 @@ import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import navigationService from '../navigationService';
-import {useIsFocused} from '@react-navigation/native';
+import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import {Get} from '../Axios/AxiosInterceptorFunction';
 import moment from 'moment';
 import LoadBoardCard from '../Components/LoadBoardCard';
 
-const LoadBoard = () => {
+const LoadBoard = ({navigation}) => {
   const IsFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
+  // console.log("🚀 ~ LoadBoard ~ userData:", JSON.stringify(userData ,null ,2))
 
   const [isLoading, setIsLoading] = useState(false);
   const [loadData, setloadData] = useState([]);
@@ -45,8 +46,9 @@ const LoadBoard = () => {
     }
   };
 
+
   useEffect(() => {
-    getLoad();
+    getLoad()
   }, [IsFocused]);
 
   return (
@@ -56,7 +58,7 @@ const LoadBoard = () => {
         headerColor={Color.secondary}
         textstyle={{color: Color.white}}
         // showBack
-        menu
+        Ismenu
       />
       <CustomStatusBar
         backgroundColor={Color.white}

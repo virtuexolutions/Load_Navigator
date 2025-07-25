@@ -32,15 +32,23 @@ import SelecteArea from './Screens/SelecteArea';
 import Help from './Screens/Help';
 import PrivacyPolicy from './Screens/PrivacyPolicy';
 import TermsAndConditions from './Screens/TermsAndConditions';
+import VerificationScreen from './Screens/VerificationScreen';
+import AddCard from './Screens/AddCard';
 
 enableScreens();
 const AppNavigator = () => {
   const isGoalCreated = useSelector(state => state.authReducer.isGoalCreated);
   const walkThrough = useSelector(state => state.authReducer.userWalkThrough);
-  console.log('🚀 ~ AppNavigator ~ walkThrough:', walkThrough);
-  const isVerified = useSelector(state => state.authReducer.isVerified);
+  const userRole = useSelector(state => state.commonReducer.selectedRole);
+  console.log("🚀 ~ AppNavigator ~ userRole:", userRole)
   const token = useSelector(state => state.authReducer.token);
-  console.log('🚀 ~ AppNavigator ~ token:', token);
+
+  const isLoggedIn = useSelector(state => state.authReducer.isLoggedIn);
+  const pm_type = useSelector(state => state.authReducer.pm_type);
+
+  const emailVerified = useSelector(state => state.authReducer.emailVerified);
+
+  const numberVerified = useSelector(state => state.authReducer.numberVerified);
 
   const RootNav = createNativeStackNavigator();
   const RootNavLogged = createNativeStackNavigator();
@@ -49,11 +57,19 @@ const AppNavigator = () => {
     const firstScreen =
       walkThrough == false
         ? 'WalkThroughScreen'
-        : token != null
-        ? 'MyDrawer'
-        : 'SelecteArea';
+        : token == null
+        ? 'SelecteArea'
+        : emailVerified == false || numberVerified == false
+        ? 'VerificationScreen'
+        : [null, '', undefined].includes(pm_type) &&
+          userRole.toLowerCase() != 'pilot'
+        ? 'AddCard'
+        : 'MyDrawer';
+    // : token != null && (!emailVerified || !numberVerified)
+    // ? 'VerificationScreen'
+    // : 'pilot';
 
-    console.log('asdasdfasdf token ================>', firstScreen, token);
+    console.log('asdasdfasdf token ================>', firstScreen, token ,pm_type);
 
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
@@ -85,7 +101,13 @@ const AppNavigator = () => {
           <RootNav.Screen name="CreateRoute" component={CreateRoute} />
           <RootNav.Screen name="LoadDetails" component={LoadDetails} />
           <RootNav.Screen name="PostScreen" component={PostScreen} />
-          {/* <RootNav.Screen name="PostLoadScreen" component={PostLoadScreen} /> */}
+
+          <RootNav.Screen name="AddCard" component={AddCard} />
+
+          <RootNav.Screen
+            name="VerificationScreen"
+            component={VerificationScreen}
+          />
           {/* <RootNav.Screen name="LoadBoard" component={LoadBoard} /> */}
           <RootNav.Screen name="ServicesScreen" component={ServicesScreen} />
 
@@ -201,12 +223,10 @@ const AppNavigator = () => {
 //   );
 // };
 
-
 export const MyDrawer = () => {
   const DrawerNavigation = createDrawerNavigator();
   const firstScreen = 'HomeScreen';
   const userRole = useSelector(state => state.commonReducer.selectedRole);
-  console.log('🚀 ~ MyDrawer ~ userRole======================:', userRole);
   return (
     <DrawerNavigation.Navigator
       drawerContent={props => <Drawer {...props} />}
@@ -220,11 +240,11 @@ export const MyDrawer = () => {
         },
       }}>
       {/* {userRole.toLowerCase() == 'pilot' ? ( */}
-       
-        <DrawerNavigation.Screen name="SelectRoute" component={SelectRoute} />
-        
-       {/* ) : ( */}
-        <DrawerNavigation.Screen
+
+      <DrawerNavigation.Screen name="SelectRoute" component={SelectRoute} />
+
+      {/* ) : ( */}
+      <DrawerNavigation.Screen
         name="PostLoadScreen"
         component={PostLoadScreen}
       />
@@ -235,11 +255,19 @@ export const MyDrawer = () => {
       {/* <DrawerNavigation.Screen name="LoadDetails" component={LoadDetails} /> */}
       <DrawerNavigation.Screen name="PostScreen" component={PostScreen} />
       <DrawerNavigation.Screen name="ViewLeadBoard" component={ViewLeadBoard} />
-      <DrawerNavigation.Screen name="ChangePassword" component={ChangePassword} />
+      <DrawerNavigation.Screen
+        name="ChangePassword"
+        component={ChangePassword}
+      />
       <DrawerNavigation.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
-      <DrawerNavigation.Screen name="TermsAndConditions" component={TermsAndConditions} />
+      <DrawerNavigation.Screen
+        name="TermsAndConditions"
+        component={TermsAndConditions}
+      />
       <DrawerNavigation.Screen name="Profile" component={Profile} />
+      <DrawerNavigation.Screen name="AddCard" component={AddCard} />
 
+      {/* <DrawerNavigation.Screen name="VerificationScreen" component={VerificationScreen} /> */}
 
       <DrawerNavigation.Screen
         name="ServicesScreen"

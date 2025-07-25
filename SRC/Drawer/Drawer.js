@@ -7,8 +7,8 @@ import Color from '../Assets/Utilities/Color';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import ScreenBoiler from '../Components/ScreenBoiler';
-import {setUserLogoutAuth, setUserToken} from '../Store/slices/auth';
-import {SetUserRole} from '../Store/slices/auth-slice';
+// import {setUserLogoutAuth, setUserToken} from '../Store/slices/auth';
+import {setUserLogoutAuth, setUserToken} from '../Store/slices/auth-slice';
 import {setSelectedRole, setUserLogOut} from '../Store/slices/common';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import {Icon} from 'native-base';
@@ -21,8 +21,8 @@ const Drawer = React.memo(() => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-   const userRole = useSelector(state => state.commonReducer.selectedRole);
-   console.log("🚀 ~ Drawer ~ userRole:", userRole)
+  const userRole = useSelector(state => state.commonReducer.selectedRole);
+  console.log('🚀 ~ Drawer ~ userRole:', userRole);
   const userData = useSelector(state => state.commonReducer.userData);
   const companyData = [
     {
@@ -35,13 +35,23 @@ const Drawer = React.memo(() => {
       iconName: 'home',
       iconType: MaterialCommunityIcons,
     },
-    
+
     {
       id: 2,
-      name: 'Load Board ',
+      name: 'Load board',
       onPress: () => {
         // navigation.navigate('LoadBoard');
         navigation.navigate('MyDrawer', {screen: 'LoadBoard'});
+      },
+      iconName: 'post',
+      iconType: MaterialCommunityIcons,
+    },
+        {
+      id: 2,
+      name: 'add card',
+      onPress: () => {
+        // navigation.navigate('LoadBoard');
+        navigation.navigate('MyDrawer', {screen: 'AddCard'});
       },
       iconName: 'post',
       iconType: MaterialCommunityIcons,
@@ -115,6 +125,15 @@ const Drawer = React.memo(() => {
       iconType: FontAwesome5,
     },
     {
+      id: 3,
+      name: 'Directory',
+      onPress: () => {
+        navigation.navigate('MyDrawer', {screen: 'CarDirectory'});
+      },
+      iconName: 'folder',
+      iconType: Feather,
+    },
+    {
       id: 9,
       name: 'Profile',
       onPress: () => {
@@ -179,7 +198,9 @@ const Drawer = React.memo(() => {
             styles.header_view,
             {
               backgroundColor:
-                userRole?.toLowerCase() !== 'pilot' ? Color.secondary : Color.black,
+                userRole?.toLowerCase() !== 'pilot'
+                  ? Color.secondary
+                  : Color.black,
             },
           ]}>
           <View style={styles.image_view}>
@@ -197,57 +218,67 @@ const Drawer = React.memo(() => {
             paddingHorizontal: moderateScale(15, 0.6),
             paddingVertical: moderateScale(15, 0.6),
           }}>
-          {  userRole?.toLowerCase() !== 'pilot' ?  companyData?.map(item => {
-            return (
-              <TouchableOpacity onPress={item?.onPress} style={styles.row_view}>
-                <Icon
-                  name={item?.iconName}
-                  as={item?.iconType}
-                  size={moderateScale(15, 0.6)}
-                  color={
-                    userRole?.toLowerCase() !== 'pilot' ? Color.black : Color.lightGrey
-                  }
-                />
-                <CustomText
-                  style={[
-                    styles.text,
-                    {
-                      color:
+          {userRole?.toLowerCase() !== 'pilot'
+            ? companyData?.map(item => {
+                return (
+                  <TouchableOpacity
+                    onPress={item?.onPress}
+                    style={styles.row_view}>
+                    <Icon
+                      name={item?.iconName}
+                      as={item?.iconType}
+                      size={moderateScale(15, 0.6)}
+                      color={
+                        userRole?.toLowerCase() !== 'pilot'
+                          ? Color.black
+                          : Color.lightGrey
+                      }
+                    />
+                    <CustomText
+                      style={[
+                        styles.text,
+                        {
+                          color:
+                            userRole?.toLowerCase() != 'pilot'
+                              ? Color.black
+                              : Color.lightGrey,
+                        },
+                      ]}>
+                      {item?.name}
+                    </CustomText>
+                  </TouchableOpacity>
+                );
+              })
+            : pilotData?.map(item => {
+                return (
+                  <TouchableOpacity
+                    onPress={item?.onPress}
+                    style={styles.row_view}>
+                    <Icon
+                      name={item?.iconName}
+                      as={item?.iconType}
+                      size={moderateScale(15, 0.6)}
+                      color={
                         userRole?.toLowerCase() != 'pilot'
                           ? Color.black
-                          : Color.lightGrey,
-                    },
-                  ]}>
-                  {item?.name}
-                </CustomText>
-              </TouchableOpacity>
-            );
-          }) :pilotData?.map(item => {
-            return (
-              <TouchableOpacity onPress={item?.onPress} style={styles.row_view}>
-                <Icon
-                  name={item?.iconName}
-                  as={item?.iconType}
-                  size={moderateScale(15, 0.6)}
-                  color={
-                    userRole?.toLowerCase() != 'pilot' ? Color.black : Color.lightGrey
-                  }
-                />
-                <CustomText
-                  style={[
-                    styles.text,
-                    {
-                      color:
-                        userRole?.toLowerCase() != 'pilot'
-                          ? Color.black
-                          : Color.lightGrey,
-                    },
-                  ]}>
-                  {item?.name}
-                </CustomText>
-              </TouchableOpacity>
-            );
-          }) }
+                          : Color.lightGrey
+                      }
+                    />
+                    <CustomText
+                      style={[
+                        styles.text,
+                        {
+                          color:
+                            userRole?.toLowerCase() != 'pilot'
+                              ? Color.black
+                              : Color.lightGrey,
+                        },
+                      ]}>
+                      {item?.name}
+                    </CustomText>
+                  </TouchableOpacity>
+                );
+              })}
           {/* <View style={styles.line} />
           {adminData1.map(item => {
             return (

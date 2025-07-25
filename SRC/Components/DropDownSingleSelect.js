@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Dimensions, View } from 'react-native';
-import { scale, moderateScale, ScaledSheet } from 'react-native-size-matters';
+import React, {useState, useEffect} from 'react';
+import {Dimensions, View} from 'react-native';
+import {scale, moderateScale, ScaledSheet} from 'react-native-size-matters';
 import SelectDropdown from 'react-native-select-dropdown';
-import { Icon } from 'native-base';
+import {Icon} from 'native-base';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Color from '../Assets/Utilities/Color';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { windowHeight, windowWidth } from '../Utillity/utils';
-import { useSelector } from 'react-redux';
+import {windowHeight, windowWidth} from '../Utillity/utils';
+import {useSelector} from 'react-redux';
 import CustomText from './CustomText';
 
 const width = Dimensions.get('window').width;
@@ -41,19 +41,17 @@ const DropDownSingleSelect = ({
   menubgColor,
   changeColorOnSelect,
 }) => {
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
 
   useEffect(() => {
-    setData([])
+    setData([]);
     array?.map((x, index) => {
-      return (
-        typeof (array[0]) == 'object' ? setData((prev) => [...prev, x?.name]) : setData(prev => [...prev, x])
-      )
-    })
-
-  }, [array])
-
+      return typeof array[0] == 'object'
+        ? setData(prev => [...prev, x?.name])
+        : setData(prev => [...prev, x]);
+    });
+  }, [array]);
 
   return (
     // <View
@@ -121,10 +119,6 @@ const DropDownSingleSelect = ({
     //       ...(!iconName && {
     //         width: width,
 
-
-
-
-
     //       }),
     //     }}
     //     buttonTextStyle={{
@@ -139,7 +133,6 @@ const DropDownSingleSelect = ({
     //       // height : 120,
     //       borderRadius: moderateScale(10, 0.3),
     //       marginTop: -height * 0.06,
-
 
     //       ...(iconName && {
     //         position: 'absolute',
@@ -185,10 +178,10 @@ const DropDownSingleSelect = ({
     //       <CustomText style={[styles.dropdownButtonTxtStyle,  {
     //         color: "black"
     //       }]}>
-    //         {(selectedItem  && typeof selectedItem == 'object'? selectedItem.title : selectedItem) || 
+    //         {(selectedItem  && typeof selectedItem == 'object'? selectedItem.title : selectedItem) ||
     //         ""}
     //       </CustomText>
-    //       <Icon 
+    //       <Icon
     //       as={MaterialCommunityIcons}
     //       name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
     //     </View>
@@ -202,48 +195,66 @@ const DropDownSingleSelect = ({
     // </View>
     <SelectDropdown
       data={data}
-
+      disabled={disabled}
       onSelect={(selectedItem, index) => {
-        console.log("Selected Item   ", selectedItem, index);
+        console.log('Selected Item   ', selectedItem, index);
         setItem(selectedItem);
       }}
-      onScrollEndReached={() => {
-
-      }}
+      onScrollEndReached={() => {}}
       renderButton={(selectedItem, isOpened) => {
         return (
-          <View style={[styles.dropdownButtonStyle,
-          btnStyle && btnStyle,
-          width && { width: width }]}>
-
-            <CustomText style={[styles.dropdownButtonTxtStyle, placeHolderColor && {
-              color: placeHolderColor
-            }]}>
-              {(item ? item : selectedItem && typeof selectedItem == 'object' ? selectedItem.title : selectedItem) || placeholder}
+          <View
+            style={[
+              styles.dropdownButtonStyle,
+              btnStyle && btnStyle,
+              width && {width: width},
+            ]}>
+            <CustomText
+              style={[
+                styles.dropdownButtonTxtStyle,
+                placeHolderColor && {
+                  color: placeHolderColor,
+                },
+              ]}>
+              {(item
+                ? item
+                : selectedItem && typeof selectedItem == 'object'
+                ? selectedItem.title
+                : selectedItem) || placeholder}
             </CustomText>
             <Icon
               color={Color.mediumGray}
               size={moderateScale(27, 0.2)}
               as={Entypo}
-              name={isOpened ? 'chevron-small-up' : 'chevron-small-down'} style={styles.dropdownButtonArrowStyle} />
+              name={isOpened ? 'chevron-small-up' : 'chevron-small-down'}
+              style={styles.dropdownButtonArrowStyle}
+            />
           </View>
         );
       }}
       renderItem={(item, index, isSelected) => {
         return (
-          <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { color: Color.primary }) }}>
+          <View
+            style={{
+              ...styles.dropdownItemStyle,
+              ...(isSelected && {color: Color.primary}),
+            }}>
             {/* <Icon name={item.icon} style={styles.dropdownItemIconStyle} /> */}
-            <CustomText style={[styles.dropdownItemTxtStyle, menuTextColor && { color: menuTextColor }, isSelected && changeColorOnSelect && { color: Color.secondary }]}>{typeof item == "object" ? item.title : item?.trim()}</CustomText>
+            <CustomText
+              style={[
+                styles.dropdownItemTxtStyle,
+                menuTextColor && {color: menuTextColor},
+                isSelected && changeColorOnSelect && {color: Color.secondary},
+              ]}>
+              {typeof item == 'object' ? item.title : item?.trim()}
+            </CustomText>
           </View>
         );
       }}
       // disa
       showsVerticalScrollIndicator={true}
       dropdownStyle={menuStyle ? menuStyle : styles.dropdownMenuStyle}
-
     />
-
-
   );
 };
 const styles = ScaledSheet.create({
@@ -287,7 +298,6 @@ const styles = ScaledSheet.create({
   },
   icon: {
     marginTop: 3,
-
   },
   icon2: {
     // color: themeColor[1],
@@ -299,14 +309,14 @@ const styles = ScaledSheet.create({
     width: windowWidth * 0.9,
     height: windowHeight * 0.045,
     // paddingVertical:moderateScale(11,0.3),
-    alignItems: "center",
+    alignItems: 'center',
     paddingHorizontal: moderateScale(5, 0.2),
     borderWidth: 0.5,
     marginTop: moderateScale(10, 0.2),
     padding: moderateScale(10, 0.3),
     backgroundColor: Color.white,
-    justifyContent: "space-between",
-    flexDirection: "row",
+    justifyContent: 'space-between',
+    flexDirection: 'row',
     borderColor: Color.mediumGray,
     borderRadius: moderateScale(25, 0.3),
   },
@@ -315,23 +325,23 @@ const styles = ScaledSheet.create({
     // height: windowHeight * 0.03,
     paddingHorizontal: moderateScale(20, 0.2),
     paddingVertical: moderateScale(10, 0.2),
-    alignItems: "flex-start"
+    alignItems: 'flex-start',
   },
   dropdownButtonTxtStyle: {
     color: Color.mediumGray,
-    paddingHorizontal: moderateScale(11, 0.2)
+    paddingHorizontal: moderateScale(11, 0.2),
   },
   dropdownMenuStyle: {
     // backgroundColor:Color.red,
     // borderColor:Color.mediumGray,
-    width: "85%",
+    width: '85%',
     borderWidth: 1,
     marginTop: moderateScale(-35, 0.2),
-    // 
+    //
     // position:"absolute",
     // top:-10,
-    borderRadius: moderateScale(15, 0.2)
-  }
+    borderRadius: moderateScale(15, 0.2),
+  },
 });
 
 export default DropDownSingleSelect;

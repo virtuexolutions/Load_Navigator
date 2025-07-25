@@ -4,8 +4,11 @@ import {Checkbox, Icon} from 'native-base';
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
+  Platform,
   ScrollView,
   StyleSheet,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -14,6 +17,7 @@ import Modal from 'react-native-modal';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {moderateScale} from 'react-native-size-matters';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
@@ -30,9 +34,13 @@ import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 const LoadDetails = props => {
   const navigationN = useNavigation();
   const isPostDetails = props?.route?.params?.isPostDetails;
+  const item = props?.route?.params?.item;
+  const repost = props?.route?.params?.repost;
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
   const [isMiles, setIsMiles] = useState(false);
+  const repostrate = item?.rate;
+  const perMilesOnly = repostrate?.split('/')[1]; //
   const [selectedRate, setSelectedRate] = useState('/per miles');
   const [selectedSize, setSelectedSize] = useState('select type');
   const [isSize, setIsSize] = useState(false);
@@ -40,7 +48,6 @@ const LoadDetails = props => {
   const [dimensions, setDimensions] = useState('');
   const [originState, setOriginState] = useState('');
   const [destinationState, setdestinationState] = useState('');
-
 
   const HEIGHT_OPTIONS = [
     "Under 8'",
@@ -56,24 +63,50 @@ const LoadDetails = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [locationType, setLocationType] = useState('');
-  const [origin, setOrigin] = useState({});
-  const [destination, setDestination] = useState({});
-  const [Rate, setRate] = useState(0);
-  const [selectedPosition, setSelectedPosition] = useState([]);
-  const [selectedRequirement, setSelectedRequirement] = useState([]);
+  const [origin, setOrigin] = useState(repost ? item?.origin : {});
+  const [destination, setDestination] = useState(
+    repost ? item?.destination : {},
+  );
+  const rate1 = item?.rate;
+  const numberOnly = rate1?.split('/')[0];
+  const [Rate, setRate] = useState(repost ? numberOnly : 0);
+  const [selectedPosition, setSelectedPosition] = useState(
+    repost ? item?.escort_positions : [],
+  );
+  const [selectedRequirement, setSelectedRequirement] = useState(
+    repost ? item?.additional_requirements : [],
+  );
   const [distance, setDistance] = useState('');
   const [title, setTitle] = useState(userData?.company_name);
   const [customHeight, setCustomHeight] = useState();
-  const [height, setHeight] = useState('');
-  const [date, setDate] = useState('');
+  const [height, setHeight] = useState(repost ? item?.height : '');
+  const [date, setDate] = useState(
+    repost ? moment(item?.start_date).format('l') : '',
+  );
+  const [endDate, setEndDate] = useState('');
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [contact, setContact] = useState(userData?.contact);
-  const [commnuicationMode, setCommunicationMode] = useState('call');
+  const [dateType, setDateType] = useState('');
+
+  const [commnuicationMode, setCommunicationMode] = useState(
+    repost && item?.communication_mode == 'text-only' ? true : false,
+  );
   const [totalRate, setTotalRate] = useState(0);
   const [fuelPrice, setFuelPrice] = useState(0);
   const [tollPrice, setTollPrice] = useState(0);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState(
+    repost ? item?.description : '',
+  );
 
+  const handleChangeText = input => {
+    const words = input.trim().split(/\s+/);
+    if (words.length <= 50) {
+      setDescription(input);
+    }
+  };
+
+  const wordCount =
+    description?.trim() === '' ? 0 : description?.trim().split(/\s+/).length;
   const [positions, setPositions] = useState([
     'lead',
     'chase',
@@ -187,14 +220,28 @@ const LoadDetails = props => {
       contact: contact.slice(0, 2) == '+1' ? contact : `+1${contact}`,
       company: title,
       height: height === 'Custom' ? customHeight : height,
-      communication_mode: commnuicationMode,
+      communication_mode: commnuicationMode == true ? 'text-only' : 'call',
       total_rate: totalRate.toFixed(2),
-      start_date: new Date().toISOString(),
+      start_date: date,
       description: description,
-      origin_state:originState,
-      destination_state :destinationState,
+      origin_state: originState,
+      destination_state: destinationState,
+      end_date: endDate,
     };
-  // return  console.log("🚀 ~ postALoad ~ body:", JSON.stringify(body ,null ,2))
+    if (description == '') {
+      return Platform.OS == 'android'
+        ? ToastAndroid.show(` description field is empty`, ToastAndroid.SHORT)
+        : Alert.alert(` description field is empty`);
+    }
+
+    if (wordCount > 50) {
+      Platform.OS == 'android'
+        ? ToastAndroid.SHORT(
+            'Description must be 50 words or less.',
+            ToastAndroid.show,
+          )
+        : Alert.alert('Description must be 50 words or less.');
+    }
     const url = 'auth/load_detail';
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
@@ -227,6 +274,34 @@ const LoadDetails = props => {
         : parseFloat(Rate),
     );
   }, [Rate, selectedRate]);
+
+  const updatePost = async () => {
+    const body = {
+      start_date: date,
+      end_date : endDate,
+    };
+    const url = `auth/load_detail/${item?.id}?_method=put`;
+    setIsLoading(true);
+    const response = await Post(url, body, apiHeader(token));
+    setIsLoading(false);
+
+    if (response != undefined) {
+      setSelectedRequirement([]);
+      setSelectedPosition([]);
+      setOrigin({});
+      setDestination({});
+      setRate(0);
+      setDistance('');
+      setSelectedRate('');
+      setTitle('');
+      setWeight('');
+      setDimensions('');
+      setSelectedSize('');
+      setSelectedRate('');
+
+      navigationN.goBack();
+    }
+  };
 
   return (
     <SafeAreaView style={styles.main_Container}>
@@ -274,6 +349,7 @@ const LoadDetails = props => {
                 Origin
               </CustomText>
               <TouchableOpacity
+                disabled={repost}
                 onPress={() => {
                   setIsModalVisible(true);
                   setLocationType('origin');
@@ -293,6 +369,7 @@ const LoadDetails = props => {
                 Destination
               </CustomText>
               <TouchableOpacity
+                disabled={repost}
                 onPress={() => {
                   setIsModalVisible(true);
                   setLocationType('destination');
@@ -313,7 +390,8 @@ const LoadDetails = props => {
                 styles.row_view,
                 {
                   alignSelf: 'flex-start',
-                  marginBottom: moderateScale(15, 0.6),
+                  // marginBottom: moderateScale(15, 0.6),
+                  marginTop: moderateScale(15, 0.6),
                 },
               ]}>
               <CustomText isBold style={styles.heading_text}>
@@ -323,7 +401,7 @@ const LoadDetails = props => {
                 style={[
                   styles.text,
                   {
-                    marginTop: moderateScale(15, 0.6),
+                    marginTop: moderateScale(5, 0.6),
                     fontSize: moderateScale(11, 0.6),
                   },
                 ]}>
@@ -335,6 +413,7 @@ const LoadDetails = props => {
               // console.log('///////////////////////////', isActive);
               return (
                 <TouchableOpacity
+                  disabled={repost}
                   key={item.id}
                   onPress={() => {
                     if (selectedPosition?.includes(item?.text)) {
@@ -388,6 +467,7 @@ const LoadDetails = props => {
               const isActive = selectedRequirement.includes(item?.text);
               return (
                 <TouchableOpacity
+                  disabled={repost}
                   key={item.id}
                   onPress={() => {
                     if (selectedRequirement?.includes(item?.text)) {
@@ -433,6 +513,7 @@ const LoadDetails = props => {
               Phone Number
             </CustomText>
             <TextInputWithTitle
+              disable={repost}
               placeholder={'Phone Number'}
               setText={setContact}
               value={contact}
@@ -450,19 +531,73 @@ const LoadDetails = props => {
               placeholderColor={Color.mediumGray}
               titleStlye={{right: 10}}
             />
-            <Checkbox
+            <TouchableOpacity
+              disabled={repost}
+              onPress={() => {
+                setCommunicationMode(!commnuicationMode);
+              }}
+              style={styles.btn_row}>
+              <TouchableOpacity
+                disabled={repost}
+                onPress={() => {
+                  setCommunicationMode(!commnuicationMode);
+                }}
+                style={[
+                  styles.check_btn,
+                  {
+                    borderColor: commnuicationMode
+                      ? Color.white
+                      : Color.darkGray,
+                    backgroundColor: commnuicationMode
+                      ? Color.secondary
+                      : Color.white,
+                  },
+                ]}>
+                {commnuicationMode && (
+                  <Icon
+                    as={Feather}
+                    size={moderateScale(15, 0.6)}
+                    color={Color.white}
+                    name="check"
+                  />
+                )}
+              </TouchableOpacity>
+              <CustomText
+                // onPress={() => {
+                //   setCommunicationMode(!commnuicationMode);
+                // }}
+                style={{
+                  fontSize: moderateScale(11, 0.6),
+                  color: Color.black,
+                }}>
+                text-only
+              </CustomText>
+            </TouchableOpacity>
+            {/* <Checkbox
               colorScheme={'red'}
-              value={commnuicationMode}
+              value={ repost ? item?.communication_mode === 'text-only' : commnuicationMode}
               onChange={isSelected => {
-                setCommunicationMode(isSelected ? 'text-only' : 'call');
+                if (repost) {
+                  setCommunicationMode(
+                    item?.communication_mode === 'text-only'
+                      ? 'text-only'
+                      : 'call',
+                  );
+                } else {
+                  setCommunicationMode(isSelected ? 'text-only' : 'call');
+                }
+              }}
+              _text={{
+                fontSize: moderateScale(12, 0.6),
               }}
               my={2}>
-              Text-Only Communication
-            </Checkbox>
+              Text-Only
+            </Checkbox> */}
             <CustomText isBold style={styles.heading_text}>
               Company Name
             </CustomText>
             <TextInputWithTitle
+              disable={repost}
               placeholder={'Company Name'}
               setText={setTitle}
               value={title}
@@ -482,6 +617,7 @@ const LoadDetails = props => {
               Height
             </CustomText>
             <DropDownSingleSelect
+              disabled={repost}
               array={HEIGHT_OPTIONS}
               item={height}
               setItem={setHeight}
@@ -528,6 +664,7 @@ const LoadDetails = props => {
                 placeholderColor={Color.mediumGray}
                 titleStlye={{right: 10}}
                 keyboardType={'numeric'}
+                disable={repost}
               />
             )}
             <CustomText isBold style={styles.heading_text}>
@@ -610,6 +747,7 @@ const LoadDetails = props => {
               <CustomButton
                 text={'custom'}
                 onPress={() => {
+                    setDateType('startdate')
                   setShowCalendarModal(true);
                 }}
                 fontSize={moderateScale(12, 0.3)}
@@ -626,6 +764,45 @@ const LoadDetails = props => {
             </View>
 
             <CustomText isBold style={styles.heading_text}>
+              end Date
+            </CustomText>
+
+            <View style={styles.drop}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  width: '100%',
+                  justifyContent: 'space-between',
+                }}>
+                <CustomText
+                  style={[
+                    styles.drop_text,
+                    {
+                      width: '70%',
+                    },
+                  ]}>
+                  {endDate ? endDate : 'select a date '}
+                </CustomText>
+              </View>
+            </View>
+            <CustomButton
+              text={'custom'}
+              onPress={() => {
+                setDateType('enddate')
+                setShowCalendarModal(true);
+              }}
+              fontSize={moderateScale(12, 0.3)}
+              textColor={Color.white}
+              borderRadius={moderateScale(10, 0.3)}
+              marginTop={moderateScale(10, 0.3)}
+              height={windowHeight * 0.04}
+              bgColor={Color.secondary}
+              style={{
+                alignSelf: 'flex-start',
+              }}
+              textTransform={'capitalize'}
+            />
+            <CustomText isBold style={styles.heading_text}>
               Rate
               <CustomText
                 style={{
@@ -636,6 +813,7 @@ const LoadDetails = props => {
               </CustomText>
             </CustomText>
             <TouchableOpacity
+              disabled={repost}
               onPress={() => {
                 setIsMiles(!isMiles);
               }}
@@ -662,6 +840,7 @@ const LoadDetails = props => {
                 backgroundColor={'transparent'}
                 borderColor={Color.white}
                 placeholderColor={Color.mediumGray}
+                disable={repost}
               />
 
               <View
@@ -669,7 +848,9 @@ const LoadDetails = props => {
                   flexDirection: 'row',
                   width: windowWidth * 0.24,
                 }}>
-                <CustomText style={styles.drop_text}>{selectedRate}</CustomText>
+                <CustomText style={styles.drop_text}>
+                  {repost ? perMilesOnly : selectedRate}
+                </CustomText>
                 <Icon
                   style={{
                     position: 'absolute',
@@ -714,22 +895,30 @@ const LoadDetails = props => {
                 </TouchableOpacity>
               </View>
             )}
-
-            <CustomText isBold style={styles.heading_text}>
-              description {''}
+            <View
+              style={{
+                flexDirection: 'row',
+                paddingTop: moderateScale(10, 0.6),
+                justifyContent: 'space-between',
+              }}>
+              <CustomText isBold style={styles.heading_text}>
+                description
+              </CustomText>
               <CustomText
                 style={{
                   fontSize: moderateScale(10, 0.6),
-                  color: Color.darkGray,
+                  color: wordCount > 50 ? 'red' : 'gray',
+                  paddingTop: moderateScale(5, 0.6),
                 }}>
-                (Optional)
+                {wordCount}/50 words
               </CustomText>
-            </CustomText>
+            </View>
             <TextInputWithTitle
+              disable={repost}
               multiline={true}
               secureText={false}
               placeholder={'Description'}
-              setText={setDescription}
+              setText={handleChangeText}
               value={description}
               viewHeight={0.15}
               viewWidth={0.9}
@@ -743,17 +932,20 @@ const LoadDetails = props => {
               titleStlye={{right: 10}}
               color={Color.btn_Color}
               borderRadius={moderateScale(25, 0.3)}
+              // maxLength={50}
             />
             <CustomButton
               text={
                 isLoading ? (
                   <ActivityIndicator size={'small'} color={'white'} />
+                ) : repost ? (
+                  'repost'
                 ) : (
                   'Post '
                 )
               }
               onPress={() => {
-                postALoad();
+                repost ? updatePost() : postALoad();
               }}
               fontSize={moderateScale(14, 0.3)}
               textColor={Color.white}
@@ -802,6 +994,7 @@ const LoadDetails = props => {
             }}
             minDate={moment().format()}
             onDayPress={day => {
+              dateType == 'enddate' ?setEndDate(day?.dateString):
               setDate(day?.dateString);
               setShowCalendarModal(false);
             }}
@@ -878,7 +1071,7 @@ const styles = StyleSheet.create({
   },
   heading_text: {
     fontSize: moderateScale(15, 0.6),
-    marginTop: moderateScale(10, 0.6),
+    // marginTop: moderateScale(10, 0.6),
   },
   header: {
     width: windowWidth * 0.7,
@@ -924,5 +1117,18 @@ const styles = StyleSheet.create({
     marginVertical: moderateScale(5, 0.6),
     justifyContent: 'center',
     paddingHorizontal: moderateScale(10, 0.6),
+  },
+  btn_row: {
+    flexDirection: 'row',
+    marginHorizontal: moderateScale(5, 0.6),
+    width: windowWidth * 0.8,
+    paddingVertical: moderateScale(5, 0.6),
+  },
+  check_btn: {
+    borderWidth: 1,
+    borderRadius: 5,
+    marginRight: moderateScale(5, 0.6),
+    height: windowHeight * 0.021,
+    width: windowWidth * 0.045,
   },
 });

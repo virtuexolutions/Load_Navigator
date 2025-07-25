@@ -26,7 +26,7 @@ const App = () => {
   return (
     <StripeProvider
       publishableKey={
-        'pk_test_51NjQZRBqyObuQCkVVZujGGQ9w7PjZegPiZvL9MEH12KsxQmTsLpBxsXdeyN8Tu3mYkN8YZt8WutsTCEexDwIOxaB00a6zjjE12'
+        'pk_test_51RoieKFIiQxtLicEZZqk0AwV9gdF7RWYSQsTOVEPgiGQmJQKhN5ZIINW7i5HC7LcX4teSDXXSfnwP8AJl1nUVjFg00ycMYLDEw'
       }>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
