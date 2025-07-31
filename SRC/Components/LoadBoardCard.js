@@ -29,7 +29,6 @@ const LoadBoardCard = ({item}) => {
   const emailVerified = useSelector(state => state.authReducer.emailVerified);
   const numberVerified = useSelector(state => state.authReducer.numberVerified);
   const [loadStatus, setLoadStatus] = useState(item?.status);
-  console.log('🚀 ~ LoadBoardCard ~ loadStatus:', loadStatus);
   const origin =
     typeof item?.origin === 'string' ? JSON.parse(item?.origin) : item.origin;
   const destination =
@@ -78,9 +77,11 @@ const LoadBoardCard = ({item}) => {
                 {
                   backgroundColor:
                     // item?.status.toLowerCase() == 'cover'
-                    loadStatus.toLowerCase() == 'cover'
+                    loadStatus.toLowerCase() == 'pending'
+                      ? 'yellow'
+                      : loadStatus.toLowerCase() == 'cover'
                       ? Color.green
-                      : 'yellow',
+                      : '#42d1fa',
                 },
               ]}>
               <CustomText
@@ -89,7 +90,11 @@ const LoadBoardCard = ({item}) => {
                   fontSize: moderateScale(10, 0.6),
                 }}>
                 {/* {item?.status.toLowerCase() == 'cover' ? 'Covered' : 'Open'} */}
-                {loadStatus.toLowerCase() == 'cover' ? 'Covered' : 'Open'}
+                {loadStatus.toLowerCase() == 'cover'
+                  ? 'Covered'
+                  : loadStatus.toLowerCase() == 'complete'
+                  ? 'Complete'
+                  : 'Open'}
               </CustomText>
             </TouchableOpacity>
           </View>
@@ -387,7 +392,8 @@ const styles = StyleSheet.create({
     color: Color.black,
   },
   btn: {
-    width: moderateScale(50, 0.6),
+    paddingHorizontal: moderateScale(10, 0.6),
+    // width: moderateScale(50, 0.6),
     backgroundColor: 'rgba(243, 10, 10, 1)',
     justifyContent: 'center',
     alignItems: 'center',

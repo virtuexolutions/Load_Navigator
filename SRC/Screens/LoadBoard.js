@@ -32,7 +32,7 @@ const LoadBoard = ({navigation}) => {
   const IsFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
-  // console.log("🚀 ~ LoadBoard ~ userData:", JSON.stringify(userData ,null ,2))
+  console.log('🚀 ~ LoadBoard ~ userData:', JSON.stringify(userData, null, 2));
 
   const [isLoading, setIsLoading] = useState(false);
   const [loadData, setloadData] = useState([]);
@@ -40,15 +40,15 @@ const LoadBoard = ({navigation}) => {
     const url = 'auth/load_detail';
     setIsLoading(true);
     const response = await Get(url, token);
+    console.log('🚀 ~ getLoad ~ response:', response?.data);
     setIsLoading(false);
     if (response != undefined) {
       setloadData(response?.data?.load_detail);
     }
   };
 
-
   useEffect(() => {
-    getLoad()
+    getLoad();
   }, [IsFocused]);
 
   return (
@@ -82,7 +82,9 @@ const LoadBoard = ({navigation}) => {
             data={loadData}
             keyExtractor={item => item.id.toString()}
             showsVerticalScrollIndicator={false}
-            renderItem={({item}) =>{ return <LoadBoardCard item={item} />}}
+            renderItem={({item}) => {
+              return <LoadBoardCard item={item} />;
+            }}
             ListEmptyComponent={
               <View
                 style={{

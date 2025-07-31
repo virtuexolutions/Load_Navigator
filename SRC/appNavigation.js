@@ -34,13 +34,13 @@ import PrivacyPolicy from './Screens/PrivacyPolicy';
 import TermsAndConditions from './Screens/TermsAndConditions';
 import VerificationScreen from './Screens/VerificationScreen';
 import AddCard from './Screens/AddCard';
+import PaymentMethod from './Screens/PaymentMethod';
 
 enableScreens();
 const AppNavigator = () => {
   const isGoalCreated = useSelector(state => state.authReducer.isGoalCreated);
   const walkThrough = useSelector(state => state.authReducer.userWalkThrough);
   const userRole = useSelector(state => state.commonReducer.selectedRole);
-  console.log("🚀 ~ AppNavigator ~ userRole:", userRole)
   const token = useSelector(state => state.authReducer.token);
 
   const isLoggedIn = useSelector(state => state.authReducer.isLoggedIn);
@@ -61,15 +61,19 @@ const AppNavigator = () => {
         ? 'SelecteArea'
         : emailVerified == false || numberVerified == false
         ? 'VerificationScreen'
-        : [null, '', undefined].includes(pm_type) &&
-          userRole.toLowerCase() != 'pilot'
+        : [null, '', undefined].includes(pm_type)
         ? 'AddCard'
         : 'MyDrawer';
     // : token != null && (!emailVerified || !numberVerified)
     // ? 'VerificationScreen'
     // : 'pilot';
 
-    console.log('asdasdfasdf token ================>', firstScreen, token ,pm_type);
+    console.log(
+      'asdasdfasdf token ================>',
+      firstScreen,
+      token,
+      pm_type,
+    );
 
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
@@ -101,8 +105,9 @@ const AppNavigator = () => {
           <RootNav.Screen name="CreateRoute" component={CreateRoute} />
           <RootNav.Screen name="LoadDetails" component={LoadDetails} />
           <RootNav.Screen name="PostScreen" component={PostScreen} />
-
+          {/* <RootNav.Screen name="PaymentMethod" component={PaymentMethod} /> */}
           <RootNav.Screen name="AddCard" component={AddCard} />
+
 
           <RootNav.Screen
             name="VerificationScreen"
@@ -272,6 +277,10 @@ export const MyDrawer = () => {
       <DrawerNavigation.Screen
         name="ServicesScreen"
         component={ServicesScreen}
+      />
+      <DrawerNavigation.Screen
+        name="PaymentMethod"
+        component={PaymentMethod}
       />
       {/* <DrawerNavigation.Screen name="LoadDetails" component={LoadDetails} />
       <DrawerNavigation.Screen name="LoadDetails" component={LoadDetails} /> */}

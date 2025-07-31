@@ -200,6 +200,7 @@ const CustomButton = props => {
                 color: Color.white,
                 opacity: 0.6,
               },
+               {fontSize: fontSize ? fontSize : moderateScale(13, 0.3)},
             ]}
             isRegular={isBold ? false : true}
             isBold={isBold ? true : false}>

@@ -6,10 +6,11 @@
  * @flow strict-local
  */
 
+import { StripeProvider } from '@stripe/stripe-react-native';
+import { NativeBaseProvider } from 'native-base';
 import React, { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import { NativeBaseProvider } from 'native-base';
 import SplashScreen from './SRC/Screens/SplashScreen';
 import { persistor, store } from './SRC/Store/index';
 import {
@@ -18,9 +19,6 @@ import {
   requestWritePermission,
 } from './SRC/Utillity/utils';
 import AppNavigator from './SRC/appNavigation';
-import { StripeProvider } from '@stripe/stripe-react-native';
-import PostLoadScreen from './SRC/Screens/PostLoadScreen';
-import CarDirectory from './SRC/Screens/CarDirectory';
 
 const App = () => {
   return (

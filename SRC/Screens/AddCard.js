@@ -23,9 +23,10 @@ import ScreenBoiler from '../Components/ScreenBoiler';
 //   setPm_Type,
 //   setUserLogout
 // } from '../Store/slices/auth';
-import {setUserData} from '../Store/slices/common';
+import {setPaymentCard, setUserData} from '../Store/slices/common';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import {setPm_Type, setUserLogoutAuth} from '../Store/slices/auth-slice';
+import Header from '../Components/Header';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -39,10 +40,10 @@ const AddCard = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [cardData, setCardData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    city: '',
+    name: userData?.name ? userData?.name : '',
+    phone: userData?.contact ? userData?.contact : '',
+    email: userData?.email ? userData?.email : '',
+    // city: '',
   });
   // const [cardDataForBackend , setCardDataForBackend] = useState({})
 
@@ -52,21 +53,27 @@ const AddCard = () => {
     const responseData = await createToken({
       type: 'Card',
     });
-    console.log(
-      '🚀 ~ addCard ~ responseData:',
-      JSON.stringify(responseData, null, 2),
-    );
 
     if (responseData.error) {
       setIsLoading(false);
+      alert(responseData?.error?.message);
       console.log(responseData.error);
     }
-    if (responseData != undefined) {
+    if (responseData?.error?.code != 'Failed') {
       const responseApi = await Post(url, responseData, apiHeader(token));
-      console.log('🚀 ~ addCard ~ responseApi:', responseApi?.data?.data);
       setIsLoading(false);
       if (responseApi != undefined) {
-        dispatch(setUserData(responseApi?.data?.data));
+        dispatch(
+          setPaymentCard(
+            (data = {
+              exp_month: responseApi?.data?.data?.exp_month,
+              exp_year: responseApi?.data?.data?.exp_year,
+              pm_type: responseApi?.data?.data?.pm_type,
+              pm_last_four: responseApi?.data?.data?.pm_last_four,
+            }),
+          ),
+        ),
+          dispatch(setUserData(responseApi?.data?.data));
         dispatch(setPm_Type(responseApi?.data?.data?.pm_type));
         Platform.OS == 'android'
           ? ToastAndroid.show('Card Saved', ToastAndroid.SHORT)
@@ -77,7 +84,7 @@ const AddCard = () => {
   return (
     <ScreenBoiler
       showHeader={false}
-      // showBack={true}
+      // showBack={true}sign
       statusBarBackgroundColor={'transparent'}
       statusBarContentStyle={'light-content'}
       headerType={2}
@@ -87,45 +94,63 @@ const AddCard = () => {
         showsVerticalScrollIndicator={false}
         style={styles.sectionContainer}
         contentContainerStyle={{paddingBottom: moderateScale(20, 0.3)}}>
-        <Image
-          source={require('../Assets/Images/card.png')}
-          resizeMode={'contain'}
-          style={{
-            alignSelf: 'center',
-            // backgroundColor: 'red',
-            height: windowHeight * 0.35,
-            marginTop: moderateScale(10, 0.3),
-          }}
-        />
-        <CustomText
-          style={{
-            fontSize: moderateScale(15, 0.6),
+        <Header
+          textstyle={{
             color: Color.white,
-            paddingHorizontal: moderateScale(40, 0.6),
-          }}>
-          add card details
-        </CustomText>
-        <CardContainer
+            fontSize: moderateScale(20, 0.6),
+          }}
+          headerColor={Color.primary}
+          showLeft={true}
+          // leftName={'left'}
+          title={'add card'}
+          // leftPress={leftPress}
+        />
+        <View style={styles.card_Con}>
+          <Image
+            source={require('../Assets/Images/otherCards.png')}
+            resizeMode={'contain'}
+            style={{
+              // alignSelf: 'center',
+              // backgroundColor: 'green',
+              height: windowHeight * 0.3,
+              width: windowWidth * 0.84,
+              // marginTop: moderateScale(10, 0.3),
+            }}
+          />
+          <CustomText
+            style={{
+              fontSize: moderateScale(15, 0.6),
+              color: Color.white,
+              // paddingHorizontal: moderateScale(40, 0.6),
+              textAlign: 'left',
+              width: '80%',
+              marginTop: moderateScale(-35, 0.6),
+            }}>
+            add card details
+          </CustomText>
+          {/* <CardContainer
           style={{
-            height: windowHeight * 0.5,
+            // height: windowHeight * 0.5,
             // paddingTop: moderateScale(30, 0.3),
-            backgroundColor: Color.primary,
-          }}>
+            backgroundColor: Color.red,
+          }}> */}
           <CardField
             postalCodeEnabled={false}
             placeholders={{
               number: '4242 4242 4242 4242',
             }}
+            // placeholderColor
             // placeholders={{
             //   number: '4242 4242 4242 4242',
             // }}
             cardStyle={{
+              placeholderColor: Color.darkGray,
               backgroundColor: '#EAEAEA',
               textColor: '#000000',
               borderRadius: moderateScale(10, 0.3),
             }}
             style={{
-              width: windowWidth * 0.75,
+              width: windowWidth * 0.8,
               height: windowHeight * 0.05,
               marginVertical: moderateScale(12, 0.3),
               borderColor: Color.lightGrey,
@@ -138,97 +163,6 @@ const AddCard = () => {
             }}
           />
 
-          <TextInputWithTitle
-            titleText={'Cardholder Name'}
-            placeholder={'Cardholder Name'}
-            setText={data => {
-              setCardData(prev => {
-                return {...prev, name: data};
-              });
-            }}
-            value={cardData?.name}
-            viewHeight={0.05}
-            viewWidth={0.75}
-            inputWidth={0.72}
-            border={1}
-            borderColor={Color.lightGrey}
-            backgroundColor={'#EAEAEA'}
-            // marginTop={moderateScale(8, 0.3)}
-            color={'#11A44C'}
-            placeholderColor={Color.themeLightGray}
-            borderRadius={moderateScale(10, 0.3)}
-          />
-          <View style={[styles.phoneView, {marginTop: moderateScale(8, 0.3)}]}>
-            <TextInputWithTitle
-              titleText={'Email'}
-              placeholder={'Email'}
-              setText={data => {
-                setCardData(prev => {
-                  return {...prev, email: data};
-                });
-              }}
-              value={cardData?.email}
-              viewHeight={0.05}
-              viewWidth={0.75}
-              inputWidth={0.72}
-              border={1}
-              borderColor={Color.lightGrey}
-              backgroundColor={'#EAEAEA'}
-              //   marginTop={moderateScale(10, 0.3)}
-              color={'#11A44C'}
-              placeholderColor={Color.themeLightGray}
-              borderRadius={moderateScale(10, 0.3)}
-            />
-
-            {/* <View style={styles.cont}>
-              <CustomText style={styles.txt4}>Scan</CustomText>
-            </View> */}
-          </View>
-          <View style={[styles.phoneView, {marginTop: moderateScale(5, 0.3)}]}>
-            <TextInputWithTitle
-              titleText={'contact'}
-              placeholder={'Phone'}
-              setText={data => {
-                setCardData(prev => {
-                  return {...prev, phone: data};
-                });
-              }}
-              value={cardData?.phone}
-              viewHeight={0.05}
-              viewWidth={0.35}
-              inputWidth={0.32}
-              border={1}
-              borderColor={Color.lightGrey}
-              backgroundColor={'#EAEAEA'}
-              //   marginTop={moderateScale(10, 0.3)}
-              color={'#11A44C'}
-              placeholderColor={Color.themeLightGray}
-              borderRadius={moderateScale(10, 0.3)}
-              keyboardType={'numeric'}
-            />
-
-            <TextInputWithTitle
-              titleText={'City'}
-              placeholder={'City'}
-              setText={data => {
-                setCardData(prev => {
-                  return {...prev, city: data};
-                });
-              }}
-              value={cardData?.city}
-              viewHeight={0.05}
-              viewWidth={0.35}
-              inputWidth={0.32}
-              border={1}
-              borderColor={Color.lightGrey}
-              backgroundColor={'#EAEAEA'}
-              //   marginTop={moderateScale(10, 0.3)}
-              color={'#11A44C'}
-              placeholderColor={Color.themeLightGray}
-              borderRadius={moderateScale(10, 0.3)}
-            />
-          </View>
-
           <CustomButton
             // textTransform={"capitalize"}
             text={
@@ -240,9 +174,9 @@ const AddCard = () => {
             }
             isBold
             textColor={Color.white}
-            width={windowWidth * 0.75}
+            width={windowWidth * 0.8}
             height={windowHeight * 0.06}
-            marginTop={moderateScale(20, 0.3)}
+            marginTop={moderateScale(10, 0.3)}
             onPress={addCard}
             bgColor={Color.secondary}
             borderColor={Color.secondary}
@@ -258,12 +192,12 @@ const AddCard = () => {
               color: Color.white,
               fontSize: moderateScale(12, 0.3),
               textDecorationLine: 'underline',
-              // fontStyle : 'italic' ,
               fontWeight: 'bold',
             }}>
             Logout
           </CustomText>
-        </CardContainer>
+          {/* </CardContainer> */}
+        </View>
       </ScrollView>
     </ScreenBoiler>
   );
@@ -273,8 +207,19 @@ const styles = ScaledSheet.create({
   sectionContainer: {
     // flex: 1,
     height: windowHeight,
-    paddingTop: moderateScale(5, 0.3),
+    paddingTop: windowHeight * 0.07,
     backgroundColor: Color.primary,
+  },
+  card_Con: {
+    width: windowWidth * 0.9,
+    backgroundColor: 'red',
+    alignItems: 'center',
+    alignSelf: 'center',
+    paddingVertical: moderateScale(10, 0.6),
+    justifyContent: 'center',
+    backgroundColor: 'rgba(71, 66, 62, 0.81)',
+    borderRadius: moderateScale(10, 0.6),
+    marginTop: moderateScale(30, 0.6),
   },
   Txt: {
     marginTop: moderateScale(10, 0.3),

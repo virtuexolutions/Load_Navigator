@@ -22,7 +22,6 @@ const Drawer = React.memo(() => {
   const navigation = useNavigation();
 
   const userRole = useSelector(state => state.commonReducer.selectedRole);
-  console.log('🚀 ~ Drawer ~ userRole:', userRole);
   const userData = useSelector(state => state.commonReducer.userData);
   const companyData = [
     {
@@ -46,12 +45,12 @@ const Drawer = React.memo(() => {
       iconName: 'post',
       iconType: MaterialCommunityIcons,
     },
-        {
+    {
       id: 2,
-      name: 'add card',
+      name: 'payment method',
       onPress: () => {
         // navigation.navigate('LoadBoard');
-        navigation.navigate('MyDrawer', {screen: 'AddCard'});
+        navigation.navigate('MyDrawer', {screen: 'PaymentMethod'});
       },
       iconName: 'post',
       iconType: MaterialCommunityIcons,
@@ -141,6 +140,16 @@ const Drawer = React.memo(() => {
       },
       iconName: 'user',
       iconType: FontAwesome5,
+    },
+     {
+      id: 2,
+      name: 'payment method',
+      onPress: () => {
+        // navigation.navigate('LoadBoard');
+        navigation.navigate('MyDrawer', {screen: 'PaymentMethod'});
+      },
+      iconName: 'post',
+      iconType: MaterialCommunityIcons,
     },
     {
       id: 2,

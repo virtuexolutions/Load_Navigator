@@ -8,8 +8,9 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 import Modal from 'react-native-modal';
 import CustomText from '../Components/CustomText';
 import navigationService from '../navigationService';
-import {launchImageLibrary} from 'react-native-image-picker';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {pick} from '@react-native-documents/picker';
+import { convertImageToText , detectFromFile } from '@react-native-ml-kit/text-recognition';
 
 const CreateRoute = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -22,34 +23,49 @@ const CreateRoute = () => {
   };
   const [show, setShow] = useState(false);
   const [fileObject, setFileObject] = useState({});
+  const [image, setImage] = useState(null);
+  const [recognizedText, setRecognizedText] = useState('');
 
-  const openGallery = () => {
-    let options = {
-      mediaType: 'photo',
-      maxWidth: 500,
-      maxHeight: 500,
-      quailty: 0.9,
-      saveToPhotos: true,
-    };
-
-    launchImageLibrary(options, response => {
-      if (Platform.OS === 'ios') {
-        setShow(false);
-      }
-      if (response.didCancel) {
-      } else if (response.error) {
-      } else if (response.customButton) {
-        Alert.alert(response.customButton);
-      } else {
-        setFileObject({
-          uri: response?.assets[0]?.uri,
-          type: response?.assets[0]?.type,
-          name: response?.assets[0]?.fileName,
-        });
-      }
-    });
-    // }
+  const pickImageAndRecognizeText = async () => {
+    const result = await launchImageLibrary({mediaType: 'photo'});
+    if (result.assets && result.assets.length > 0) {
+      const path = result.assets[0].uri;
+      const recognizedText = await MLKitOcr.detectFromFile(path);
+      console.log(
+        'Text found:',
+        recognizedText.map(block => block.text).join('\n'),
+      );
+    }
   };
+
+  // const openGallery = () => {
+  //   let options = {
+  //     mediaType: 'photo',
+  //     maxWidth: 500,
+  //     maxHeight: 500,
+  //     quailty: 0.9,
+  //     saveToPhotos: true,
+  //   };
+
+  //   launchImageLibrary(options, response => {
+  //     if (Platform.OS === 'ios') {
+  //       setShow(false);
+  //     }
+  //     if (response.didCancel) {
+  //     } else if (response.error) {
+  //     } else if (response.customButton) {
+  //       Alert.alert(response.customButton);
+  //     } else {
+  //       setFileObject({
+  //         uri: response?.assets[0]?.uri,
+  //         type: response?.assets[0]?.type,
+  //         name: response?.assets[0]?.fileName,
+  //       });
+
+  //     }
+  //   });
+  //   // }
+  // };
 
   const selectDocument = async () => {
     try {
@@ -65,6 +81,18 @@ const CreateRoute = () => {
         console.error('Unknown error:', err);
       }
     }
+  };
+
+  const handleSelectImage = () => {
+    ImagePicker.launchCamera({}, async response => {
+      if (response.assets && response.assets.length > 0) {
+        const uri = response.assets[0].uri;
+        setImage(uri);
+
+        const result = await TextRecognition.recognize(uri);
+        setRecognizedText(result.join(' ')); // result is an array of strings
+      }
+    });
   };
   return (
     <View style={styles.container}>
@@ -99,8 +127,16 @@ const CreateRoute = () => {
           width={windowWidth * 0.72}
           bgColor={Color.secondary}
           marginTop={moderateScale(20, 0.6)}
-          onPress={() => {
-            // navigationService.navigate('LoginScreen');
+          onPress={async () => {
+            const result = await launchCamera({mediaType: 'photo'});
+            if (result.assets && result.assets.length > 0) {
+              const path = result.assets[0].uri;
+              const recognizedText = await MLKitOcr.detectFromFile(path);
+              console.log(
+                'Text found:',
+                recognizedText.map(block => block.text).join('\n'),
+              );
+            }
           }}
         />
       </View>
@@ -115,8 +151,9 @@ const CreateRoute = () => {
         bgColor={Color.secondary}
         marginTop={moderateScale(20, 0.6)}
         onPress={() => {
-            // console.log('============== >')
-          openGallery()
+          // console.log('============== >')
+          // openGallery();
+          pickImageAndRecognizeText();
         }}
       />
       <CustomButton

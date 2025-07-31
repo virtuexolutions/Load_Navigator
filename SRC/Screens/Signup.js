@@ -21,12 +21,10 @@ import CountryStatePicker from '../Components/CountryStatePicker';
 import CustomButton from '../Components/CustomButton';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText';
-import Header from '../Components/Header';
 import SearchLocationModal from '../Components/SearchLocationModal';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
 import {setUserToken} from '../Store/slices/auth-slice';
 import {setSelectedRole, setUserData} from '../Store/slices/common';
-import Entypo from 'react-native-vector-icons/Entypo';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import DropDownSingleSelect from '../Components/DropDownSingleSelect';
 import {
@@ -76,13 +74,13 @@ const Signup = props => {
       mc_number: mcNumber,
       password: password,
       confirm_password: confirmPassword,
-      hear_about_us: aboutUs?.name,
+      hear_about_us: aboutUs,
       agree_to_terms: Policy,
       selected_area: selectedArea,
       role: 'company',
       state: selectedState,
       // include_me_directory :
-      is_notified: isNotified,
+      // is_notified: isNotified,
       lat: userAddress?.lat,
       lng: userAddress?.lng,
     };
@@ -94,7 +92,7 @@ const Signup = props => {
       company_name: company,
       password: password,
       confirm_password: confirmPassword,
-      hear_about_us: aboutUs?.name,
+      hear_about_us: aboutUs,
       agree_to_terms: Policy,
       experience: Experience,
       car_certificate: InsuranceCertificate,
@@ -103,7 +101,7 @@ const Signup = props => {
       role: 'pilot',
       address: userAddress?.name,
       state: selectedState,
-      is_notified: isNotified,
+      // is_notified: isNotified,
       lat: userAddress?.lat,
       lng: userAddress?.lng,
     };
@@ -113,15 +111,45 @@ const Signup = props => {
         ? JSON.stringify(body, null, 2)
         : JSON.stringify(body1, null, 2),
     );
-    for (let key in selectedUserType == 'Trucking company' ? body : body1) {
-      if (body[key] == '') {
+
+    const apiBody = selectedUserType == 'Trucking company' ? body : body1;
+    for (let key in apiBody) {
+      if (apiBody[key] == '') {
         return Platform.OS == 'android'
-          ? ToastAndroid.show(` ${key} field is empty`, ToastAndroid.SHORT)
-          : Alert.alert(` ${key} field is empty`);
+          ? ToastAndroid.show(
+              `Required Field Should not be empty`,
+              ToastAndroid.SHORT,
+            )
+          : Alert.alert(`Required field should not be empty`);
+        // ? ToastAndroid.show(` ${key} field is empty`, ToastAndroid.SHORT)
+        // : Alert.alert(` ${key} field is empty`);
       }
     }
+    if (password.length < 8) {
+      return Platform.OS == 'android'
+        ? ToastAndroid.show(
+            'Password should atleast 8 character long',
+            ToastAndroid.SHORT,
+          )
+        : Alert.alert('Password should atleast 8 character long');
+    }
+
+    if (password != confirmPassword) {
+      return Platform.OS == 'android'
+        ? ToastAndroid.show('Password does not match', ToastAndroid.SHORT)
+        : Alert.alert('Password does not match');
+    }
+    if (selectedUserType == 'Trucking company') {
+      body.is_notified = isNotified;
+      console.log('============ >>>>> hello');
+    } else {
+      console.log('============ >>>>> ');
+      body1.is_notified = isNotified;
+    }
     const url = 'register';
+    // return console.log("====", apiBody)
     setIsLoading(true);
+
     const response = await Post(
       url,
       selectedUserType == 'Trucking company' ? body : body1,
@@ -133,7 +161,7 @@ const Signup = props => {
         ? ToastAndroid.show('Sign up successfully', ToastAndroid.SHORT)
         : Alert.alert('Sign up successfully');
       dispatch(setUserData(response?.data?.user_info));
-    dispatch(setUserToken({token: response?.data?.token}));
+      dispatch(setUserToken({token: response?.data?.token}));
       dispatch(setSelectedRole(response?.data?.user_info?.role));
       // dispatch(
       //   setIsEmailVerified(response?.data?.user_info?.is_email_verified),
@@ -144,11 +172,11 @@ const Signup = props => {
     }
   };
   const dummyarray = [
-    {id: 1, name: 'Search Engine'},
-    {id: 2, name: 'Social Media'},
-    {id: 3, name: 'Word Of Mouth'},
-    {id: 4, name: 'App Store'},
-    {id: 5, name: 'Other'},
+    'Search Engine',
+    'Social Media',
+    'Word Of Mouth',
+    'App Store',
+    'Other',
   ];
 
   const isValidCanadianNumber = phone => {
@@ -322,7 +350,7 @@ const Signup = props => {
               justifyContent: 'space-between',
             }}>
             <TextInputWithTitle
-              placeholder={'FirstName'}
+              placeholder={'First Name'}
               setText={setFirstName}
               value={firstName}
               viewHeight={0.06}
@@ -337,7 +365,7 @@ const Signup = props => {
               titleStlye={{right: 10}}
             />
             <TextInputWithTitle
-              placeholder={'LastName'}
+              placeholder={'Last Name'}
               setText={setLastName}
               value={LastName}
               viewHeight={0.06}
@@ -391,7 +419,7 @@ const Signup = props => {
             </CustomText>
           )} */}
           <TextInputWithTitle
-            placeholder={'Comapny Name'}
+            placeholder={'Company Name'}
             setText={setcompany}
             value={company}
             viewHeight={0.06}
@@ -647,6 +675,7 @@ const Signup = props => {
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
               titleStlye={{right: 10}}
+              keyboardType={'numeric'}
             />
           )}
           <CustomText
@@ -678,10 +707,10 @@ const Signup = props => {
                       styles.social_option,
                       {
                         backgroundColor:
-                          aboutUs?.id == item?.id ? 'red' : 'transparent',
+                          aboutUs == item ? 'red' : 'transparent',
                       },
                     ]}></View>
-                  <CustomText style={styles.label}>{item?.name}</CustomText>
+                  <CustomText style={styles.label}>{item}</CustomText>
                 </TouchableOpacity>
               );
             })}
@@ -755,7 +784,6 @@ const Signup = props => {
               send me notification on text or email
             </CustomText>
           </TouchableOpacity>
-
           <CustomButton
             text={
               isLoading ? (
@@ -764,23 +792,23 @@ const Signup = props => {
                 'sign up for free '
               )
             }
-            fontSize={moderateScale(153, 0.3)}
+            fontSize={moderateScale(13, 0.3)}
             textColor={Color.white}
             borderWidth={0}
             borderColor={Color.white}
             borderRadius={moderateScale(30, 0.3)}
             width={windowWidth * 0.85}
             height={windowHeight * 0.065}
-            bgColor={Color.secondry}
+            bgColor={Color.secondary}
             marginTop={moderateScale(10, 0.6)}
+            marginBottom={moderateScale(10, 0.6)}
             textTransform={'capitalize'}
             elevation={true}
             onPress={() => {
-              // navigationService.navigate('VerificationScreen');
-              // // navigationService.navigate('VerificationScreen')
               onPressregister();
             }}
           />
+
           <CustomButton
             text={'already have an account? login instead '}
             fontSize={moderateScale(13, 0.3)}

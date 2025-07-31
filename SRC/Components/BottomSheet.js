@@ -21,13 +21,14 @@ import PostCoveredModal from './PostCoveredModal';
 import {Post} from '../Axios/AxiosInterceptorFunction';
 import {useNavigation} from '@react-navigation/native';
 
-const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item ,loadStatus}) => {
+const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item, loadStatus}) => {
+  console.log('🚀 ~ BottomSheet ~ loadStatus:', loadStatus);
   const navigation = useNavigation();
   const userRole = useSelector(state => state.commonReducer.selectedRole);
   const token = useSelector(state => state.authReducer.token);
 
   const origin =
-    typeof item?.origin === 'string' ? JSON.parse(item?.origin) : item.origin;
+    typeof item?.origin === 'string' ? JSON.parse(item?.origin) : item?.origin;
   const destination =
     typeof item?.destination === 'string'
       ? JSON.parse(item?.destination)
@@ -36,33 +37,14 @@ const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item ,loadStatus}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isExpire, setIsExpire] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isCompletionToday, setIsCompletionToday] = useState(false);
-
-  const statusUpdate = async () => {
-    const body = {
-      origin: item?.origin,
-      destination: item?.destination,
-      escort_positions: item?.selecescort_positionstedPosition,
-      additional_requirements: item?.additional_requirements,
-      rate: item?.rate,
-      status: 'cover',
-      miles: item?.miles,
-      contact: item?.contact,
-    };
-    const url = `auth/load_detail/${item?.id}?_method=put`;
-    setIsLoading(true);
-    const respose = await Post(url, body, apiHeader(token));
-    setIsLoading(false);
-    if (respose != undefined) {
-      setLoadStatus('cover');
-      Rbref.current?.close();
-      // navigationService.navigate('LoadBoard');
-      // navigation.navigate('LoadBoard');
-    }
-  };
+  const [isCompletionToday, setIsCompletionToday] = useState(true);
+  console.log(
+    '🚀 ~ BottomSheet ~ isCompletionToday==============:',
+    isCompletionToday,
+  );
 
   useEffect(() => {
-    checkExpiry(item?.start_date, item?.status);
+    checkExpiry(item?.start_date, loadStatus);
     checkcompletionDate();
   }, []);
 
@@ -82,6 +64,30 @@ const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item ,loadStatus}) => {
     const isTodaycompletion = itemStr === todayStr;
     setIsCompletionToday(isTodaycompletion);
   };
+
+  const statusUpdate = async () => {
+    const body = {
+      origin: item?.origin,
+      destination: item?.destination,
+      escort_positions: item?.selecescort_positionstedPosition,
+      additional_requirements: item?.additional_requirements,
+      rate: item?.rate,
+      status: 'complete',
+      miles: item?.miles,
+      contact: item?.contact,
+    };
+    const url = `auth/load_detail/${item?.id}?_method=put`;
+    setIsLoading(true);
+    const respose = await Post(url, body, apiHeader(token));
+    setIsLoading(false);
+    if (respose != undefined) {
+      setLoadStatus('complete');
+      Rbref.current?.close();
+      // navigationService.navigate('LoadBoard');
+      // navigation.navigate('LoadBoard');
+    }
+  };
+
   return (
     <RBSheet
       // closeOnDragDown={true}
@@ -139,15 +145,24 @@ const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item ,loadStatus}) => {
               marginTop: moderateScale(5, 0.6),
               paddingTop: moderateScale(2, 0.6),
               backgroundColor:
-                loadStatus.toLowerCase() == 'cover' ? Color.green : 'yellow',
-              width: moderateScale(50, 0.6),
+                loadStatus.toLowerCase() == 'cover'
+                  ? Color.green
+                  : loadStatus.toLowerCase() == 'complete'
+                  ? '#42d1fa'
+                  : 'yellow',
+              // width: moderateScale(50, 0.6),
               height: windowHeight * 0.025,
               // justifyContent: 'center',
               // alignItems: 'center',
+              paddingHorizontal: moderateScale(5, 0.6),
               borderRadius: moderateScale(20, 0.6),
               marginLeft: moderateScale(10, 0.6),
             }}>
-            {loadStatus.toLowerCase() == 'cover' ? 'Covered' : 'Open'}
+            {loadStatus.toLowerCase() == 'cover'
+              ? 'Covered'
+              : loadStatus.toLowerCase() == 'complete'
+              ? 'Complete'
+              : 'Open'}
           </CustomText>
         </View>
         <View
@@ -200,6 +215,14 @@ const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item ,loadStatus}) => {
             </View>
             <CustomText style={styles.text}>
               {moment(item?.start_date).format('DD-MM-YYYY')}
+              <CustomText
+                style={{
+                  fontSize: moderateScale(10, 0.6),
+                  color: Color.red,
+                }}>
+                {' '}
+                (start date)
+              </CustomText>
             </CustomText>
           </View>
           <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
@@ -299,7 +322,15 @@ const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item ,loadStatus}) => {
               />
             </View>
             <CustomText style={styles.text}>
-              {moment(item?.created_at).format('l')}
+              {moment(item?.end_date).format('l')}
+              <CustomText
+                style={{
+                  fontSize: moderateScale(10, 0.6),
+                  color: Color.red,
+                }}>
+                {' '}
+                (Target Completion Date)
+              </CustomText>
             </CustomText>
           </View>
           <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
@@ -345,13 +376,7 @@ const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item ,loadStatus}) => {
         ) : (
           <>
             <CustomButton
-              text={
-                isLoading ? (
-                  <ActivityIndicator size={'small'} color={Color.white} />
-                ) : (
-                  'Mark Covered '
-                )
-              }
+              text={'Mark Covered '}
               textColor={Color.white}
               width={windowWidth * 0.8}
               height={windowHeight * 0.05}
@@ -363,7 +388,7 @@ const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item ,loadStatus}) => {
               bgColor={Color.secondary}
               borderRadius={moderateScale(30, 0.3)}
               fontSize={moderateScale(15, 0.3)}
-              // disabled={item?.status.toLowerCase() == 'cover' ? true : false}
+              disabled={loadStatus == 'pending' ? false : true}
             />
             {isExpire && (
               <CustomButton
@@ -384,29 +409,43 @@ const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item ,loadStatus}) => {
               />
             )}
 
-            {userRole?.toLowerCase() != 'pilot' && isCompletionToday && (
-              <CustomButton
-                text={'complete'}
-                textColor={Color.white}
-                width={windowWidth * 0.8}
-                height={windowHeight * 0.05}
-                marginTop={moderateScale(15, 0.3)}
-                onPress={() => {
-                  Rbref?.current?.close();
-                }}
-                bgColor={Color.secondary}
-                borderWidth={1}
-                borderColor={Color.secondary}
-                borderRadius={moderateScale(30, 0.3)}
-                fontSize={moderateScale(15, 0.3)}
-              />
-            )}
+            {userRole?.toLowerCase() != 'pilot' &&
+              isCompletionToday &&
+              loadStatus !== 'pending' && (
+                <CustomButton
+                  text={
+                    isLoading ? (
+                      <ActivityIndicator size={'small'} color={Color.white} />
+                    ) : (
+                      'complete'
+                    )
+                  }
+                  textColor={Color.white}
+                  width={windowWidth * 0.8}
+                  height={windowHeight * 0.05}
+                  marginTop={moderateScale(15, 0.3)}
+                  onPress={() => {
+                    statusUpdate();
+                    // Rbref?.current?.close();
+                  }}
+                  bgColor={Color.secondary}
+                  borderWidth={1}
+                  borderColor={Color.secondary}
+                  borderRadius={moderateScale(30, 0.3)}
+                  fontSize={moderateScale(15, 0.3)}
+                  disabled={
+                    loadStatus.toLowerCase() == 'complete' ? true : false
+                  }
+                />
+              )}
           </>
         )}
 
         <PostCoveredModal
           isModalVisible={isModalVisible}
           setIsModalVisible={setIsModalVisible}
+          item={item}
+          setLoadStatus={setLoadStatus}
         />
       </View>
     </RBSheet>

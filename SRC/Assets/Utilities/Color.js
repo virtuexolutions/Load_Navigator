@@ -2,7 +2,6 @@ import {theme} from 'native-base';
 import {useSelector} from 'react-redux';
 
 export default Color = {
-
   // Basic Colors
   primary: '#000000',
   secondary: '#C32C27',
@@ -28,9 +27,11 @@ export default Color = {
   secondry: '#C32C27',
 
   // theme colors
-  grey: "#5D5D5D",
-  cartheme: ['#79B9F6', '#00309E',],
-  btnColor: ['#565657', "#000000"],
+  grey: '#5D5D5D',
+
+  btn_Color2: ['#5D5D5D', '#000000'],
+  cartheme: ['#79B9F6', '#00309E'],
+  btnColor: ['#565657', '#000000'],
   grey: '#757575',
   cartheme: ['#79B9F6', '#00309E'],
   btnColor: ['#565657', '#000000'],
@@ -46,6 +47,6 @@ export default Color = {
   themeBgColor: ['#E9CB5800', '#E9CB58'],
   statusBarColor: ['#297FAD', '#297FAD'],
 
-  primary:"#000000",
-  secondary: "#C32C27"
+  primary: '#000000',
+  secondary: '#C32C27',
 };

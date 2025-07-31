@@ -17,6 +17,7 @@ const initialState = {
   location: '',
   pickupLocatin: {},
   dropoffLocation: {},
+  cardData : {}
 };
 
 const CommonSlice = createSlice({
@@ -51,6 +52,7 @@ const CommonSlice = createSlice({
       state.notification = action.payload;
     },
     setSelectedRole(state, action) {
+      console.log("🚀 ~ setSelectedRole ~ action:", action)
       state.selectedRole = action.payload;
     },
 
@@ -216,6 +218,10 @@ const CommonSlice = createSlice({
       state.location = action.payload;
       console.log('🚀 ~ setLoaction ~ ==============location:', action.payload);
     },
+     setPaymentCard(state, action) {
+      state.cardData = action.payload;
+      console.log('🚀 ~ setLoaction ~ ==============location:', action.payload);
+    },
   },
 });
 
@@ -245,6 +251,7 @@ export const {
   setLoaction,
   setPickupLocation,
   setDropoffLocation,
+  setPaymentCard,
 } = CommonSlice.actions;
 
 export default CommonSlice.reducer;

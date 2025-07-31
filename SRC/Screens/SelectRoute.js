@@ -46,7 +46,7 @@ const SelectRoute = () => {
         />
         <CustomButton
           text={
-            userRole.toLowerCase() == 'pilot'
+            userRole?.toLowerCase() == 'pilot'
               ? 'View Leader Board'
               : 'View Load Board'
           }
@@ -58,7 +58,7 @@ const SelectRoute = () => {
           borderRadius={moderateScale(30, 0.6)}
           width={windowWidth * 0.85}
           onPress={() => {
-            userRole.toLowerCase() == 'pilot'
+            userRole?.toLowerCase() == 'pilot'
               ? navigationService.navigate('ViewLeadBoard')
               : navigationService.navigate('PostLoadScreen');
           }}

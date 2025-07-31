@@ -26,6 +26,7 @@ const PostLoadScreen = () => {
   const navigation = useNavigation();
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
+  console.log("🚀 ~ PostLoadScreen ~ userData:", userData?.contact)
 
   const [isVisible, setIsVisible] = useState(false);
   const [isDetails, setIsDetails] = useState(false);

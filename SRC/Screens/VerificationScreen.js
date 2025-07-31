@@ -24,7 +24,8 @@ import Modal from 'react-native-modal';
 import CustomImage from '../Components/CustomImage';
 import Color from '../Assets/Utilities/Color';
 import LinearGradient from 'react-native-linear-gradient';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Feather from 'react-native-vector-icons/Feather';
 
 import {Icon} from 'native-base';
 import {setUserLogOut, setUserRegisteredComet} from '../Store/slices/common';
@@ -51,7 +52,6 @@ const VerificationScreen = () => {
   const token = useSelector(state => state.authReducer.token);
   const mobileVerified = useSelector(state => state.authReducer.numberVerified);
   const emailVerified = useSelector(state => state.authReducer.emailVerified);
-  console.log('🚀 ~ VerificationScreen ~ emailVerified:', emailVerified);
   const [emailCode, setEmailCode] = useState('');
   const [phoneCode, setPhoneCode] = useState('');
   const [emailVerify, setEmailVerify] = useState(false);
@@ -108,7 +108,6 @@ const VerificationScreen = () => {
       {phone: userData?.contact},
       apiHeader(token),
     );
-    console.log('🚀 ~ sendMobileOtp ~ response:', response?.data);
     setIsLoading(false);
     if (response?.data) {
       // return console.log(response?.data?.code)
@@ -160,7 +159,6 @@ const VerificationScreen = () => {
       {email: userData?.email, email_code: emailCode},
       apiHeader(token),
     );
-    //  return console.log("🚀 ~ ConfirmEmailOTP ~ response:", response?.data)
     setLoading(false);
 
     if (response != undefined) {
@@ -236,7 +234,7 @@ const VerificationScreen = () => {
           alignItems: 'center',
           height: windowHeight,
           backgroundColor: Color.primary,
-          paddingVertical: moderateScale(30, 0.6),
+          paddingVertical: moderateScale(40, 0.6),
           //  justifyContent : 'center',
 
           //  backgroundColor : 'red'
@@ -254,14 +252,22 @@ const VerificationScreen = () => {
         <View
           style={{
             marginTop: windowHeight * 0.06,
-            paddingVertical: moderateScale(50, 0.6),
+            paddingVertical: moderateScale(40, 0.6),
             paddingHorizontal: moderateScale(20, 0.6),
             borderRadius: moderateScale(10, 0.6),
-            borderWidth : 1.3,
-            borderColor : Color.secondary ,
-            // justifyCosntent : 'center',
+            borderWidth: 1.3,
+
             alignItems: 'center',
-            backgroundColor: '	rgba(68, 62, 57, 0.81)',
+            backgroundColor: 'rgba(68, 62, 57, 0.4)',
+            // shadowColor:'white',
+            // shadowOffset: {
+            //   width: 0,
+            //   height: 2,
+            // },
+            // shadowOpacity: 0.25,
+            // shadowRadius: 3.84,
+
+            // elevation: 5,
           }}>
           <View
             style={{
@@ -270,7 +276,7 @@ const VerificationScreen = () => {
               // backgroundColor : 'red'
             }}>
             <CustomImage
-              source={require('../Assets/Images/lock1.png')}
+              source={require('../Assets/Images/lock.png')}
               style={{
                 width: '100%',
                 height: '100%',
@@ -297,113 +303,122 @@ const VerificationScreen = () => {
             }}>
             Please verify your phone number and email address before Entering{' '}
           </CustomText>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            // backgroundColor : 'red',
-            alignItems: 'center',
-            marginTop: moderateScale(25, 0.3),
-          }}>
-          <View style={styles.emptyBar}>
-            <LinearGradient
-              colors={Color.themeBgColor}
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 0}}
+          <View
+            style={{
+              flexDirection: 'row',
+              // backgroundColor : 'red',
+              alignItems: 'center',
+              marginTop: moderateScale(25, 0.3),
+            }}>
+            <View style={styles.emptyBar}>
+              <LinearGradient
+                colors={Color.themeBgColor}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 0}}
+                style={{
+                  height: '100%',
+                  width: `${emailVerified ? 50 : mobileVerified ? 100 : 0}%`,
+                  borderTopRightRadius: moderateScale(10, 0.3),
+                  borderBottomRightRadius: moderateScale(10, 0.3),
+                }}></LinearGradient>
+            </View>
+            <Icon
+              name={!emailVerified ? 'email' : 'mark-email-read'}
+              as={MaterialIcons}
+              size={moderateScale(16, 0.6)}
+              color={emailVerified ? Color.green : Color.veryLightGray}
               style={{
-                height: '100%',
-                width: `${emailVerified ? 50 : mobileVerified ? 100 : 0}%`,
-                borderTopRightRadius: moderateScale(10, 0.3),
-                borderBottomRightRadius: moderateScale(10, 0.3),
-              }}></LinearGradient>
+                marginRight: moderateScale(5, 0.6),
+              }}
+            />
+            <Icon
+              name={mobileVerified ? 'phone' : 'phone-off'}
+              as={Feather}
+              size={moderateScale(15, 0.6)}
+              color={mobileVerified ? Color.green : Color.veryLightGray}
+            />
           </View>
-          <Icon
-            name={!emailVerified ? 'lock' : 'unlock'}
-            as={FontAwesome}
-            size={moderateScale(15, 0.6)}
-            color={Color.veryLightGray}
-          />
-          <Icon
-            name={!mobileVerified ? 'lock' : 'unlock'}
-            as={FontAwesome}
-            size={moderateScale(15, 0.6)}
-            color={Color.veryLightGray}
-          />
-        </View>
 
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            width: windowWidth * 0.85,
-            alignItems: 'center',
-          }}>
-          <CustomButton
-            text={
-              loading ? (
-                <ActivityIndicator color={'#FFFFFF'} size={'small'} />
-              ) : emailVerified ? (
-                'email verified'
-              ) : (
-                'Verify Email'
-              )
-            }
-            textColor={Color.white}
-            width={windowWidth * 0.4}
-            height={windowHeight * 0.06}
-            marginTop={moderateScale(20, 0.3)}
-            bgColor={Color.secondary}
-            borderRadius={moderateScale(25, 0.3)}
-            elevation
-            // isGradient
-            fontSize={moderateScale(12, 0.6)}
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-evenly',
+              width: windowWidth * 0.8,
+              alignSelf: 'center',
+              // backgroundColor : 'red'
+              // alignItems: 'center',
+            }}>
+            <CustomButton
+              text={
+                loading ? (
+                  <ActivityIndicator color={'#FFFFFF'} size={'small'} />
+                ) : emailVerified ? (
+                  'email verified'
+                ) : (
+                  'Verify Email'
+                )
+              }
+              textColor={Color.white}
+              width={windowWidth * 0.32}
+              height={windowHeight * 0.035}
+              marginTop={moderateScale(20, 0.3)}
+              bgColor={'transparent'}
+              borderRadius={moderateScale(25, 0.3)}
+              elevation
+              borderWidth={1}
+              borderColor={Color.secondary}
+              fontSize={moderateScale(11, 0.6)}
+              onPress={() => {
+                sendEmailOtp();
+                // setLoader(prev=> prev == 0 ?50 : 0)
+              }}
+              textTransform={'lowerCase'}
+              disabled={emailVerified}
+            />
+            <CustomButton
+              text={
+                isloading ? (
+                  <ActivityIndicator color={'#FFFFFF'} size={'small'} />
+                ) : mobileVerified ? (
+                  'number verified'
+                ) : (
+                  'Verify number'
+                )
+              }
+              textColor={Color.white}
+              width={windowWidth * 0.32}
+              height={windowHeight * 0.035}
+              marginTop={moderateScale(20, 0.3)}
+              bgColor={Color.secondary}
+              borderRadius={moderateScale(25, 0.3)}
+              // elevation
+              borderWidth={1}
+              // borderColor={Color.black}
+              textTransform={'lowerCase'}
+              fontSize={moderateScale(11, 0.6)}
+              onPress={() => {
+                sendMobileOtp();
+                // setLoader(prev=> prev == 50 ?100 : 50)
+              }}
+              disabled={mobileVerified == true}
+            />
+          </View>
+          <CustomText
             onPress={() => {
-              sendEmailOtp();
-              // setLoader(prev=> prev == 0 ?50 : 0)
+              console.log('================= >>>>>>>>> sdf');
+              dispatch(setUserLogOut(), dispatch(setUserLogoutAuth()));
+              dispatch(setIsEmailVerified(false));
+              dispatch(setIsMobileVerified(false));
             }}
-            disabled={emailVerified}
-          />
-          <CustomButton
-            text={
-              isloading ? (
-                <ActivityIndicator color={'#FFFFFF'} size={'small'} />
-              ) : mobileVerified ? (
-                'number verified'
-              ) : (
-                'Verify number'
-              )
-            }
-            textColor={Color.white}
-            width={windowWidth * 0.4}
-            height={windowHeight * 0.06}
-            marginTop={moderateScale(20, 0.3)}
-            bgColor={Color.secondary}
-            borderRadius={moderateScale(25, 0.3)}
-            // elevation
-            borderWidth={1}
-            // borderColor={Color.white}
-            // isGradient
-            fontSize={moderateScale(12, 0.6)}
-            onPress={() => {
-              sendMobileOtp();
-              // setLoader(prev=> prev == 50 ?100 : 50)
-            }}
-            disabled={mobileVerified == true}
-          />
+            style={{
+              color: Color.white,
+              fontSize: moderateScale(10, 0.6),
+              marginTop: moderateScale(10, 0.3),
+              textTransform: 'uppercase',
+            }}>
+            log out
+          </CustomText>
         </View>
-        <CustomText
-          onPress={() => {
-            dispatch(setUserLogOut(), dispatch(setUserLogoutAuth()));
-            dispatch(setIsEmailVerified(false));
-            dispatch(setIsMobileVerified(false));
-          }}
-          style={{
-            color: Color.white,
-            fontSize: moderateScale(12, 0.6),
-            marginTop: moderateScale(10, 0.3),
-          }}>
-          log out
-        </CustomText>
       </View>
       <Modal
         isVisible={modalVisible}
