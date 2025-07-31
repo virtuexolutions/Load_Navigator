@@ -1,21 +1,93 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import Color from '../Assets/Utilities/Color';
 import CustomText from './CustomText';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import CustomButton from './CustomButton';
 import {moderateScale} from 'react-native-size-matters';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-// import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Fontisto from 'react-native-vector-icons/Fontisto';
+// import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import {Icon} from 'native-base';
 import moment from 'moment';
+import {useSelector} from 'react-redux';
+import navigationService from '../navigationService';
+import PostCoveredModal from './PostCoveredModal';
+import {Post} from '../Axios/AxiosInterceptorFunction';
+import {useNavigation} from '@react-navigation/native';
 
-const BottomSheet = ({Rbref, setRbRef, item}) => {
+const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item, loadStatus}) => {
+  console.log('🚀 ~ BottomSheet ~ loadStatus:', loadStatus);
+  const navigation = useNavigation();
+  const userRole = useSelector(state => state.commonReducer.selectedRole);
+  const token = useSelector(state => state.authReducer.token);
+
+  const origin =
+    typeof item?.origin === 'string' ? JSON.parse(item?.origin) : item?.origin;
+  const destination =
+    typeof item?.destination === 'string'
+      ? JSON.parse(item?.destination)
+      : item?.destination;
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isExpire, setIsExpire] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isCompletionToday, setIsCompletionToday] = useState(true);
+  console.log(
+    '🚀 ~ BottomSheet ~ isCompletionToday==============:',
+    isCompletionToday,
+  );
+
+  useEffect(() => {
+    checkExpiry(item?.start_date, loadStatus);
+    checkcompletionDate();
+  }, []);
+
+  const checkExpiry = (postDate, isCovered) => {
+    const today = new Date();
+    const postDateObj = new Date(postDate);
+    const expire = isCovered.toLowerCase() == 'pending' && postDateObj < today;
+    setIsExpire(expire);
+  };
+
+  const checkcompletionDate = () => {
+    if (!item?.end_date) return false;
+    const today = new Date();
+    const itemDate = new Date(item?.end_date);
+    const todayStr = today.toISOString().split('T')[0];
+    const itemStr = itemDate.toISOString().split('T')[0];
+    const isTodaycompletion = itemStr === todayStr;
+    setIsCompletionToday(isTodaycompletion);
+  };
+
+  const statusUpdate = async () => {
+    const body = {
+      origin: item?.origin,
+      destination: item?.destination,
+      escort_positions: item?.selecescort_positionstedPosition,
+      additional_requirements: item?.additional_requirements,
+      rate: item?.rate,
+      status: 'complete',
+      miles: item?.miles,
+      contact: item?.contact,
+    };
+    const url = `auth/load_detail/${item?.id}?_method=put`;
+    setIsLoading(true);
+    const respose = await Post(url, body, apiHeader(token));
+    setIsLoading(false);
+    if (respose != undefined) {
+      setLoadStatus('complete');
+      Rbref.current?.close();
+      // navigationService.navigate('LoadBoard');
+      // navigation.navigate('LoadBoard');
+    }
+  };
+
   return (
     <RBSheet
       // closeOnDragDown={true}
@@ -28,7 +100,10 @@ const BottomSheet = ({Rbref, setRbRef, item}) => {
         container: {
           borderTopRightRadius: 30,
           borderTopLeftRadius: 30,
-          height: windowHeight * 0.54,
+          height:
+            userRole.toLowerCase() == 'pilot'
+              ? windowHeight * 0.6
+              : windowHeight * 0.69,
         },
       }}>
       <View
@@ -46,15 +121,50 @@ const BottomSheet = ({Rbref, setRbRef, item}) => {
             marginTop: moderateScale(10, 0.6),
             // backgroundColor :'red'
           }}></View>
-        <CustomText
+        <View
           style={{
-            width: windowWidth * 0.6,
-            fontSize: moderateScale(17, 0.6),
-            textAlign: 'center',
+            flexDirection: 'row',
+            width: windowWidth * 0.9,
+            paddingHorizontal: moderateScale(10, 0.6),
+            justifyContent: 'space-between',
             paddingTop: moderateScale(10, 0.6),
           }}>
-          {item?.company}
-        </CustomText>
+          <CustomText
+            numberOfLines={2}
+            style={{
+              fontSize: moderateScale(16, 0.6),
+              color: Color.black,
+              width: windowWidth * 0.7,
+            }}>
+            {item?.company}
+          </CustomText>
+          <CustomText
+            style={{
+              fontSize: moderateScale(11, 0.6),
+              textAlign: 'center',
+              marginTop: moderateScale(5, 0.6),
+              paddingTop: moderateScale(2, 0.6),
+              backgroundColor:
+                loadStatus.toLowerCase() == 'cover'
+                  ? Color.green
+                  : loadStatus.toLowerCase() == 'complete'
+                  ? '#42d1fa'
+                  : 'yellow',
+              // width: moderateScale(50, 0.6),
+              height: windowHeight * 0.025,
+              // justifyContent: 'center',
+              // alignItems: 'center',
+              paddingHorizontal: moderateScale(5, 0.6),
+              borderRadius: moderateScale(20, 0.6),
+              marginLeft: moderateScale(10, 0.6),
+            }}>
+            {loadStatus.toLowerCase() == 'cover'
+              ? 'Covered'
+              : loadStatus.toLowerCase() == 'complete'
+              ? 'Complete'
+              : 'Open'}
+          </CustomText>
+        </View>
         <View
           style={{
             paddingHorizontal: moderateScale(35, 0.6),
@@ -79,7 +189,7 @@ const BottomSheet = ({Rbref, setRbRef, item}) => {
                     width: windowWidth * 0.7,
                   },
                 ]}>
-                {item?.origin?.name}
+                {origin?.name}
               </CustomText>
             </View>
           </View>
@@ -92,9 +202,7 @@ const BottomSheet = ({Rbref, setRbRef, item}) => {
                 color={Color.white}
               />
             </View>
-            <CustomText style={styles.text}>
-              {item?.destination?.name}
-            </CustomText>
+            <CustomText style={styles.text}>{destination?.name}</CustomText>
           </View>
           <View style={[styles.row, {marginTop: moderateScale(5, 0.6)}]}>
             <View style={styles.icon_view}>
@@ -107,31 +215,43 @@ const BottomSheet = ({Rbref, setRbRef, item}) => {
             </View>
             <CustomText style={styles.text}>
               {moment(item?.start_date).format('DD-MM-YYYY')}
+              <CustomText
+                style={{
+                  fontSize: moderateScale(10, 0.6),
+                  color: Color.red,
+                }}>
+                {' '}
+                (start date)
+              </CustomText>
             </CustomText>
           </View>
-          {/* <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+          <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
             <View style={styles.icon_view}>
               <Icon
-                name="weight"
-                as={FontAwesome5}
+                name="paragraph"
+                as={Fontisto}
                 size={moderateScale(12, 0.6)}
                 color={Color.white}
               />
             </View>
 
-            <CustomText style={styles.text}>{item?.weight}</CustomText>
-          </View> */}
-          <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-            <View style={styles.icon_view}>
-              <Icon
-                name="height"
-                as={MaterialIcons}
-                size={moderateScale(12, 0.6)}
-                color={Color.white}
-              />
-            </View>
-            <CustomText style={styles.text}>{item?.height}</CustomText>
+            <CustomText numberOfLines={2} style={styles.text}>
+              {item?.description}
+            </CustomText>
           </View>
+          {item?.height != null && (
+            <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+              <View style={styles.icon_view}>
+                <Icon
+                  name="height"
+                  as={MaterialIcons}
+                  size={moderateScale(12, 0.6)}
+                  color={Color.white}
+                />
+              </View>
+              <CustomText style={styles.text}>{item?.height}</CustomText>
+            </View>
+          )}
           <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
             <View style={styles.icon_view}>
               <Icon
@@ -182,6 +302,19 @@ const BottomSheet = ({Rbref, setRbRef, item}) => {
           <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
             <View style={styles.icon_view}>
               <Icon
+                name="map-marker-distance"
+                as={MaterialCommunityIcons}
+                size={moderateScale(12, 0.6)}
+                color={Color.white}
+              />
+            </View>
+            <CustomText
+              style={styles.text}>{`${item?.miles} miles`}</CustomText>
+          </View>
+
+          <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+            <View style={styles.icon_view}>
+              <Icon
                 name="date"
                 as={Fontisto}
                 size={moderateScale(12, 0.6)}
@@ -189,7 +322,15 @@ const BottomSheet = ({Rbref, setRbRef, item}) => {
               />
             </View>
             <CustomText style={styles.text}>
-              {moment(item?.created_at).format('l')}
+              {moment(item?.end_date).format('l')}
+              <CustomText
+                style={{
+                  fontSize: moderateScale(10, 0.6),
+                  color: Color.red,
+                }}>
+                {' '}
+                (Target Completion Date)
+              </CustomText>
             </CustomText>
           </View>
           <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
@@ -206,16 +347,105 @@ const BottomSheet = ({Rbref, setRbRef, item}) => {
             </CustomText>
           </View>
         </View>
-        <CustomButton
-          text={'create route'}
-          textColor={Color.white}
-          width={windowWidth * 0.8}
-          height={windowHeight * 0.05}
-          marginTop={moderateScale(15, 0.3)}
-          onPress={() => {}}
-          bgColor={Color.secondary}
-          borderRadius={moderateScale(30, 0.3)}
-          fontSize={moderateScale(15, 0.3)}
+        {isExpire && (
+          <CustomText
+            style={[
+              styles.text,
+              {
+                textAlign: 'flex-start',
+                width: windowWidth * 0.8,
+                paddingVertical: moderateScale(5, 0.6),
+              },
+            ]}>
+            Did you find someone?
+          </CustomText>
+        )}
+
+        {userRole.toLowerCase() == 'pilot' ? (
+          <CustomButton
+            text={'create route'}
+            textColor={Color.white}
+            width={windowWidth * 0.8}
+            height={windowHeight * 0.05}
+            marginTop={moderateScale(15, 0.3)}
+            onPress={() => {}}
+            bgColor={Color.secondary}
+            borderRadius={moderateScale(30, 0.3)}
+            fontSize={moderateScale(15, 0.3)}
+          />
+        ) : (
+          <>
+            <CustomButton
+              text={'Mark Covered '}
+              textColor={Color.white}
+              width={windowWidth * 0.8}
+              height={windowHeight * 0.05}
+              marginTop={!isExpire && moderateScale(15, 0.3)}
+              onPress={() => {
+                setIsModalVisible(true);
+                // statusUpdate();
+              }}
+              bgColor={Color.secondary}
+              borderRadius={moderateScale(30, 0.3)}
+              fontSize={moderateScale(15, 0.3)}
+              disabled={loadStatus == 'pending' ? false : true}
+            />
+            {isExpire && (
+              <CustomButton
+                text={'repost'}
+                textColor={Color.white}
+                width={windowWidth * 0.8}
+                height={windowHeight * 0.05}
+                marginTop={moderateScale(5, 0.3)}
+                onPress={() => {
+                  navigationService.navigate('LoadDetails', {
+                    item: item,
+                    repost: true,
+                  });
+                }}
+                bgColor={Color.secondary}
+                borderRadius={moderateScale(30, 0.3)}
+                fontSize={moderateScale(15, 0.3)}
+              />
+            )}
+
+            {userRole?.toLowerCase() != 'pilot' &&
+              isCompletionToday &&
+              loadStatus !== 'pending' && (
+                <CustomButton
+                  text={
+                    isLoading ? (
+                      <ActivityIndicator size={'small'} color={Color.white} />
+                    ) : (
+                      'complete'
+                    )
+                  }
+                  textColor={Color.white}
+                  width={windowWidth * 0.8}
+                  height={windowHeight * 0.05}
+                  marginTop={moderateScale(15, 0.3)}
+                  onPress={() => {
+                    statusUpdate();
+                    // Rbref?.current?.close();
+                  }}
+                  bgColor={Color.secondary}
+                  borderWidth={1}
+                  borderColor={Color.secondary}
+                  borderRadius={moderateScale(30, 0.3)}
+                  fontSize={moderateScale(15, 0.3)}
+                  disabled={
+                    loadStatus.toLowerCase() == 'complete' ? true : false
+                  }
+                />
+              )}
+          </>
+        )}
+
+        <PostCoveredModal
+          isModalVisible={isModalVisible}
+          setIsModalVisible={setIsModalVisible}
+          item={item}
+          setLoadStatus={setLoadStatus}
         />
       </View>
     </RBSheet>
@@ -226,7 +456,7 @@ export default BottomSheet;
 
 const styles = StyleSheet.create({
   row: {
-    marginTop: moderateScale(10, 0.6),
+    marginTop: moderateScale(5, 0.6),
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',

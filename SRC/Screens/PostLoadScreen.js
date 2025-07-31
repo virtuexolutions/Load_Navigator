@@ -1,6 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
-import { Icon } from 'native-base';
-import React, { useState } from 'react';
+import {useNavigation} from '@react-navigation/native';
+import {Icon} from 'native-base';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -8,24 +8,25 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { moderateScale } from 'react-native-size-matters';
+import {moderateScale} from 'react-native-size-matters';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
 import CustomButton from '../Components/CustomButton';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
 import navigationService from '../navigationService';
-import { windowHeight, windowWidth } from '../Utillity/utils';
+import {windowHeight, windowWidth} from '../Utillity/utils';
 
 const PostLoadScreen = () => {
   const navigation = useNavigation();
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
+  console.log("🚀 ~ PostLoadScreen ~ userData:", userData?.contact)
 
   const [isVisible, setIsVisible] = useState(false);
   const [isDetails, setIsDetails] = useState(false);
@@ -149,7 +150,8 @@ const PostLoadScreen = () => {
         }}
         title={'Post A Load'}
         headerColor={Color.secondary}
-        Ismenu
+        // Ismenu
+        menu
       />
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -160,20 +162,60 @@ const PostLoadScreen = () => {
         />
 
         <View style={styles.main_view}>
+          {/* <View style={[
+             styles.post_card,
+  {     marginVertical : moderateScale(10,.6)   }]}>
+          </View> */}
           <View
             style={[
               styles.post_card,
               {
-                height: isDetails ? windowHeight * 0.55 : windowHeight * 0.35,
+                height: windowHeight * 0.45,
               },
             ]}>
-            <CustomText isBold style={styles.card_heading}>
+            <View
+              style={{
+                flexDirection: 'row',
+                // justifyContent: 'space-between',
+              }}>
+              <CustomText
+                isBold
+                style={[
+                  styles.card_heading,
+                  {
+                    fontSize: moderateScale(17, 0.6),
+                    color: Color.secondary,
+                    // paddingVertical: moderateScale(5, 0.6),
+                  },
+                ]}>
+                {userData?.company_name}
+              </CustomText>
+            </View>
+            <CustomText
+              isBold
+              style={[
+                styles.card_heading,
+                {
+                  fontSize: moderateScale(13, 0.6),
+                },
+              ]}>
+              {userData?.contact}
+            </CustomText>
+            <View style={styles.lines} />
+            <CustomText
+              isBold
+              style={[
+                styles.card_heading,
+                {
+                  paddingTop: moderateScale(5, 0.6),
+                },
+              ]}>
               Loads
             </CustomText>
             <CustomText style={styles.card_text}>
               View Past Load Or Post a new One.
             </CustomText>
-            <CustomButton
+            {/* <CustomButton
               text={'Post Load '}
               onPress={() => navigationService.navigate('LoadDetails')}
               fontSize={moderateScale(14, 0.3)}
@@ -187,102 +229,53 @@ const PostLoadScreen = () => {
                 alignSelf: 'flex-start',
               }}
               textTransform={'capitalize'}
-            />
+            /> */}
             <View style={styles.lines} />
-            {isDetails ? (
-              <View
+            <>
+              <CustomText
+                isBold
+                style={[
+                  styles.card_heading,
+                  {marginTop: moderateScale(10, 0.6)},
+                ]}>
+                Welcome! Let's Get Started
+              </CustomText>
+              <CustomText style={styles.card_text}>
+                Click 'Post Load' to start posting
+              </CustomText>
+              <View style={styles.lines} />
+              <CustomButton
+                text={'Post Load '}
+                onPress={() => navigationService.navigate('LoadDetails')}
+                fontSize={moderateScale(14, 0.3)}
+                textColor={Color.white}
+                borderRadius={moderateScale(30, 0.3)}
+                width={windowWidth * 0.8}
+                marginTop={moderateScale(15, 0.3)}
+                height={windowHeight * 0.065}
+                bgColor={Color.secondary}
                 style={{
-                  marginTop: moderateScale(10, 0.6),
-                }}>
-                <View style={styles.row_view}>
-                  <CustomText isBold style={styles.heading_text}>
-                    Truck
-                  </CustomText>
-                  <View style={styles.row_view}>
-                    <CustomText style={styles.text}>Recent</CustomText>
-                    <TouchableOpacity style={styles.btn}>
-                      <CustomText style={[styles.text, { color: Color.white }]}>
-                        Open
-                      </CustomText>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                {truckDetails.map(item => {
-                  return (
-                    <View
-                      style={[
-                        styles.row_view,
-                        {
-                          justifyContent: 'flex-start',
-                          marginTop: moderateScale(7, 0.6),
-                        },
-                      ]}>
-                      <View style={styles.icon_box}>
-                        <Icon
-                          name={item?.iconName}
-                          as={item?.iconType}
-                          color={Color.white}
-                          size={moderateScale(13, 0.6)}
-                          style={{ alignSelf: 'center' }}
-                        />
-                      </View>
-                      <CustomText style={styles.details_text}>
-                        {item?.text}
-                      </CustomText>
-                    </View>
-                  );
-                })}
-                <CustomText
-                  style={{
-                    fontSize: moderateScale(12, 0.6),
-                    marginTop: moderateScale(10, 0.6),
-                  }}>
-                  Lead
-                </CustomText>
-                <View
-                  style={[
-                    styles.lines,
-                    {
-                      marginTop: moderateScale(10, 0.6),
-                    },
-                  ]}
-                />
-              </View>
-            ) : (
-              <>
-                <CustomText
-                  isBold
-                  style={[
-                    styles.card_heading,
-                    { marginTop: moderateScale(10, 0.6) },
-                  ]}>
-                  Welcome! Let's Get Started
-                </CustomText>
-                <CustomText style={styles.card_text}>
-                  Click 'Post Load' to start posting
-                </CustomText>
-                <View style={styles.lines} />
-              </>
-            )}
+                  alignSelf: 'flex-start',
+                }}
+                textTransform={'capitalize'}
+              />
+              <CustomButton
+                text={'View load board'}
+                onPress={() => navigationService.navigate('LoadBoard')}
+                fontSize={moderateScale(14, 0.3)}
+                textColor={Color.white}
+                borderRadius={moderateScale(30, 0.3)}
+                width={windowWidth * 0.8}
+                marginTop={moderateScale(8, 0.3)}
+                height={windowHeight * 0.065}
+                bgColor={Color.secondary}
+                style={{
+                  alignSelf: 'flex-start',
+                }}
+                textTransform={'capitalize'}
+              />
+            </>
           </View>
-          <CustomButton
-            text={'Create a Route'}
-            // onPress={() => navigationService.navigate('LoadDetails')}
-            fontSize={moderateScale(14, 0.3)}
-            textColor={Color.white}
-            borderRadius={moderateScale(30, 0.3)}
-            width={windowWidth * 0.8}
-            marginTop={moderateScale(50, 0.3)}
-            height={windowHeight * 0.065}
-            bgColor={Color.secondary}
-            style={{
-              alignSelf: 'center',
-            }}
-            onPress={() => {
-              navigationService.navigate('CreateRoute');
-            }}
-            textTransform={'capitalize'}
-          />
         </View>
 
         {/* <SideBarModal
@@ -316,7 +309,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Color.white,
     height: windowHeight,
-    paddingHorizontal: moderateScale(10, 0.6)
+    paddingHorizontal: moderateScale(10, 0.6),
   },
   post_card: {
     backgroundColor: Color.white,
@@ -341,7 +334,7 @@ const styles = StyleSheet.create({
   },
   card_text: {
     fontSize: moderateScale(14, 0.6),
-    color: Color.veryLightGray,
+    color: Color.mediumGray,
     textTransform: 'capitalize',
     marginTop: moderateScale(10, 0.6),
   },

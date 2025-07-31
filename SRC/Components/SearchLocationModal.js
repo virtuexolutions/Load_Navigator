@@ -27,6 +27,9 @@ const SearchLocationModal = ({
   userAddress,
   placeholder,
   setState = state => {},
+  setdestinationState,
+  setOriginState,
+  fromSignup,
 }) => {
   const dispatch = useDispatch();
   const googlePlacesRef = useRef(null);
@@ -97,7 +100,12 @@ const SearchLocationModal = ({
                 c.types.includes('postal_code'),
               )?.long_name;
               // setZipCode(zip)
-              setState(state);
+              if (fromSignup) {
+                setState(state);
+              } else {
+                setOriginState(state);
+                setdestinationState(state);
+              }
               // setCity(city)
 
               console.log('======================== >>>>>', state, city, zip);

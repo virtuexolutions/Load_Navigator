@@ -22,24 +22,25 @@ import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import navigationService from '../navigationService';
-import {useIsFocused} from '@react-navigation/native';
+import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import {Get} from '../Axios/AxiosInterceptorFunction';
 import moment from 'moment';
 import LoadBoardCard from '../Components/LoadBoardCard';
 
-const LoadBoard = () => {
+const LoadBoard = ({navigation}) => {
   const IsFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
+  console.log('🚀 ~ LoadBoard ~ userData:', JSON.stringify(userData, null, 2));
 
   const [isLoading, setIsLoading] = useState(false);
   const [loadData, setloadData] = useState([]);
-
   const getLoad = async () => {
     const url = 'auth/load_detail';
     setIsLoading(true);
     const response = await Get(url, token);
+    console.log('🚀 ~ getLoad ~ response:', response?.data);
     setIsLoading(false);
     if (response != undefined) {
       setloadData(response?.data?.load_detail);
@@ -56,8 +57,8 @@ const LoadBoard = () => {
         title="Load Board Details"
         headerColor={Color.secondary}
         textstyle={{color: Color.white}}
-        showBack
-        menu
+        // showBack
+        Ismenu
       />
       <CustomStatusBar
         backgroundColor={Color.white}
@@ -81,9 +82,28 @@ const LoadBoard = () => {
             data={loadData}
             keyExtractor={item => item.id.toString()}
             showsVerticalScrollIndicator={false}
-            renderItem={({item}) => (
-              <LoadBoardCard item={item}/>
-            )}
+            renderItem={({item}) => {
+              return <LoadBoardCard item={item} />;
+            }}
+            ListEmptyComponent={
+              <View
+                style={{
+                  width: windowWidth,
+
+                  height: windowHeight * 0.5,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <CustomText
+                  style={{
+                    color: Color.black,
+                    width: windowWidth * 0.5,
+                    textAlign: 'center',
+                  }}>
+                  No data Uploaded yet!
+                </CustomText>
+              </View>
+            }
           />
         )}
       </View>

@@ -7,9 +7,9 @@ import Color from '../Assets/Utilities/Color';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import ScreenBoiler from '../Components/ScreenBoiler';
-import {setUserLogoutAuth, setUserToken} from '../Store/slices/auth';
-import {SetUserRole} from '../Store/slices/auth-slice';
-import {setUserLogOut} from '../Store/slices/common';
+// import {setUserLogoutAuth, setUserToken} from '../Store/slices/auth';
+import {setUserLogoutAuth, setUserToken} from '../Store/slices/auth-slice';
+import {setSelectedRole, setUserLogOut} from '../Store/slices/common';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import {Icon} from 'native-base';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -21,12 +21,23 @@ const Drawer = React.memo(() => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
-  const role = useSelector(state => state.authReducer.role);
+  const userRole = useSelector(state => state.commonReducer.selectedRole);
   const userData = useSelector(state => state.commonReducer.userData);
   const companyData = [
     {
       id: 1,
-      name: 'Load Board ',
+      name: 'Home ',
+      onPress: () => {
+        // navigation.navigate('LoadBoard');
+        navigation.navigate('MyDrawer', {screen: 'PostLoadScreen'});
+      },
+      iconName: 'home',
+      iconType: MaterialCommunityIcons,
+    },
+
+    {
+      id: 2,
+      name: 'Load board',
       onPress: () => {
         // navigation.navigate('LoadBoard');
         navigation.navigate('MyDrawer', {screen: 'LoadBoard'});
@@ -36,6 +47,16 @@ const Drawer = React.memo(() => {
     },
     {
       id: 2,
+      name: 'payment method',
+      onPress: () => {
+        // navigation.navigate('LoadBoard');
+        navigation.navigate('MyDrawer', {screen: 'PaymentMethod'});
+      },
+      iconName: 'post',
+      iconType: MaterialCommunityIcons,
+    },
+    {
+      id: 3,
       name: 'Directory',
       onPress: () => {
         // setIsModalVisible(true);
@@ -46,7 +67,7 @@ const Drawer = React.memo(() => {
       iconType: Feather,
     },
     {
-      id: 9,
+      id: 4,
       name: 'Profile',
       onPress: () => {
         navigation.navigate('MyDrawer', {screen: 'Profile'});
@@ -55,7 +76,7 @@ const Drawer = React.memo(() => {
       iconType: FontAwesome5,
     },
     {
-      id: 2,
+      id: 5,
       name: 'Help/FAQS',
       onPress: () => {
         navigation.navigate('MyDrawer', {screen: 'Help'});
@@ -64,7 +85,7 @@ const Drawer = React.memo(() => {
       iconType: FontAwesome5,
     },
     {
-      id: 3,
+      id: 6,
       name: 'Change Password',
       onPress: () => {
         navigation.navigate('MyDrawer', {screen: 'ChangePassword'});
@@ -73,7 +94,7 @@ const Drawer = React.memo(() => {
       iconType: AntDesign,
     },
     {
-      id: 4,
+      id: 7,
       name: 'Terms & Conditions',
       onPress: () => {
         navigation.navigate('MyDrawer', {screen: 'TermsAndConditions'});
@@ -82,7 +103,7 @@ const Drawer = React.memo(() => {
       iconType: MaterialCommunityIcons,
     },
     {
-      id: 5,
+      id: 8,
       name: 'Privacy Policy',
       onPress: () => {
         navigation.navigate('MyDrawer', {screen: 'PrivacyPolicy'});
@@ -103,6 +124,15 @@ const Drawer = React.memo(() => {
       iconType: FontAwesome5,
     },
     {
+      id: 3,
+      name: 'Directory',
+      onPress: () => {
+        navigation.navigate('MyDrawer', {screen: 'CarDirectory'});
+      },
+      iconName: 'folder',
+      iconType: Feather,
+    },
+    {
       id: 9,
       name: 'Profile',
       onPress: () => {
@@ -110,6 +140,16 @@ const Drawer = React.memo(() => {
       },
       iconName: 'user',
       iconType: FontAwesome5,
+    },
+     {
+      id: 2,
+      name: 'payment method',
+      onPress: () => {
+        // navigation.navigate('LoadBoard');
+        navigation.navigate('MyDrawer', {screen: 'PaymentMethod'});
+      },
+      iconName: 'post',
+      iconType: MaterialCommunityIcons,
     },
     {
       id: 2,
@@ -159,7 +199,7 @@ const Drawer = React.memo(() => {
           styles.drawer_view,
           {
             backgroundColor:
-              userData?.role == 'pilot' ? '#292929' : Color.white,
+              userRole?.toLowerCase() == 'pilot' ? '#292929' : Color.white,
           },
         ]}>
         <View
@@ -167,7 +207,9 @@ const Drawer = React.memo(() => {
             styles.header_view,
             {
               backgroundColor:
-                userData?.role !== 'pilot' ? Color.secondary : Color.black,
+                userRole?.toLowerCase() !== 'pilot'
+                  ? Color.secondary
+                  : Color.black,
             },
           ]}>
           <View style={styles.image_view}>
@@ -185,57 +227,67 @@ const Drawer = React.memo(() => {
             paddingHorizontal: moderateScale(15, 0.6),
             paddingVertical: moderateScale(15, 0.6),
           }}>
-          {  userData?.role?.toLowerCase() !== 'pilot' ?  companyData?.map(item => {
-            return (
-              <TouchableOpacity onPress={item?.onPress} style={styles.row_view}>
-                <Icon
-                  name={item?.iconName}
-                  as={item?.iconType}
-                  size={moderateScale(15, 0.6)}
-                  color={
-                    userData?.role !== 'pilot' ? Color.black : Color.lightGrey
-                  }
-                />
-                <CustomText
-                  style={[
-                    styles.text,
-                    {
-                      color:
-                        userData?.role != 'pilot'
+          {userRole?.toLowerCase() !== 'pilot'
+            ? companyData?.map(item => {
+                return (
+                  <TouchableOpacity
+                    onPress={item?.onPress}
+                    style={styles.row_view}>
+                    <Icon
+                      name={item?.iconName}
+                      as={item?.iconType}
+                      size={moderateScale(15, 0.6)}
+                      color={
+                        userRole?.toLowerCase() !== 'pilot'
                           ? Color.black
-                          : Color.lightGrey,
-                    },
-                  ]}>
-                  {item?.name}
-                </CustomText>
-              </TouchableOpacity>
-            );
-          }) :pilotData?.map(item => {
-            return (
-              <TouchableOpacity onPress={item?.onPress} style={styles.row_view}>
-                <Icon
-                  name={item?.iconName}
-                  as={item?.iconType}
-                  size={moderateScale(15, 0.6)}
-                  color={
-                    userData?.role != 'pilot' ? Color.black : Color.lightGrey
-                  }
-                />
-                <CustomText
-                  style={[
-                    styles.text,
-                    {
-                      color:
-                        userData?.role != 'pilot'
+                          : Color.lightGrey
+                      }
+                    />
+                    <CustomText
+                      style={[
+                        styles.text,
+                        {
+                          color:
+                            userRole?.toLowerCase() != 'pilot'
+                              ? Color.black
+                              : Color.lightGrey,
+                        },
+                      ]}>
+                      {item?.name}
+                    </CustomText>
+                  </TouchableOpacity>
+                );
+              })
+            : pilotData?.map(item => {
+                return (
+                  <TouchableOpacity
+                    onPress={item?.onPress}
+                    style={styles.row_view}>
+                    <Icon
+                      name={item?.iconName}
+                      as={item?.iconType}
+                      size={moderateScale(15, 0.6)}
+                      color={
+                        userRole?.toLowerCase() != 'pilot'
                           ? Color.black
-                          : Color.lightGrey,
-                    },
-                  ]}>
-                  {item?.name}
-                </CustomText>
-              </TouchableOpacity>
-            );
-          }) }
+                          : Color.lightGrey
+                      }
+                    />
+                    <CustomText
+                      style={[
+                        styles.text,
+                        {
+                          color:
+                            userRole?.toLowerCase() != 'pilot'
+                              ? Color.black
+                              : Color.lightGrey,
+                        },
+                      ]}>
+                      {item?.name}
+                    </CustomText>
+                  </TouchableOpacity>
+                );
+              })}
           {/* <View style={styles.line} />
           {adminData1.map(item => {
             return (
@@ -245,7 +297,7 @@ const Drawer = React.memo(() => {
                   as={item?.iconType}
                   size={moderateScale(15, 0.6)}
                   color={
-                    userData?.role == 'company' ? Color.black : Color.lightGrey
+                    userRole == 'company' ? Color.black : Color.lightGrey
                   }
                 />
                 <CustomText
@@ -253,7 +305,7 @@ const Drawer = React.memo(() => {
                     styles.text,
                     {
                       color:
-                        userData?.role == 'company'
+                        userRole == 'company'
                           ? Color.black
                           : Color.lightGrey,
                     },
@@ -269,7 +321,7 @@ const Drawer = React.memo(() => {
             dispatch(setUserLogoutAuth());
             // dispatch(setUserLogOut())
             dispatch(setUserToken());
-            dispatch(SetUserRole());
+            dispatch(setSelectedRole());
             dispatch(setUserLogOut());
           }}
           style={[

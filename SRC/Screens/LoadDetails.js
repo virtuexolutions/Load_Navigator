@@ -1,45 +1,53 @@
-import { Checkbox, Icon } from 'native-base';
-import React, { useEffect, useState } from 'react';
+import {useNavigation} from '@react-navigation/native';
+import moment from 'moment';
+import {Checkbox, Icon} from 'native-base';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
+  Alert,
+  Platform,
   ScrollView,
   StyleSheet,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { moderateScale } from 'react-native-size-matters';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import {Calendar} from 'react-native-calendars';
 import Modal from 'react-native-modal';
-import Entypo from 'react-native-vector-icons/Entypo';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {moderateScale} from 'react-native-size-matters';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import { Post } from '../Axios/AxiosInterceptorFunction';
+import {Post} from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText';
-import { Calendar } from 'react-native-calendars';
-import Header from '../Components/Header';
-import TextInputWithTitle from '../Components/TextInputWithTitle';
-import navigationService from '../navigationService';
-import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
-import SearchLocationModal from '../Components/SearchLocationModal';
-import haversine from 'haversine-distance';
 import DropDownSingleSelect from '../Components/DropDownSingleSelect';
-import moment from 'moment';
+import Header from '../Components/Header';
+import SearchLocationModal from '../Components/SearchLocationModal';
+import TextInputWithTitle from '../Components/TextInputWithTitle';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 
 const LoadDetails = props => {
+  const navigationN = useNavigation();
   const isPostDetails = props?.route?.params?.isPostDetails;
+  const item = props?.route?.params?.item;
+  const repost = props?.route?.params?.repost;
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
-  console.log('🚀 ~ userData:', userData);
   const [isMiles, setIsMiles] = useState(false);
+  const repostrate = item?.rate;
+  const perMilesOnly = repostrate?.split('/')[1]; //
   const [selectedRate, setSelectedRate] = useState('/per miles');
   const [selectedSize, setSelectedSize] = useState('select type');
   const [isSize, setIsSize] = useState(false);
   const [weight, setWeight] = useState('');
   const [dimensions, setDimensions] = useState('');
+  const [originState, setOriginState] = useState('');
+  const [destinationState, setdestinationState] = useState('');
 
   const HEIGHT_OPTIONS = [
     "Under 8'",
@@ -55,23 +63,50 @@ const LoadDetails = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [locationType, setLocationType] = useState('');
-  const [origin, setOrigin] = useState({});
-  const [destination, setDestination] = useState({});
-  const [Rate, setRate] = useState(0);
-  const [selectedPosition, setSelectedPosition] = useState([]);
-  const [selectedRequirement, setSelectedRequirement] = useState([]);
+  const [origin, setOrigin] = useState(repost ? item?.origin : {});
+  const [destination, setDestination] = useState(
+    repost ? item?.destination : {},
+  );
+  const rate1 = item?.rate;
+  const numberOnly = rate1?.split('/')[0];
+  const [Rate, setRate] = useState(repost ? numberOnly : 0);
+  const [selectedPosition, setSelectedPosition] = useState(
+    repost ? item?.escort_positions : [],
+  );
+  const [selectedRequirement, setSelectedRequirement] = useState(
+    repost ? item?.additional_requirements : [],
+  );
   const [distance, setDistance] = useState('');
   const [title, setTitle] = useState(userData?.company_name);
   const [customHeight, setCustomHeight] = useState();
-  const [height, setHeight] = useState('');
-  const [date, setDate] = useState('');
+  const [height, setHeight] = useState(repost ? item?.height : '');
+  const [date, setDate] = useState(
+    repost ? moment(item?.start_date).format('l') : '',
+  );
+  const [endDate, setEndDate] = useState('');
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [contact, setContact] = useState(userData?.contact);
-  const [commnuicationMode, setCommunicationMode] = useState('call');
+  const [dateType, setDateType] = useState('');
+
+  const [commnuicationMode, setCommunicationMode] = useState(
+    repost && item?.communication_mode == 'text-only' ? true : false,
+  );
   const [totalRate, setTotalRate] = useState(0);
   const [fuelPrice, setFuelPrice] = useState(0);
   const [tollPrice, setTollPrice] = useState(0);
+  const [description, setDescription] = useState(
+    repost ? item?.description : '',
+  );
 
+  const handleChangeText = input => {
+    const words = input.trim().split(/\s+/);
+    if (words.length <= 50) {
+      setDescription(input);
+    }
+  };
+
+  const wordCount =
+    description?.trim() === '' ? 0 : description?.trim().split(/\s+/).length;
   const [positions, setPositions] = useState([
     'lead',
     'chase',
@@ -182,19 +217,31 @@ const LoadDetails = props => {
       rate: Rate + selectedRate,
       status: 'pending',
       miles: distance,
-      contact: contact,
+      contact: contact.slice(0, 2) == '+1' ? contact : `+1${contact}`,
       company: title,
       height: height === 'Custom' ? customHeight : height,
-      communication_mode: commnuicationMode,
+      communication_mode: commnuicationMode == true ? 'text-only' : 'call',
       total_rate: totalRate.toFixed(2),
-      start_date: new Date().toISOString(),
-      // toll_price: tollPrice,
-      // fuel_price: fuelPrice,
-      // title: title,
-      // weight: weight,
-      // dimension: dimensions,
-      // type: selectedSize,
+      start_date: date,
+      description: description,
+      origin_state: originState,
+      destination_state: destinationState,
+      end_date: endDate,
     };
+    if (description == '') {
+      return Platform.OS == 'android'
+        ? ToastAndroid.show(` description field is empty`, ToastAndroid.SHORT)
+        : Alert.alert(` description field is empty`);
+    }
+
+    if (wordCount > 50) {
+      Platform.OS == 'android'
+        ? ToastAndroid.SHORT(
+            'Description must be 50 words or less.',
+            ToastAndroid.show,
+          )
+        : Alert.alert('Description must be 50 words or less.');
+    }
     const url = 'auth/load_detail';
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
@@ -214,7 +261,7 @@ const LoadDetails = props => {
       setSelectedSize('');
       setSelectedRate('');
 
-      navigationService.navigate('PostLoadScreen');
+      navigationN.goBack();
     }
   };
 
@@ -223,10 +270,38 @@ const LoadDetails = props => {
       selectedRate?.toLowerCase() == '/ per km'
         ? parseFloat(Rate) * distance
         : selectedRate?.toLowerCase() == '/ per miles'
-          ? parseFloat(Rate) * (distance * 0.621371)
-          : parseFloat(Rate),
+        ? parseFloat(Rate) * (distance * 0.621371)
+        : parseFloat(Rate),
     );
   }, [Rate, selectedRate]);
+
+  const updatePost = async () => {
+    const body = {
+      start_date: date,
+      end_date : endDate,
+    };
+    const url = `auth/load_detail/${item?.id}?_method=put`;
+    setIsLoading(true);
+    const response = await Post(url, body, apiHeader(token));
+    setIsLoading(false);
+
+    if (response != undefined) {
+      setSelectedRequirement([]);
+      setSelectedPosition([]);
+      setOrigin({});
+      setDestination({});
+      setRate(0);
+      setDistance('');
+      setSelectedRate('');
+      setTitle('');
+      setWeight('');
+      setDimensions('');
+      setSelectedSize('');
+      setSelectedRate('');
+
+      navigationN.goBack();
+    }
+  };
 
   return (
     <SafeAreaView style={styles.main_Container}>
@@ -234,9 +309,9 @@ const LoadDetails = props => {
         <Header
           title="load details"
           headerColor={Color.secondary}
-          textstyle={{ color: Color.white }}
+          textstyle={{color: Color.white}}
           showBack
-          menu
+          // menu
         />
         <CustomStatusBar
           backgroundColor={Color.white}
@@ -248,124 +323,6 @@ const LoadDetails = props => {
             paddingBottom: moderateScale(70, 0.6),
           }}
           showsVerticalScrollIndicator={false}>
-          {/* <View
-            style={{
-              flexDirection: 'row',
-              paddingHorizontal: moderateScale(20, 0.3),
-              paddingVertical: moderateScale(15, 0.3),
-              backgroundColor: Color.secondary,
-              alignItems: 'center',
-              justifyContent : 'space-between'
-            }}>
-            <CustomText style={{
-                fontSize : moder
-            }}>load details</CustomText>
-            <Icon
-              name="menu"
-              as={Ionicons}
-              size={moderateScale(20, 0.6)}
-              color={Color.white}
-            />
-          </View> */}
-          {/* {isPostDetails ? (
-            <View>
-              <View style={styles.header}>
-                <CustomText
-                  isBold
-                  style={{
-                    color: Color.white,
-                    fontSize: moderateScale(18, 0.6),
-                  }}>
-                  Post A Load
-                </CustomText>
-                <Icon name="cross" as={Entypo} />
-              </View>
-              <View
-                style={{
-                  paddingTop: moderateScale(20, 0.6),
-                  paddingHorizontal: moderateScale(20, 0.6),
-                }}>
-                <CustomText isBold style={styles.heading_text}>
-                  Posted
-                </CustomText>
-                <CustomText style={styles.text}>
-                  Less Than a minute ago
-                </CustomText>
-                <CustomText isBold style={styles.heading_text}>
-                  status
-                </CustomText>
-                <CustomText style={styles.text}>Open</CustomText>
-                <CustomText isBold style={styles.heading_text}>
-                  Alert
-                </CustomText>
-                <CustomText style={styles.text}>
-                  Calculating notifications sent to drivers
-                </CustomText>
-                <CustomText isBold style={styles.heading_text}>
-                  Load Date
-                </CustomText>
-                <CustomText style={styles.text}>04/24/2025</CustomText>
-                <CustomText isBold style={styles.heading_text}>
-                  Phone
-                </CustomText>
-                <CustomText style={styles.text}>(123) 281-6351</CustomText>
-                <CustomText isBold style={styles.heading_text}>
-                  Origin
-                </CustomText>
-                <CustomText style={styles.text}>
-                  Pennsylvania Furance, PA, USA
-                </CustomText>
-                <CustomText isBold style={styles.heading_text}>
-                  Destination
-                </CustomText>
-                <CustomText style={styles.text}>Furance, SC, USA</CustomText>
-                <CustomText isBold style={styles.heading_text}>
-                  Est. Mileage
-                </CustomText>
-                <CustomText style={styles.text}>609 mi</CustomText>
-                <CustomText isBold style={styles.heading_text}>
-                  Rate
-                </CustomText>
-                <CustomText style={styles.text}>$5.00/mi</CustomText>
-                <CustomButton
-                  text={'Mark Covered '}
-                  onPress={() => {
-                    setIsPost(true);
-                    setIsModalVisible(false);
-                    navigationService.navigate('CarDirectory');
-                  }}
-                  fontSize={moderateScale(14, 0.3)}
-                  textColor={Color.white}
-                  borderRadius={moderateScale(30, 0.3)}
-                  width={windowWidth * 0.58}
-                  marginTop={moderateScale(15, 0.3)}
-                  height={windowHeight * 0.055}
-                  bgColor={Color.secondary}
-                  style={{
-                    alignSelf: 'flex-start',
-                  }}
-                  textTransform={'capitalize'}
-                />
-                <CustomButton
-                  text={'Cancle'}
-                  onPress={() => setIsModalVisible(false)}
-                  fontSize={moderateScale(14, 0.3)}
-                  textColor={Color.black}
-                  borderRadius={moderateScale(30, 0.3)}
-                  width={windowWidth * 0.58}
-                  height={windowHeight * 0.055}
-                  bgColor={Color.white}
-                  marginTop={moderateScale(10, 0.3)}
-                  borderColor={Color.black}
-                  borderWidth={1}
-                  style={{
-                    alignSelf: 'flex-start',
-                  }}
-                  textTransform={'capitalize'}
-                />
-              </View>
-            </View>
-          ) : ( */}
           <View
             style={{
               paddingHorizontal: moderateScale(20, 0.6),
@@ -378,7 +335,6 @@ const LoadDetails = props => {
                 },
               ]}>
               <View style={styles.box} />
-              {/* <CustomText style={styles.text}>Text only</CustomText> */}
             </View>
             <View
               style={{
@@ -393,6 +349,7 @@ const LoadDetails = props => {
                 Origin
               </CustomText>
               <TouchableOpacity
+                disabled={repost}
                 onPress={() => {
                   setIsModalVisible(true);
                   setLocationType('origin');
@@ -412,6 +369,7 @@ const LoadDetails = props => {
                 Destination
               </CustomText>
               <TouchableOpacity
+                disabled={repost}
                 onPress={() => {
                   setIsModalVisible(true);
                   setLocationType('destination');
@@ -432,7 +390,8 @@ const LoadDetails = props => {
                 styles.row_view,
                 {
                   alignSelf: 'flex-start',
-                  marginBottom: moderateScale(15, 0.6),
+                  // marginBottom: moderateScale(15, 0.6),
+                  marginTop: moderateScale(15, 0.6),
                 },
               ]}>
               <CustomText isBold style={styles.heading_text}>
@@ -442,7 +401,7 @@ const LoadDetails = props => {
                 style={[
                   styles.text,
                   {
-                    marginTop: moderateScale(15, 0.6),
+                    marginTop: moderateScale(5, 0.6),
                     fontSize: moderateScale(11, 0.6),
                   },
                 ]}>
@@ -454,6 +413,7 @@ const LoadDetails = props => {
               // console.log('///////////////////////////', isActive);
               return (
                 <TouchableOpacity
+                  disabled={repost}
                   key={item.id}
                   onPress={() => {
                     if (selectedPosition?.includes(item?.text)) {
@@ -499,7 +459,7 @@ const LoadDetails = props => {
               isBold
               style={[
                 styles.heading_text,
-                { marginBottom: moderateScale(10, 0.6) },
+                {marginBottom: moderateScale(10, 0.6)},
               ]}>
               Additional requirements
             </CustomText>
@@ -507,6 +467,7 @@ const LoadDetails = props => {
               const isActive = selectedRequirement.includes(item?.text);
               return (
                 <TouchableOpacity
+                  disabled={repost}
                   key={item.id}
                   onPress={() => {
                     if (selectedRequirement?.includes(item?.text)) {
@@ -552,6 +513,7 @@ const LoadDetails = props => {
               Phone Number
             </CustomText>
             <TextInputWithTitle
+              disable={repost}
               placeholder={'Phone Number'}
               setText={setContact}
               value={contact}
@@ -567,21 +529,75 @@ const LoadDetails = props => {
               marginTop={moderateScale(10, 0.3)}
               keyboardType={'numeric'}
               placeholderColor={Color.mediumGray}
-              titleStlye={{ right: 10 }}
+              titleStlye={{right: 10}}
             />
-            <Checkbox
+            <TouchableOpacity
+              disabled={repost}
+              onPress={() => {
+                setCommunicationMode(!commnuicationMode);
+              }}
+              style={styles.btn_row}>
+              <TouchableOpacity
+                disabled={repost}
+                onPress={() => {
+                  setCommunicationMode(!commnuicationMode);
+                }}
+                style={[
+                  styles.check_btn,
+                  {
+                    borderColor: commnuicationMode
+                      ? Color.white
+                      : Color.darkGray,
+                    backgroundColor: commnuicationMode
+                      ? Color.secondary
+                      : Color.white,
+                  },
+                ]}>
+                {commnuicationMode && (
+                  <Icon
+                    as={Feather}
+                    size={moderateScale(15, 0.6)}
+                    color={Color.white}
+                    name="check"
+                  />
+                )}
+              </TouchableOpacity>
+              <CustomText
+                // onPress={() => {
+                //   setCommunicationMode(!commnuicationMode);
+                // }}
+                style={{
+                  fontSize: moderateScale(11, 0.6),
+                  color: Color.black,
+                }}>
+                text-only
+              </CustomText>
+            </TouchableOpacity>
+            {/* <Checkbox
               colorScheme={'red'}
-              value={commnuicationMode}
+              value={ repost ? item?.communication_mode === 'text-only' : commnuicationMode}
               onChange={isSelected => {
-                setCommunicationMode(isSelected ? 'text-only' : 'call');
+                if (repost) {
+                  setCommunicationMode(
+                    item?.communication_mode === 'text-only'
+                      ? 'text-only'
+                      : 'call',
+                  );
+                } else {
+                  setCommunicationMode(isSelected ? 'text-only' : 'call');
+                }
+              }}
+              _text={{
+                fontSize: moderateScale(12, 0.6),
               }}
               my={2}>
-              Text-Only Communication
-            </Checkbox>
+              Text-Only
+            </Checkbox> */}
             <CustomText isBold style={styles.heading_text}>
               Company Name
             </CustomText>
             <TextInputWithTitle
+              disable={repost}
               placeholder={'Company Name'}
               setText={setTitle}
               value={title}
@@ -595,12 +611,13 @@ const LoadDetails = props => {
               borderColor={Color.darkGray}
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
-              titleStlye={{ right: 10 }}
+              titleStlye={{right: 10}}
             />
             <CustomText isBold style={styles.heading_text}>
               Height
             </CustomText>
             <DropDownSingleSelect
+              disabled={repost}
               array={HEIGHT_OPTIONS}
               item={height}
               setItem={setHeight}
@@ -610,7 +627,7 @@ const LoadDetails = props => {
                 borderBottomWidth: 0,
                 width: windowWidth * 0.9,
                 marginTop: 10,
-                borderRadius: 10
+                borderRadius: 10,
               }}
               menuStyle={{
                 backgroundColor: Color.white,
@@ -627,7 +644,7 @@ const LoadDetails = props => {
                 height: windowHeight * 0.057,
                 borderWidth: 1,
                 bordderColor: Color.white,
-                borderRadius: 10
+                borderRadius: 10,
               }}
             />
             {height === 'Custom' && (
@@ -645,8 +662,9 @@ const LoadDetails = props => {
                 borderColor={Color.darkGray}
                 marginTop={moderateScale(10, 0.3)}
                 placeholderColor={Color.mediumGray}
-                titleStlye={{ right: 10 }}
+                titleStlye={{right: 10}}
                 keyboardType={'numeric'}
+                disable={repost}
               />
             )}
             <CustomText isBold style={styles.heading_text}>
@@ -683,9 +701,10 @@ const LoadDetails = props => {
             <View
               style={{
                 flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingVertical: moderateScale(10, 0.6),
-                width: windowWidth * 0.8,
+                gap: moderateScale(20, 0.6),
+                paddingTop: moderateScale(15, 0.6),
+                width: windowWidth * 0.9,
+                flexWrap: 'wrap',
               }}>
               <CustomButton
                 text={'today'}
@@ -697,7 +716,6 @@ const LoadDetails = props => {
                 fontSize={moderateScale(12, 0.3)}
                 textColor={Color.white}
                 borderRadius={moderateScale(10, 0.3)}
-                width={windowWidth * 0.25}
                 marginTop={moderateScale(10, 0.3)}
                 height={windowHeight * 0.04}
                 bgColor={Color.secondary}
@@ -717,7 +735,7 @@ const LoadDetails = props => {
                 fontSize={moderateScale(12, 0.3)}
                 textColor={Color.white}
                 borderRadius={moderateScale(10, 0.3)}
-                width={windowWidth * 0.25}
+                // width={windowWidth * 0.28}
                 marginTop={moderateScale(10, 0.3)}
                 height={windowHeight * 0.04}
                 bgColor={Color.secondary}
@@ -729,12 +747,12 @@ const LoadDetails = props => {
               <CustomButton
                 text={'custom'}
                 onPress={() => {
+                    setDateType('startdate')
                   setShowCalendarModal(true);
                 }}
                 fontSize={moderateScale(12, 0.3)}
                 textColor={Color.white}
                 borderRadius={moderateScale(10, 0.3)}
-                width={windowWidth * 0.25}
                 marginTop={moderateScale(10, 0.3)}
                 height={windowHeight * 0.04}
                 bgColor={Color.secondary}
@@ -744,53 +762,12 @@ const LoadDetails = props => {
                 textTransform={'capitalize'}
               />
             </View>
-            {/* <CustomText isBold style={styles.heading_text}>
-              weight
-            </CustomText> */}
-            {/* <TextInputWithTitle
-              placeholder={'Weight '}
-              setText={setWeight}
-              value={weight}
-              viewHeight={0.06}
-              viewWidth={0.9}
-              inputWidth={0.82}
-              border={1}
-              fontSize={moderateScale(10, 0.6)}
-              borderRadius={30}
-              backgroundColor={'transparent'}
-              borderColor={Color.darkGray}
-              marginTop={moderateScale(10, 0.3)}
-              placeholderColor={Color.mediumGray}
-              titleStlye={{right: 10}}
-            />
+
             <CustomText isBold style={styles.heading_text}>
-              dimensions
+              end Date
             </CustomText>
 
-            <TextInputWithTitle
-              placeholder={'Dimension'}
-              setText={setDimensions}
-              value={dimensions}
-              viewHeight={0.06}
-              viewWidth={0.9}
-              inputWidth={0.82}
-              border={1}
-              fontSize={moderateScale(10, 0.6)}
-              borderRadius={30}
-              backgroundColor={'transparent'}
-              borderColor={Color.darkGray}
-              marginTop={moderateScale(10, 0.3)}
-              placeholderColor={Color.mediumGray}
-              titleStlye={{right: 10}}
-            />
-            <CustomText isBold style={styles.heading_text}>
-              type
-            </CustomText>
-            <TouchableOpacity
-              onPress={() => {
-                setIsSize(!isSize);
-              }}
-              style={styles.drop}>
+            <View style={styles.drop}>
               <View
                 style={{
                   flexDirection: 'row',
@@ -804,49 +781,27 @@ const LoadDetails = props => {
                       width: '70%',
                     },
                   ]}>
-                  {selectedSize}
-                </CustomText>
-                <Icon
-                  name="keyboard-arrow-down"
-                  as={MaterialIcons}
-                  size={moderateScale(20, 0.6)}
-                  color={Color.black}
-                />
-              </View>
-            </TouchableOpacity>
-            {isSize && (
-              <View
-                onPress={() => {}}
-                style={[
-                  styles.drop_modal,
-                  {
-                    alignItems: 'flex-start',
-                  },
-                ]}>
-                <CustomText
-                  onPress={() => {
-                    setSelectedSize('overweight');
-                    setIsSize(false);
-                  }}
-                  style={{
-                    fontSize: moderateScale(14, 0.6),
-                    width: '100%',
-                  }}>
-                  overweight
-                </CustomText>
-                <CustomText
-                  onPress={() => {
-                    setSelectedSize('oversize');
-                    setIsSize(false);
-                  }}
-                  style={{
-                    fontSize: moderateScale(14, 0.6),
-                    width: '100%',
-                  }}>
-                  oversize
+                  {endDate ? endDate : 'select a date '}
                 </CustomText>
               </View>
-            )} */}
+            </View>
+            <CustomButton
+              text={'custom'}
+              onPress={() => {
+                setDateType('enddate')
+                setShowCalendarModal(true);
+              }}
+              fontSize={moderateScale(12, 0.3)}
+              textColor={Color.white}
+              borderRadius={moderateScale(10, 0.3)}
+              marginTop={moderateScale(10, 0.3)}
+              height={windowHeight * 0.04}
+              bgColor={Color.secondary}
+              style={{
+                alignSelf: 'flex-start',
+              }}
+              textTransform={'capitalize'}
+            />
             <CustomText isBold style={styles.heading_text}>
               Rate
               <CustomText
@@ -858,6 +813,7 @@ const LoadDetails = props => {
               </CustomText>
             </CustomText>
             <TouchableOpacity
+              disabled={repost}
               onPress={() => {
                 setIsMiles(!isMiles);
               }}
@@ -884,19 +840,19 @@ const LoadDetails = props => {
                 backgroundColor={'transparent'}
                 borderColor={Color.white}
                 placeholderColor={Color.mediumGray}
+                disable={repost}
               />
 
               <View
                 style={{
                   flexDirection: 'row',
-                  // padding : moderateScale(10,.6)
-                  width: windowWidth * 0.22,
+                  width: windowWidth * 0.24,
                 }}>
-                <CustomText style={styles.drop_text}>{selectedRate}</CustomText>
+                <CustomText style={styles.drop_text}>
+                  {repost ? perMilesOnly : selectedRate}
+                </CustomText>
                 <Icon
                   style={{
-                    width: windowWidth * 0.1,
-                    textAlign: 'center',
                     position: 'absolute',
                     right: 0,
                   }}
@@ -907,43 +863,7 @@ const LoadDetails = props => {
                 />
               </View>
             </TouchableOpacity>
-            {/* <CustomText isBold style={styles.heading_text}>
-              fuel price
-            </CustomText>
-            <TextInputWithTitle
-              placeholder={'$ 0'}
-              setText={setFuelPrice}
-              value={fuelPrice}
-              keyboardType={'numeric'}
-              viewHeight={0.05}
-              viewWidth={0.9}
-              inputWidth={0.85}
-              borderRadius={30}
-              border={1}
-              backgroundColor={Color.white}
-              borderColor={Color.black}
-              placeholderColor={Color.mediumGray}
-              marginTop={moderateScale(10, 0.6)}
-            />
-            <CustomText isBold style={styles.heading_text}>
-              toll price
-            </CustomText>
-            <TextInputWithTitle
-              // title={'fuel price'}
-              placeholder={'$ 0'}
-              setText={setTollPrice}
-              value={tollPrice}
-              keyboardType={'numeric'}
-              viewHeight={0.05}
-              viewWidth={0.9}
-              inputWidth={0.85}
-              borderRadius={30}
-              border={1}
-              backgroundColor={Color.white}
-              borderColor={Color.black}
-              placeholderColor={Color.mediumGray}
-              marginTop={moderateScale(10, 0.6)}
-            /> */}
+
             {isMiles && (
               <View
                 style={{
@@ -975,41 +895,57 @@ const LoadDetails = props => {
                 </TouchableOpacity>
               </View>
             )}
-            {/* <CustomText isBold style={styles.heading_text}>
-              Total Rate
-            </CustomText> */}
-            {/* <TextInputWithTitle
-              placeholder={'Total Rate'}
-              setText={setTotalRate}
-              value={
-                isNaN(totalRate) ? '0' : `$${totalRate.toFixed(2).toString(12)}`
-              }
-              keyboardType={'numeric'}
-              viewHeight={0.06}
+            <View
+              style={{
+                flexDirection: 'row',
+                paddingTop: moderateScale(10, 0.6),
+                justifyContent: 'space-between',
+              }}>
+              <CustomText isBold style={styles.heading_text}>
+                description
+              </CustomText>
+              <CustomText
+                style={{
+                  fontSize: moderateScale(10, 0.6),
+                  color: wordCount > 50 ? 'red' : 'gray',
+                  paddingTop: moderateScale(5, 0.6),
+                }}>
+                {wordCount}/50 words
+              </CustomText>
+            </View>
+            <TextInputWithTitle
+              disable={repost}
+              multiline={true}
+              secureText={false}
+              placeholder={'Description'}
+              setText={handleChangeText}
+              value={description}
+              viewHeight={0.15}
               viewWidth={0.9}
               inputWidth={0.82}
               border={1}
               fontSize={moderateScale(10, 0.6)}
-              borderRadius={30}
               backgroundColor={'transparent'}
               borderColor={Color.darkGray}
               marginTop={moderateScale(10, 0.3)}
               placeholderColor={Color.mediumGray}
               titleStlye={{right: 10}}
-            /> */}
+              color={Color.btn_Color}
+              borderRadius={moderateScale(25, 0.3)}
+              // maxLength={50}
+            />
             <CustomButton
               text={
                 isLoading ? (
                   <ActivityIndicator size={'small'} color={'white'} />
+                ) : repost ? (
+                  'repost'
                 ) : (
                   'Post '
                 )
               }
               onPress={() => {
-                postALoad();
-                // navigationService.navigate('PostLoadScreen');
-                // //   setIsPost(true);
-                //   setIsModalVisible(false);
+                repost ? updatePost() : postALoad();
               }}
               fontSize={moderateScale(14, 0.3)}
               textColor={Color.white}
@@ -1040,8 +976,8 @@ const LoadDetails = props => {
               textTransform={'capitalize'}
             />
           </View>
-          {/* // )} */}
-          <View style={{ height: windowHeight * 0.12 }} />
+
+          <View style={{height: windowHeight * 0.12}} />
         </ScrollView>
         <Modal
           onBackdropPress={() => {
@@ -1055,10 +991,10 @@ const LoadDetails = props => {
             style={{
               width: windowWidth * 0.8,
               marginBottom: moderateScale(40, 0.3),
-              // backgroundColor : 'red'
             }}
             minDate={moment().format()}
             onDayPress={day => {
+              dateType == 'enddate' ?setEndDate(day?.dateString):
               setDate(day?.dateString);
               setShowCalendarModal(false);
             }}
@@ -1098,6 +1034,9 @@ const LoadDetails = props => {
           setIsModalVisible={setIsModalVisible}
           setPickupLocation={setOrigin}
           setdropOffLocation={setDestination}
+          // setState={}
+          setOriginState={setOriginState}
+          setdestinationState={setdestinationState}
         />
       </View>
     </SafeAreaView>
@@ -1132,7 +1071,7 @@ const styles = StyleSheet.create({
   },
   heading_text: {
     fontSize: moderateScale(15, 0.6),
-    marginTop: moderateScale(10, 0.6),
+    // marginTop: moderateScale(10, 0.6),
   },
   header: {
     width: windowWidth * 0.7,
@@ -1178,5 +1117,18 @@ const styles = StyleSheet.create({
     marginVertical: moderateScale(5, 0.6),
     justifyContent: 'center',
     paddingHorizontal: moderateScale(10, 0.6),
+  },
+  btn_row: {
+    flexDirection: 'row',
+    marginHorizontal: moderateScale(5, 0.6),
+    width: windowWidth * 0.8,
+    paddingVertical: moderateScale(5, 0.6),
+  },
+  check_btn: {
+    borderWidth: 1,
+    borderRadius: 5,
+    marginRight: moderateScale(5, 0.6),
+    height: windowHeight * 0.021,
+    width: windowWidth * 0.045,
   },
 });

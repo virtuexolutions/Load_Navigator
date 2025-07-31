@@ -1,40 +1,43 @@
-import {
-  ActivityIndicator,
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
-import {windowHeight, windowWidth} from '../Utillity/utils';
-import Color from '../Assets/Utilities/Color';
-import {moderateScale} from 'react-native-size-matters';
-import CustomText from '../Components/CustomText';
+import {useIsFocused} from '@react-navigation/native';
+import moment from 'moment';
 import {Icon} from 'native-base';
+import React, {useEffect, useRef, useState} from 'react';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {moderateScale} from 'react-native-size-matters';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Fontisto from 'react-native-vector-icons/Fontisto';
-import Header from '../Components/Header';
-import navigationService from '../navigationService';
-import {Get} from '../Axios/AxiosInterceptorFunction';
 import {useSelector} from 'react-redux';
-import {useIsFocused} from '@react-navigation/native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import moment from 'moment';
+import Color from '../Assets/Utilities/Color';
 import BottomSheet from '../Components/BottomSheet';
+import CustomText from '../Components/CustomText';
+import {windowHeight, windowWidth} from '../Utillity/utils';
 
 const LeadBoardCard = ({item}) => {
   const IsFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
+  console.log(
+    '🚀 ~ LeadBoardCard======================= >>>>>>>>>>>>',
+    JSON.stringify(
+      item?.user?.is_email_verified,
+      item?.user?.is_number_verified,
+      null,
+      2,
+    ),
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [leaderData, setLeaderData] = useState([]);
   const rbref = useRef();
+  const [isRecent, setIsRecent] = useState(false);
+
+  useEffect(() => {
+    const THREE_HOURS = 3 * 60 * 60 * 1000; // 3 hours in ms
+    const now = new Date();
+    const createdTime = new Date(item?.created_at);
+    const recent = now - createdTime <= THREE_HOURS;
+    setIsRecent(recent);
+  }, []);
   return (
     <>
       <TouchableOpacity
@@ -44,12 +47,58 @@ const LeadBoardCard = ({item}) => {
         // }}
         style={styles.card}>
         <View style={styles.row}>
-          <CustomText isBold style={styles.card_heading}>
-            {item?.company}
+          {/* {isRecent && ( */}
+          <CustomText
+            style={{
+              color: Color.black,
+              fontSize: moderateScale(10, 0.6),
+              backgroundColor: Color.lightGrey,
+              paddingHorizontal: moderateScale(5, 0.6),
+              borderRadius: moderateScale(10, 0.6),
+              position: 'absolute',
+              right: 90,
+            }}>
+            recent
           </CustomText>
-          <View style={styles.badges}>
-            <CustomText style={styles.text}>{item?.status}</CustomText>
+          {/* )}  */}
+
+          <View
+            style={[
+              styles.badges,
+              {
+                backgroundColor:
+                  item?.status.toLowerCase() == 'cover'
+                    ? Color.green
+                    : 'yellow',
+              },
+            ]}>
+            <CustomText style={styles.text}>
+              {item?.status.toLowerCase() == 'cover' ? 'Covered' : 'Open'}
+            </CustomText>
           </View>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            paddingTop: moderateScale(10, 0.6),
+            paddingHorizontal: moderateScale(15, 0.6),
+          }}>
+          <CustomText numberOfLines={1} isBold style={styles.card_heading}>
+            {item?.company}{' '}
+          </CustomText>
+          {item?.user?.is_email_verified == 1 &&
+            item?.user?.is_number_verified == 1 && (
+              <Icon
+                style={{
+                  marginTop: moderateScale(8, 0.6),
+                  marginHorizontal: moderateScale(5, 0.6),
+                }}
+                as={MaterialIcons}
+                name="verified"
+                color={Color.blue}
+                size={moderateScale(14, 0.6)}
+              />
+            )}
         </View>
         {/* <View> */}
         <View style={styles.row}>
@@ -66,7 +115,7 @@ const LeadBoardCard = ({item}) => {
             style={[
               styles.text,
               {
-                width: windowWidth * 0.6,
+                width: windowWidth * 0.7,
               },
             ]}>
             {item?.origin?.name}
@@ -91,13 +140,12 @@ const LeadBoardCard = ({item}) => {
             style={[
               styles.text,
               {
-                width: windowWidth * 0.6,
+                width: windowWidth * 0.7,
               },
             ]}>
             {item?.destination?.name}
           </CustomText>
         </View>
-
         <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
           <View style={styles.icon_view}>
             <Icon
@@ -250,18 +298,14 @@ const styles = StyleSheet.create({
     backgroundColor: Color.primary,
     aignItems: 'center',
   },
-  main_view: {
-    // paddingHorizontal: moderateScale(20, 0.6),
-    // paddingVertical: moderateScale(30, 0.6),
-  },
   heading: {
     fontSize: moderateScale(20, 0.6),
     color: Color.white,
     textAlign: 'center',
   },
   card: {
-    width: windowWidth * 0.8,
-    height: windowHeight * 0.285,
+    width: windowWidth * 0.85,
+    height: windowHeight * 0.29,
     backgroundColor: Color.grey,
     borderRadius: moderateScale(20, 0.6),
     marginTop: moderateScale(10, 0.6),
@@ -273,9 +317,12 @@ const styles = StyleSheet.create({
   card_heading: {
     fontSize: moderateScale(18, 0.6),
     color: Color.white,
+    paddingHorizontal: moderateScale(5, 0.6),
+    // width : windowWidth *0.6,
+    // backgroundColor: 'red',
   },
   row: {
-    marginTop: moderateScale(10, 0.6),
+    marginTop: moderateScale(5, 0.6),
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -291,7 +338,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: moderateScale(12, 0.6),
     marginLeft: moderateScale(5, 0.6),
-    color: Color.white,
+    color: Color.black,
     // backgroundColor :'red'
   },
   badges: {

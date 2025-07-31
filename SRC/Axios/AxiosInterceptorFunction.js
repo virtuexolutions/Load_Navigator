@@ -180,7 +180,7 @@ let Put = async (route, data, headers, showAlert = true) => {
   try {
     return await axios.put(apiUrl, data, headers);
   } catch (error) {
-    console.log('error', error.message);
+    console.log('error================>', error.message);
     let networkError = error.message === 'Network Error';
     if (showAlert) {
       if (networkError) {

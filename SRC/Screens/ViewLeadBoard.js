@@ -7,12 +7,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
-import { windowHeight, windowWidth } from '../Utillity/utils';
+import React, {useEffect, useRef, useState} from 'react';
+import {windowHeight, windowWidth} from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
-import { moderateScale } from 'react-native-size-matters';
+import {moderateScale} from 'react-native-size-matters';
 import CustomText from '../Components/CustomText';
-import { Icon } from 'native-base';
+import {Icon} from 'native-base';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -21,14 +21,15 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Header from '../Components/Header';
 import navigationService from '../navigationService';
-import { Get } from '../Axios/AxiosInterceptorFunction';
-import { useSelector } from 'react-redux';
-import { useIsFocused } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {Get} from '../Axios/AxiosInterceptorFunction';
+import {useSelector} from 'react-redux';
+import {useIsFocused} from '@react-navigation/native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import moment from 'moment';
 import BottomSheet from '../Components/BottomSheet';
 import LeadBoardCard from '../Components/LeadBoardCard';
 import CountryStatePicker from '../Components/CountryStatePicker';
+import StatesCodeModal from '../Components/StatesCodeModal';
 
 const ViewLeadBoard = () => {
   const IsFocused = useIsFocused();
@@ -37,63 +38,18 @@ const ViewLeadBoard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [leaderData, setLeaderData] = useState([]);
   const [selectedOrigin, setSelectedOrigin] = useState('');
-  console.log("🚀 ~ ViewLeadBoard ~ selectedOrigin:", selectedOrigin)
   const [selectedDestination, setselectedDestination] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState('');
 
   const [selectedCountry, setSelectedCountry] = useState(
     userData?.selected_area == 'Sign Up For Canada' ? 'Canada' : 'USA',
   );
   const rbref = useRef();
 
-  const leadBoard_array = [
-    {
-      id: 1,
-      name: 'Ovila, Services',
-      startLocation: 'start location',
-      endLocation: 'End LOcation',
-      phoneNumber: '0000000000',
-      date: '05 Apr 2025',
-      time: '05 Day Ago',
-      type: 'open',
-    },
-    {
-      id: 2,
-      name: 'Ovila, Services',
-      startLocation: 'start location',
-      endLocation: 'End LOcation',
-      phoneNumber: '0000000000',
-      date: '05 Apr 2025',
-      time: '05 Day Ago',
-      type: 'cover',
-    },
-    {
-      id: 3,
-      name: 'Ovila, Services',
-      startLocation: 'start location',
-      endLocation: 'End LOcation',
-      phoneNumber: '0000000000',
-      date: '05 Apr 2025',
-      time: '05 Day Ago',
-      type: 'cover',
-    },
-    {
-      id: 4,
-      name: 'Ovila, Services',
-      startLocation: 'start location',
-      endLocation: 'End LOcation',
-      phoneNumber: '0000000000',
-      date: '05 Apr 2025',
-      time: '05 Day Ago',
-      type: 'open',
-    },
-  ];
-
   const getLoadList = async () => {
     const url = `auth/load_list?origin=${selectedOrigin?.label}&destination=${selectedDestination?.label}`;
     setIsLoading(true);
-    console.log("🚀 ~ getLoadList ~ url:", url)
     const response = await Get(url, token);
-    console.log("🚀 ~ getLoadList ~ response:", response?.data)
     setIsLoading(false);
     if (response != undefined) {
       setLeaderData(response?.data?.load_detail);
@@ -108,26 +64,19 @@ const ViewLeadBoard = () => {
     <SafeAreaView
       // scrollEnabled={false}
       style={styles.mainScreen}
-    //   conltentContainerStyle={{
-    //     aignItems: 'center',
-    //   }}
+      //   conltentContainerStyle={{
+      //     aignItems: 'center',
+      //   }}
     >
       <View style={styles.main_view}>
         <Header
           title="View Leader Board"
           headerColor={'transparent'}
-          textstyle={{ color: Color.white }}
-          showBack
+          textstyle={{color: Color.white}}
+          // showBack
           menu
         />
-        <View
-          style={{
-            flexDirection: 'row',
-            width: windowWidth,
-            justifyContent: 'space-between',
-            paddingHorizontal: moderateScale(20, 0.6),
-          }}>
-
+        <View style={styles.sec_row}>
           <View>
             <CustomText
               style={{
@@ -189,40 +138,7 @@ const ViewLeadBoard = () => {
             />
           </View>
         </View>
-        {/* <View
-          style={{
-            paddingVertical: moderateScale(10, 0.6),
-            paddingHorizontal: moderateScale(20, 0.6),
-          }}>
-          <CustomText
-            style={{
-              color: Color.white,
-              fontSize: moderateScale(18, 0.6),
-            }}>
-            Filter
-          </CustomText>
-          <TouchableOpacity
-            onPress={() => {}}
-            style={{
-              backgroundColor: 'red',
-              paddingVertical: moderateScale(10, 0.6),
-              width: windowWidth * 0.1,
-              height: windowWidth * 0.1,
-              borderRadius: (windowWidth * 0.1) / 2,
-              alignItems: 'center',
-              position: 'absolute',
-              right: 10,
-              // top: 80,
-              // zIndex: 1,
-            }}>
-            <Icon
-              name="filter"
-              size={moderateScale(17, 0.6)}
-              color={Color.white}
-              as={Feather}
-            />
-          </TouchableOpacity>
-        </View> */}
+
         {isLoading ? (
           <ActivityIndicator
             style={{
@@ -236,12 +152,30 @@ const ViewLeadBoard = () => {
           <FlatList
             contentContainerStyle={{
               alignItems: 'center',
-              paddingBottom: moderateScale(70, 0.6),
+              paddingBottom: moderateScale(150, 0.6),
             }}
             data={leaderData}
-            renderItem={({ item, index }) => {
+            renderItem={({item, index}) => {
               return <LeadBoardCard item={item} />;
             }}
+            ListEmptyComponent={
+              <View
+                style={{
+                  width: windowWidth,
+                  height: windowHeight * 0.5,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <CustomText
+                  style={{
+                    color: 'white',
+                    width: windowWidth * 0.5,
+                    textAlign: 'center',
+                  }}>
+                  No Leads founds in your selected origin
+                </CustomText>
+              </View>
+            }
           />
         )}
       </View>
@@ -321,5 +255,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: moderateScale(5, 0.6),
+  },
+  sec_row: {
+    flexDirection: 'row',
+    width: windowWidth,
+    justifyContent: 'space-between',
+    paddingHorizontal: moderateScale(20, 0.6),
+  },
+  btn: {
+    width: windowWidth * 0.4,
+    height: windowHeight * 0.04,
+    borderWidth: 1,
+    borderColor: Color.white,
+    borderRadius: moderateScale(5, 0.6),
+    paddingHorizontal: moderateScale(10, 0.6),
+    justifyContent: 'center',
+  },
+  btn_txt: {
+    fontSize: moderateScale(9, 0.6),
+    color: Color.white,
   },
 });

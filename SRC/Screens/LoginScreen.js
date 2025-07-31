@@ -24,7 +24,12 @@ import CustomText from '../Components/CustomText';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
 import {loginSchema} from '../Constant/schema';
-import {setUserToken} from '../Store/slices/auth-slice';
+import {
+  setIsEmailVerified,
+  setIsMobileVerified,
+  setPm_Type,
+  setUserToken,
+} from '../Store/slices/auth-slice';
 import {setSelectedRole, setUserData} from '../Store/slices/common';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import {mode} from 'native-base/lib/typescript/theme/tools';
@@ -72,10 +77,24 @@ const LoginScreen = props => {
     const response = await Post(url, body, apiHeader());
     setIsLoading(false);
     if (response != undefined) {
+      // return console.log(
+      //   'darta =====>',
+      //   JSON.stringify(response?.data?.user_info?.pm_type, null, 2),
+      // );
+      dispatch(
+        setIsMobileVerified(
+          response?.data?.user_info?.is_number_verified == 0 ? false : true,
+        ),
+      );
+      dispatch(
+        setIsEmailVerified(
+          response?.data?.user_info?.is_email_verified == 0 ? false : true,
+        ),
+      );
       dispatch(setSelectedRole(response?.data?.user_info?.role));
       dispatch(setUserData(response?.data?.user_info));
       dispatch(setUserToken({token: response?.data?.token}));
-
+      dispatch(setPm_Type(response?.data?.user_info?.pm_type));
       Platform.OS == 'android'
         ? ToastAndroid.show('Login Successfully', ToastAndroid.SHORT)
         : Alert.alert('Login Successfully');

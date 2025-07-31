@@ -1,5 +1,5 @@
-import { Icon } from 'native-base';
-import React, { useEffect, useState } from 'react';
+import {Icon} from 'native-base';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -12,40 +12,42 @@ import {
   View,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import { moderateScale } from 'react-native-size-matters';
+import {moderateScale} from 'react-native-size-matters';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Zocial from 'react-native-vector-icons/Zocial';
 import CustomText from '../Components/CustomText';
-import { windowHeight, windowWidth } from '../Utillity/utils';
+import {windowHeight, windowWidth} from '../Utillity/utils';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import Color from '../Assets/Utilities/Color';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import Header from '../Components/Header';
 import navigationService from '../navigationService';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import CountryStatePicker from '../Components/CountryStatePicker';
-import { Get } from '../Axios/AxiosInterceptorFunction';
+import {Get} from '../Axios/AxiosInterceptorFunction';
 import DropDownSingleSelect from '../Components/DropDownSingleSelect';
 import CustomButton from '../Components/CustomButton';
+import {background} from 'native-base/lib/typescript/theme/styled-system';
 
 const CarDirectory = () => {
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
-
+  const userRole = useSelector(state => state.commonReducer.selectedRole);
   const [serviceSate, setServiceState] = useState('');
   const [escortPosition, setEscortPosition] = useState('');
   const [services, setServices] = useState(['A', 'B']);
   const [selectedState, setSelectedState] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [pilotData, setPilotData] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState(userData?.selected_area == 'Sign Up For Canada' ? 'Canada' : 'USA');
-  const countryOptions = ["Canada", "USA"];
+  const [selectedCountry, setSelectedCountry] = useState(
+    userData?.selected_area == 'Sign Up For Canada' ? 'Canada' : 'USA',
+  );
+  const countryOptions = ['Canada', 'USA'];
   const [escortPositions, setEscortPositions] = useState(false);
   const [selectedPositionModal, setSelectedPositionModal] = useState(false);
   const [selectedPosition, setSelectedPosition] = useState([]);
-  console.log("🚀 ~ CarDirectory ~ selectedPosition:", selectedPosition)
-
   const dummyData = [
     {
       id: 1,
@@ -92,39 +94,38 @@ const CarDirectory = () => {
   ];
 
   const getPilot = async () => {
-    const url = `auth/pilot_list?state=${selectedState?.label}&role=pilot&escorte_positions=${selectedPosition}`;
+    const url = `auth/pilot_list?state=${selectedState?.label}&role=${
+      userRole.toLowerCase() == 'pilot' ? 'company' : 'pilot'
+    }&escorte_positions=${selectedPosition}`;
     setIsLoading(true);
-    console.log('🚀 ~ getPilot ~ url:', url);
     const response = await Get(url, token);
-    console.log('🚀 ~ getPilot ~ response:', response?.data?.pilots);
+    console.log("🚀 ~ getPilot ~ response:", response?.data)
     setIsLoading(false);
     if (response != undefined) {
-      setPilotData(response?.data?.pilots);
+      setPilotData(response?.data?.user_info);
     }
   };
 
-  // useEffect(() => {
-  //   if (selectedPosition.length > 0 && selectedState && escortPositions === true) {
-  //     getPilot();
-  //   }
-  // }, [selectedPosition, selectedState]);
-
+  useEffect(() => {
+    if (userRole.toLowerCase() == 'pilot') {
+      getPilot();
+    }
+  }, [selectedPosition, selectedState]);
 
   const handelSaveButton = async () => {
     if (selectedPosition.length > 0 && selectedState) {
-      setSelectedPositionModal(false)
+      setSelectedPositionModal(false);
       getPilot();
     } else {
-      setSelectedPositionModal(false)
+      setSelectedPositionModal(false);
       Platform.OS == 'android'
         ? ToastAndroid.show(
-          'Please Select Country and State First',
-          ToastAndroid.SHORT,
-        )
+            'Please Select Country and State First',
+            ToastAndroid.SHORT,
+          )
         : Alert.alert('Please Select Country and State First');
     }
-  }
-
+  };
 
   const positionOptions = [
     {
@@ -164,20 +165,58 @@ const CarDirectory = () => {
   ];
 
   return (
-    <SafeAreaView style={styles.main_view}>
+    <SafeAreaView
+      style={[
+        styles.main_view,
+        {
+          backgroundColor:
+            userRole.toLowerCase() == 'pilot' ? Color.primary : Color.secondary,
+        },
+      ]}>
       <Header
         title="Pilot Car Directory"
-        headerColor={Color.secondary}
-        textstyle={{ color: Color.white }}
-        showBack
+        headerColor={
+          userRole.toLowerCase() == 'pilot' ? Color.primary : Color.secondary
+        }
+        textstyle={{color: Color.white}}
+        // showBack
         menu
       />
       <CustomStatusBar
         backgroundColor={Color.white}
         barStyle={'light-content'}
       />
-      <View style={styles.mainScreen}>
-        <View style={styles.dropDownsContainer}>
+      <View
+        style={[
+          styles.mainScreen,
+          {
+            backgroundColor:
+              userRole.toLowerCase() == 'pilot' ? Color.primary : Color.white,
+          },
+        ]}>
+        <View
+          style={[
+            styles.dropDownsContainer,
+            {
+              height:
+                userRole.toLowerCase() == 'pilot'
+                  ? windowHeight * 0.21
+                  : windowHeight * 0.3,
+            },
+          ]}>
+          <CustomText
+            style={{
+              fontSize: moderateScale(11, 0.6),
+              color:
+                userRole.toLowerCase() == 'pilot' ? Color.white : Color.black,
+              width: '90%',
+
+              marginBottom: moderateScale(-18, 0.6),
+              // alignself :'flex-start' ,
+              // backgroundColor: 'red',
+            }}>
+            select country *
+          </CustomText>
           <DropDownSingleSelect
             array={countryOptions}
             item={selectedCountry}
@@ -196,26 +235,55 @@ const CarDirectory = () => {
               height: windowHeight * 0.055,
             }}
           />
+          <CustomText
+            style={{
+              fontSize: moderateScale(11, 0.6),
+              color:
+                userRole.toLowerCase() == 'pilot' ? Color.white : Color.black,
+              width: '90%',
+              marginBottom: moderateScale(-18, 0.6),
+            }}>
+            select state *
+          </CustomText>
           <CountryStatePicker
             style_dropDown={{
               height: windowHeight * 0.06,
-              backgroundColor: 'transparent',
+              backgroundColor: 'white',
               width: windowWidth * 0.85,
               borderWidth: 0.5,
               justifyContent: 'center',
               paddingHorizontal: moderateScale(15, 0.6),
               borderColor: Color.mediumGray,
               borderRadius: moderateScale(30, 0.6),
+              // marginBottom : moderateScale(10,.6)
             }}
-            country={
-              selectedCountry
-            }
+            country={selectedCountry}
             setSelectedState={setSelectedState}
             selectedState={selectedState}
           />
-          <TouchableOpacity onPress={() => setSelectedPositionModal(!selectedPositionModal)} style={styles.dropdownButtonStyle}>
-            <CustomText style={styles.dropdownButtonTxtStyle}>Select Escort Position</CustomText>
-          </TouchableOpacity>
+          {userRole.toLowerCase() != 'pilot' && (
+            <>
+              <CustomText
+                style={{
+                  fontSize: moderateScale(11, 0.6),
+                  color:
+                    userRole.toLowerCase() == 'pilot'
+                      ? Color.white
+                      : Color.black,
+                  width: '90%',
+                  marginTop: moderateScale(-10, 0.6),
+                }}>
+                select escort positions *
+              </CustomText>
+              <TouchableOpacity
+                onPress={() => setSelectedPositionModal(!selectedPositionModal)}
+                style={styles.dropdownButtonStyle}>
+                <CustomText style={styles.dropdownButtonTxtStyle}>
+                  Select Escort Position
+                </CustomText>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
         {/* <View style={styles.dropDownsContainer}> */}
         {/* <CustomDropDown
@@ -245,11 +313,34 @@ const CarDirectory = () => {
             showsVerticalScrollIndicator={false}
             data={pilotData}
             keyExtractor={item => item.id}
-            contentContainerStyle={styles.flatListContainer}
-            renderItem={({ item, index }) => <DirectoryItem item={item} />}
+            contentContainerStyle={[
+              styles.flatListContainer,
+              {
+                backgroundColor:
+                  userRole.toLowerCase() == 'pilot'
+                    ? Color.primary
+                    : Color.white,
+              },
+            ]}
+            renderItem={({item, index}) => <DirectoryItem item={item} />}
             ListFooterComponent={() => (
-              <View style={{ height: windowHeight * 0.1 }} />
+              <View style={{height: windowHeight * 0.1}} />
             )}
+            ListEmptyComponent={
+              <CustomText
+                style={{
+                  fontSize: moderateScale(14, 0.6),
+                  color:
+                    userRole.toLowerCase() == 'pilot'
+                      ? Color.white
+                      : Color.black,
+                  paddingTop: windowHeight * 0.1,
+                }}>
+                {userRole.toLowerCase() == 'pilot'
+                  ? 'No companies found!'
+                  : 'No pilot cars found!'}
+              </CustomText>
+            }
           />
         )}
       </View>
@@ -265,13 +356,16 @@ const CarDirectory = () => {
           alignItems: 'center',
         }}>
         <View style={styles.modal_box}>
-          <CustomText style={{
-            fontSize: moderateScale(15, 0.6),
-            color: Color.secondary,
-            textAlign: 'left',
-            width: '90%',
-            marginBottom: moderateScale(10, 0.6)
-          }}>Select Escort Position</CustomText>
+          <CustomText
+            style={{
+              fontSize: moderateScale(15, 0.6),
+              color: Color.secondary,
+              textAlign: 'left',
+              width: '90%',
+              marginBottom: moderateScale(10, 0.6),
+            }}>
+            Select Escort Position
+          </CustomText>
           {positionOptions?.map(item => {
             const isActive = selectedPosition?.includes(item?.text);
             // console.log('///////////////////////////', isActive);
@@ -294,7 +388,7 @@ const CarDirectory = () => {
                     alignItems: 'flex-start',
                     justifyContent: 'flex-start',
                     marginBottom: moderateScale(7, 0.6),
-                    marginLeft: moderateScale(10, 0.6)
+                    marginLeft: moderateScale(10, 0.6),
                   },
                 ]}>
                 <View
@@ -303,9 +397,7 @@ const CarDirectory = () => {
                     {
                       borderWidth: 1,
                       borderColor: isActive ? Color.secondary : 'black',
-                      backgroundColor: isActive
-                        ? Color.secondary
-                        : Color.white,
+                      backgroundColor: isActive ? Color.secondary : Color.white,
                     },
                   ]}>
                   <Icon
@@ -317,20 +409,17 @@ const CarDirectory = () => {
                 </View>
                 <CustomText style={styles.text}>{item.text}</CustomText>
               </TouchableOpacity>
-
             );
           })}
 
           <CustomButton
-            text={
-              'Save'
-            }
+            text={'Save'}
             textColor={Color.white}
             width={windowWidth * 0.8}
             height={windowHeight * 0.06}
             marginTop={moderateScale(15, 0.3)}
             onPress={() => {
-              handelSaveButton()
+              handelSaveButton();
             }}
             bgColor={Color.secondary}
             borderRadius={moderateScale(30, 0.3)}
@@ -346,11 +435,9 @@ const CarDirectory = () => {
 
 export default CarDirectory;
 
-const DirectoryItem = ({ item }) => {
-  console.log(
-    '🚀 ~ DirectoryItem ~ item ---------------->>>>>>>:',
-    item?.email,
-  );
+const DirectoryItem = ({item}) => {
+  const emailVerified = useSelector(state => state.authReducer.emailVerified);
+  const numberVerified = useSelector(state => state.authReducer.numberVerified);
   return (
     <TouchableOpacity
       // onPress={() => {
@@ -358,9 +445,25 @@ const DirectoryItem = ({ item }) => {
       //   navigationService.navigate('ServicesScreen');
       // }}
       style={styles.itemContainer}>
-      <CustomText isBold style={styles.txt1}>
-        {item?.first_name}
-      </CustomText>
+      <View
+        style={{
+          flexDirection: 'row',
+        }}>
+        <CustomText numberOfLines={1} isBold style={styles.txt1}>
+          {item?.first_name}
+        </CustomText>
+
+        <Icon
+          style={{
+            marginTop: moderateScale(5, 0.6),
+            marginHorizontal: moderateScale(5, 0.6),
+          }}
+          as={MaterialIcons}
+          name="verified"
+          color={Color.blue}
+          size={moderateScale(10, 0.6)}
+        />
+      </View>
       <View style={styles.row}>
         <Icon
           name={'phone-alt'}
@@ -372,13 +475,15 @@ const DirectoryItem = ({ item }) => {
         <CustomText style={styles.txt2}>{item?.contact}</CustomText>
       </View>
       <View style={styles.row}>
-        <Icon
-          name={'email'}
-          as={Zocial}
-          size={moderateScale(20, 0.3)}
-          color={Color.mediumGray}
-          opacity={0.5}
-        />
+        {emailVerified == true && numberVerified == true && (
+          <Icon
+            name={'email'}
+            as={Zocial}
+            size={moderateScale(20, 0.3)}
+            color={Color.mediumGray}
+            opacity={0.5}
+          />
+        )}
         <CustomText style={styles.txt2}>{item?.email}</CustomText>
       </View>
     </TouchableOpacity>
@@ -393,7 +498,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   flatListContainer: {
-    backgroundColor: Color.white,
     width: windowWidth * 0.9,
     alignItems: 'center',
     borderRadius: moderateScale(20, 0.3),
@@ -403,6 +507,8 @@ const styles = StyleSheet.create({
     width: moderateScale(20, 0.6),
     marginRight: moderateScale(6, 0.6),
     borderRadius: moderateScale(4, 0.6),
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   itemContainer: {
     width: windowWidth * 0.9,
@@ -422,7 +528,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e8e8e8',
     alignItems: 'center',
     paddingHorizontal: moderateScale(10, 0.6),
-    paddingVertical: moderateScale(20, 0.6)
+    paddingVertical: moderateScale(20, 0.6),
   },
   row_view: {
     flexDirection: 'row',
@@ -437,6 +543,8 @@ const styles = StyleSheet.create({
   txt1: {
     fontSize: moderateScale(14, 0.3),
     color: Color.secondary,
+    paddingHorizontal: moderateScale(5, 0.6),
+    // backgroundColor: 'red',
   },
   txt2: {
     fontSize: moderateScale(14, 0.3),
@@ -448,13 +556,14 @@ const styles = StyleSheet.create({
     marginTop: moderateScale(20, 0.2),
     marginBottom: moderateScale(10, 0.2),
     // backgroundColor :'red',
-    height: windowHeight * 0.25,
+
     width: windowWidth * 0.9,
     marginVertical: moderateScale(10, 0.6),
     alignItems: 'center',
     borderWidth: 1,
     borderRadius: moderateScale(10, 0.6),
     borderColor: '#C32C2745',
+    paddingVertical: moderateScale(10, 0.6),
   },
   text: {
     fontSize: moderateScale(14, 0.6),
@@ -462,25 +571,25 @@ const styles = StyleSheet.create({
   main_view: {
     height: windowHeight,
     width: windowWidth,
-    backgroundColor: Color.secondary,
     paddingTop: moderateScale(20, 0.6),
   },
   dropdownButtonStyle: {
     width: windowWidth * 0.85,
     height: windowHeight * 0.055,
-    // paddingVertical:moderateScale(11,0.3),
-    alignItems: "center",
+    paddingVertical: moderateScale(11, 0.3),
+    alignItems: 'center',
+    marginTop: moderateScale(-5, 0.6),
     paddingHorizontal: moderateScale(5, 0.2),
     borderWidth: 0.5,
-    padding: moderateScale(10, 0.3),
+    // padding: moderateScale(10, 0.3),
     backgroundColor: Color.white,
-    justifyContent: "space-between",
-    flexDirection: "row",
+    justifyContent: 'space-between',
+    flexDirection: 'row',
     borderColor: Color.mediumGray,
     borderRadius: moderateScale(25, 0.3),
   },
   dropdownButtonTxtStyle: {
     color: Color.mediumGray,
-    paddingHorizontal: moderateScale(11, 0.2)
+    paddingHorizontal: moderateScale(11, 0.2),
   },
 });

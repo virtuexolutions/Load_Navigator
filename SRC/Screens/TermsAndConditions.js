@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 const TermsAndConditions = () => {
   const navigation = useNavigation();
   const userData = useSelector(state => state.commonReducer.userData);
+    const userRole = useSelector(state => state.commonReducer.selectedRole);
 
   return (
     <SafeAreaView
@@ -23,12 +24,12 @@ const TermsAndConditions = () => {
     //     aignItems: 'center',
     //   }}
   >
-    <View style={[styles.main_view, {backgroundColor: userData?.role =='pilot' ? Color.primary : Color.white}]}>
+    <View style={[styles.main_view, {backgroundColor:  userRole.toLowerCase() =='pilot' ? Color.primary : Color.white}]}>
       <Header
         title="Terms & Conditions"
-        headerColor={ userData?.role == 'pilot' ? 'transparent' : Color.secondary}
+        headerColor={  userRole.toLowerCase() == 'pilot' ? 'transparent' : Color.secondary}
         textstyle={{color: Color.white}}
-        showBack
+        // showBack
         menu
       />
 
@@ -47,7 +48,7 @@ const TermsAndConditions = () => {
           style={{
             marginTop: moderateScale(30, 0.3),
             marginHorizontal: moderateScale(10, 0.3),
-            color: userData?.role == 'pilot' ? Color.white : Color.black,
+            color:  userRole.toLowerCase() == 'pilot' ? Color.white : Color.black,
             // width : windowWidth ,
             textAlign: 'justify',
             fontSize: moderateScale(12, 0.6),

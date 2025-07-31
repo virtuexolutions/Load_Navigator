@@ -23,7 +23,7 @@ const ServicesScreen = () => {
         title="JLS Pilot Car Services"
         headerColor={Color.secondary}
         textstyle={{color: Color.white}}
-        showBack
+        // showBack
       />
       <CustomStatusBar
         backgroundColor={Color.white}
