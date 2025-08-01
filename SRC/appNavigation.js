@@ -78,8 +78,8 @@ const AppNavigator = () => {
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
-          // initialRouteName={"Signup"}
-          initialRouteName={firstScreen}
+          initialRouteName={"CreateRoute"}
+          // initialRouteName={firstScreen}
           screenOptions={{headerShown: false}}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
           <RootNav.Screen name="CarDirectory" component={CarDirectory} />

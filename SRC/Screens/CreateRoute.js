@@ -1,16 +1,16 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
-import {moderateScale} from 'react-native-size-matters';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import { pick } from '@react-native-documents/picker';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import MLKitOcr from 'react-native-mlkit-ocr';
+import Modal from 'react-native-modal';
+import QRCodeScanner from 'react-native-qrcode-scanner';
+import { moderateScale } from 'react-native-size-matters';
 import Color from '../Assets/Utilities/Color';
 import CustomButton from '../Components/CustomButton';
-import QRCodeScanner from 'react-native-qrcode-scanner';
-import Modal from 'react-native-modal';
 import CustomText from '../Components/CustomText';
-import navigationService from '../navigationService';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import {pick} from '@react-native-documents/picker';
-import { convertImageToText , detectFromFile } from '@react-native-ml-kit/text-recognition';
+import { wait, windowHeight, windowWidth } from '../Utillity/utils';
+import TextRecognition from '@react-native-ml-kit/text-recognition';
 
 const CreateRoute = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -18,23 +18,51 @@ const CreateRoute = () => {
   const [pdfFile, setPdfFile] = useState(null);
 
   const onSuccess = e => {
-    setScannedData(e.data); // Save scanned data
-    setModalVisible(true); // Show modal
+    setScannedData(e.data);
+    setModalVisible(true);
   };
+
   const [show, setShow] = useState(false);
   const [fileObject, setFileObject] = useState({});
   const [image, setImage] = useState(null);
   const [recognizedText, setRecognizedText] = useState('');
 
-  const pickImageAndRecognizeText = async () => {
-    const result = await launchImageLibrary({mediaType: 'photo'});
+  const detectTextWithRetry = async (uri, maxRetries = 5) => {
+    let retries = 0;
+    while (retries < maxRetries) {
+      try {
+        const result = await MLKitOcr.detectFromUri(uri);
+        return result;
+      } catch (error) {
+        if (
+          error?.message?.includes('Waiting for the text optional module to be downloaded')
+        ) {
+          console.warn(`Model not ready yet. Retrying in 2s... (${retries + 1}/${maxRetries})`);
+          await wait(2000); // wait 2 seconds
+          retries++;
+        } else {
+          throw error;
+        }
+      }
+    }
+    throw new Error('Text recognition model did not load in time. Try again later.');
+  };
+
+  const pickAndRecognizeText = async () => {
+    const result = await launchImageLibrary({ mediaType: 'photo' });
+
     if (result.assets && result.assets.length > 0) {
-      const path = result.assets[0].uri;
-      const recognizedText = await MLKitOcr.detectFromFile(path);
-      console.log(
-        'Text found:',
-        recognizedText.map(block => block.text).join('\n'),
-      );
+      const uri = result.assets[0].uri;
+      console.log('Picked image URI:', uri);
+
+      try {
+        const { blocks, text } = await TextRecognition.recognize(uri);
+        const allBlockText = blocks.map(block => block.text).join('\n');
+        console.log('Block-wise text:', allBlockText);
+        console.log('Full text:', text);
+      } catch (err) {
+        console.log('Text recognition error:', err);
+      }
     }
   };
 
@@ -94,6 +122,7 @@ const CreateRoute = () => {
       }
     });
   };
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create A Route</Text>
@@ -128,7 +157,7 @@ const CreateRoute = () => {
           bgColor={Color.secondary}
           marginTop={moderateScale(20, 0.6)}
           onPress={async () => {
-            const result = await launchCamera({mediaType: 'photo'});
+            const result = await launchCamera({ mediaType: 'photo' });
             if (result.assets && result.assets.length > 0) {
               const path = result.assets[0].uri;
               const recognizedText = await MLKitOcr.detectFromFile(path);
@@ -153,7 +182,7 @@ const CreateRoute = () => {
         onPress={() => {
           // console.log('============== >')
           // openGallery();
-          pickImageAndRecognizeText();
+          pickAndRecognizeText();
         }}
       />
       <CustomButton
@@ -264,17 +293,17 @@ const styles = StyleSheet.create({
   topRight: {
     top: 0,
     right: 0,
-    transform: [{rotate: '90deg'}],
+    transform: [{ rotate: '90deg' }],
   },
   bottomLeft: {
     bottom: 0,
     left: 0,
-    transform: [{rotate: '-90deg'}],
+    transform: [{ rotate: '-90deg' }],
   },
   bottomRight: {
     bottom: 0,
     right: 0,
-    transform: [{rotate: '180deg'}],
+    transform: [{ rotate: '180deg' }],
   },
   button: {
     backgroundColor: '#B91C1C',
@@ -307,7 +336,7 @@ const styles = StyleSheet.create({
     padding: 30,
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
