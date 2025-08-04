@@ -122,7 +122,7 @@ const CreateRoute = () => {
       }
     });
   };
-  
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create A Route</Text>
