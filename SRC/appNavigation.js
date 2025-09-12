@@ -35,7 +35,7 @@ import TermsAndConditions from './Screens/TermsAndConditions';
 import VerificationScreen from './Screens/VerificationScreen';
 import AddCard from './Screens/AddCard';
 import PaymentMethod from './Screens/PaymentMethod';
-import MapScreen from './Screens/MapScreen';
+// import MapScreen from './Screens/MapScreen';
 
 enableScreens();
 const AppNavigator = () => {
@@ -79,8 +79,8 @@ const AppNavigator = () => {
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
-          initialRouteName={'CreateRoute'}
-          // initialRouteName={firstScreen}
+          // initialRouteName={'CreateRoute'}
+          initialRouteName={firstScreen}
           screenOptions={{headerShown: false}}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
           <RootNav.Screen name="CarDirectory" component={CarDirectory} />
@@ -108,7 +108,7 @@ const AppNavigator = () => {
           <RootNav.Screen name="PostScreen" component={PostScreen} />
           {/* <RootNav.Screen name="PaymentMethod" component={PaymentMethod} /> */}
           <RootNav.Screen name="AddCard" component={AddCard} />
-          <RootNav.Screen name="MapScreen" component={MapScreen} />
+          {/* <RootNav.Screen name="MapScreen" component={MapScreen} /> */}
 
           <RootNav.Screen
             name="VerificationScreen"

@@ -126,6 +126,8 @@ dependencies {
     implementation project(':react-native-vector-icons')
     implementation project(':react-native-permissions')
     implementation 'com.google.android.libraries.places:places:3.3.0'
+    
+    // implementation project(':react-native-fs')
 
 
     // implementation 'com.google.android.gms:play-services-base:18.0.1'

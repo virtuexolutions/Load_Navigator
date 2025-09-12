@@ -1,583 +1,423 @@
-import {pick} from '@react-native-documents/picker';
-import React, {useEffect, useRef, useState} from 'react';
-import {
-  ActivityIndicator,
-  Linking,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import MLKitOcr from 'react-native-mlkit-ocr';
+import Lottie from 'lottie-react-native';
+import {Icon} from 'native-base';
+import React, {useRef, useState} from 'react';
+import {Alert, Linking, StyleSheet, Text, View} from 'react-native';
+import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
-import QRCodeScanner from 'react-native-qrcode-scanner';
 import {moderateScale} from 'react-native-size-matters';
+import Feather from 'react-native-vector-icons/Feather';
 import Color from '../Assets/Utilities/Color';
 import CustomButton from '../Components/CustomButton';
 import CustomText from '../Components/CustomText';
-import {wait, windowHeight, windowWidth} from '../Utillity/utils';
-import TextRecognition from '@react-native-ml-kit/text-recognition';
-import axios from 'axios';
-import {RNCamera} from 'react-native-camera';
-import navigationService from '../navigationService';
+import ScanRoute from '../Components/ScanRoute';
+import {windowHeight, windowWidth} from '../Utillity/utils';
 
 const CreateRoute = () => {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [scannedData, setScannedData] = useState(null);
-  const [pdfFile, setPdfFile] = useState(null);
   const cameraRef = useRef(null);
-  const onSuccess = e => {
-    setScannedData(e.data);
-    setModalVisible(true);
-  };
-
-  const [show, setShow] = useState(false);
-  const [isLoading, setisLoading] = useState(false);
-
-  const [fileObject, setFileObject] = useState({});
-  const [image, setImage] = useState(null);
-  const [recognizedText, setRecognizedText] = useState([]);
-  const [location, setlocation] = useState('');
-  const [origin, setOrigin] = useState('');
-  console.log('🚀 ~ CreateRoute ~ origin:', origin, destination);
-  const [destination, setDestination] = useState('');
-  const [route, setRoute] = useState([]);
-  const [waypoint, setWaypoint] = useState([]);
-  console.log('🚀 ~ CreateRoute ~ waypoint:', waypoint);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isRouteFound, setIsRouteFound] = useState(false);
+  const [routeUrl, setRouteUrl] = useState('');
+  const [isPermitScan, setisPermitScan] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState(null);
+  const [parsed, setParsed] = useState(null);
+  const [url, setUrl] = useState(null);
+  console.log("🚀 ~ CreateRoute ~  =======================url:", url)
+  const [isLoading, setIsLoading] = useState(false);
+  const [permitData, setPermitData] = useState(null);
 
   const takePicture = async () => {
     if (cameraRef.current) {
-      const options = {quality: 0.5, base64: true};
+      const options = {quality: 0.5, base64: true, includeBase64: true};
       const data = await cameraRef.current.takePictureAsync(options);
-      console.log('📸 Photo captured:', data?.uri);
       setModalVisible(true);
-      setisLoading(true);
-      if (data?.uri) {
-        const path = data?.uri;
-        const resultText = await MLKitOcr.detectFromFile(path);
-      //  return console.log("🚀 ~ takePicture ~ resultText:", resultText)
-        setRecognizedText(resultText);
-
-        // extractPermitDetails(resultText);
-        // setRecognizedText(resultText?.map((item ,index )=> item?.text) .join(' '))
-      }
-      // OCR logic ya jo bhi karna hai
-    }
-  };
-
-  const detectTextWithRetry = async (uri, maxRetries = 5) => {
-    let retries = 0;
-    while (retries < maxRetries) {
-      try {
-        const result = await MLKitOcr.detectFromUri(uri);
-        return result;
-      } catch (error) {
-        if (
-          error?.message?.includes(
-            'Waiting for the text optional module to be downloaded',
-          )
-        ) {
-          console.warn(
-            `Model not ready yet. Retrying in 2s... (${
-              retries + 1
-            }/${maxRetries})`,
-          );
-          await wait(2000); // wait 2 seconds
-          retries++;
-        } else {
-          throw error;
-        }
-      }
-    }
-    throw new Error(
-      'Text recognition model did not load in time. Try again later.',
-    );
-  };
-
-  const pickAndRecognizeText = async () => {
-    console.log('first ================== > from image picker function');
-    const result = await launchImageLibrary({mediaType: 'photo'});
-
-    if (result.assets && result.assets.length > 0) {
-      const uri = result.assets[0].uri;
-      console.log('Picked image URI:', uri);
-
-      try {
-        console.log('first ================ >>>>>>> from utl');
-        if (uri) {
-          const resultText = await MLKitOcr.detectFromFile(uri);
-
-          setisLoading(true);
-          setModalVisible(true);
-        }
-
-        // const allBlockText = blocks.map(block => block.text).join('\n');
-        // console.log('Block-wise text:', allBlockText);
-        // console.log('Full text:', text);
-      } catch (err) {
-        console.log('Text recognition error:', err);
+      setIsLoading(true);
+      if (data?.base64) {
+        const path = data?.base64;
+        await processImage(path);
       }
     }
   };
-  //
-  //   useEffect(() => {
-  //     handleNavigate();
-  //   }, [recognizedText]);
 
-  //   const GOOGLE_API_KEY = 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8';
-
-  //   // --- Helper: Extract route text
-  //   const extractRouteParts = text => {
-  //     let origin = '';
-  //     let destination = '';
-  //     const waypoints = [];
-
-  //     for (let wordObj of text) {
-  //       const isLocation = wordObj.text;
-
-  //       const parts = isLocation.split(/end on/i); // case insensitive
-  //       const rawText = parts[0];
-  //       const lowerText = rawText.replace(/\n/g, ' ').toLowerCase();
-  //       // console.log(
-  //       //   '🚀 ~ extractRouteParts ~ lowerText:========== >>>',
-  //       //   lowerText,
-  //       // );
-  //       // const fullLower = lowerText.replace(/\n/g, ' ').toLowerCase();
-
-  //       const startMatch =
-  //         lowerText.match(/start on\s+(.*?)(,|\n|\.|$)/i) ||
-  //         lowerText.match(/origin\s*[:-]?\s*(.*?)(?=[.,\n]|$)/i);
-  //       if (startMatch) origin = startMatch[1].trim();
-  //       setOrigin(startMatch);
-
-  //       const endMatch =
-  //         lowerText.match(/end on\s+(.*?)(,|\n|\.|$)/i) ||
-  //         lowerText.match(/destination\s*[:-]?\s*(.*?)(?=[.,\n]|$)/i);
-  //       console.log("🚀 ~ extractRouteParts ~ endMatch:", endMatch)
-  //       if (endMatch) destination = endMatch[1].trim();
-  //       setDestination(endMatch);
-
-  //       const allRoutes = recognizedText?.map(obj => obj.text).join('\n');
-  //       extractRoutes(allRoutes);
-  //       // console.log('🚀 ~ extractRouteParts ~ allRoutes:', allRoutes);
-  //       if (allRoutes) {
-  //         // allRoutes.forEach(route => {
-  //         //   if (route !== origin && route !== destination) waypoints.push(route);
-  //         getCleanRoutes(allRoutes);
-  //         // setWaypoint(route);
-  //         //   }
-  //         // );
+  // const detectTextWithRetry = async (uri, maxRetries = 5) => {
+  //   let retries = 0;
+  //   while (retries < maxRetries) {
+  //     try {
+  //       const result = await MLKitOcr.detectFromUri(uri);
+  //       return result;
+  //     } catch (error) {
+  //       if (
+  //         error?.message?.includes(
+  //           'Waiting for the text optional module to be downloaded',
+  //         )
+  //       ) {
+  //         console.warn(
+  //           `Model not ready yet. Retrying in 2s... (${
+  //             retries + 1
+  //           }/${maxRetries})`,
+  //         );
+  //         await wait(2000); // wait 2 seconds
+  //         retries++;
+  //       } else {
+  //         throw error;
   //       }
   //     }
-
-  //     return {origin, destination, allRoutes};
-  //   };
-
-  //   const extractRoutes = (fullText) => {
-
-  //   // Clean and normalize the text
-  //   const cleanText = fullText.replace(/\s+/g, ' ').toUpperCase();
-
-  //   // Match patterns like I-86, US-20, NY-352, PA-17, etc.
-  //   const pattern = /\b(?:I|US|NY|PA)-\d{1,4}[A-Z]*\b/g;
-  //   const matches = cleanText.match(pattern);
-
-  //   if (!matches || matches.length === 0) {
-  //     console.warn('❌ No route matches found');
-  //     return [];
   //   }
-
-  //   // Remove duplicates while preserving order
-  //   const uniqueRoutes = [...new Set(matches)];
-  //   setWaypoint(uniqueRoutes)
-  //   console.log('✅ ALL Routes in ONE array:', uniqueRoutes);
-
-  //   return uniqueRoutes;
-  // };
-
-  //   // --- Helper: Get lat/lng from location name
-  //   const getLatLng = async location => {
-  //     const response = await fetch(
-  //       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-  //         location,
-  //       )}&key=${GOOGLE_API_KEY}`,
-  //     );
-  //     const data = await response.json();
-  //     return data.results[0]?.geometry?.location || null;
-  //   };
-
-  //   // --- Helper: Build Google Maps URL
-  //   const buildGoogleMapsURL = (origin, destination, waypoints) => {
-  //     console.log(
-  //       '🚀 ~ buildGoogleMapsURL ~ origin, destination, waypoints:',
-  //       origin,
-  //       destination,
-  //       waypoints,
-  //     );
-  //     const waypointsStr = waypoints.map(w => `${w.lat},${w.lng}`).join('|');
-  //     console.log("🚀 ~ buildGoogleMapsURL ~ waypointsStr:", waypointsStr)
-  //     return `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${destination.lat},${destination.lng}&waypoints=${waypointsStr}&travelmode=driving`;
-  //   };
-
-  //   const [status, setStatus] = useState('Idle');
-
-  //   const handleNavigate = async () => {
-  //     console.log('first======================== >');
-  //     // setStatus('Parsing text...');
-
-  //     // 👇 Dummy text - replace with OCR output
-  //     const permitText = recognizedText;
-  //     // console.log("🚀 ~ handleNavigate ~ permitText:", permitText)
-
-  //     const {origin, destination, waypoints} = extractRouteParts(permitText);
-  //     console.log("🚀 ~ handleNavigate ~ waypoints:", waypoints)
-  //     if (!origin || !destination) {
-  //       setStatus('Failed to extract route.');
-
-  //       return;
-  //     }
-
-  //     setStatus('Fetching coordinates...');
-  //     const [originCoords, destinationCoords, ...waypointsCoords] =
-  //       await Promise.all([
-  //         getLatLng(origin),
-  //         getLatLng(destination),
-  //         ...waypoints.map(w => getLatLng(w)),
-  //       ]);
-
-  //     if (!originCoords || !destinationCoords) {
-  //       setStatus('Invalid location data.');
-  //       return;
-  //     }
-
-  //     const validWaypoints = waypointsCoords.filter(Boolean);
-  //     console.log('🚀 ~ handleNavigate ~ validWaypoints:', validWaypoints);
-  //     const mapURL = buildGoogleMapsURL(
-  //       originCoords,
-  //       destinationCoords,
-  //       waypoint,
-  //     );
-
-  //     setStatus('Opening Google Maps...');
-  //     Linking.openURL(mapURL);
-  //   };
-
-  useEffect(() => {
-    // extractPermitDetails(recognizedText);
-    findLocations();
-    if ((origin && destination, route)) {
-      isLocationValid(destination, origin, route);
-    }
-  }, [recognizedText]);
-
-  const extractPermitDetails = text => {
-    // const fullText = text?.map(item => item.text).join('\n');
-
-    // let origin = '';
-    // let destination = '';
-
-    // const fullLower = fullText.replace(/\n/g, ' ').toLowerCase();
-    // console.log('🚀 ~ extractPermitDetails ~ fullLower:', fullLower);
-
-    for (let wordObj of text) {
-      const isLocation = wordObj.text;
-
-      const parts = isLocation.split(/end on/i); // case insensitive
-      const rawText = parts[0];
-      const lowerText = rawText.replace(/\n/g, ' ').toLowerCase();
-      const originMatch =
-        lowerText.match(/start on\s+(.*?)(?=[.,\n]|$)/i) ||
-        lowerText.match(/origin\s*[:-]?\s*(.*?)(?=[.,\n]|$)/i);
-
-      // if (originMatch && originMatch[1]) {
-      //   origin = originMatch[1].trim();
-      //   setOrigin(origin);
-      // }
-
-      // Destination: match "end on" or "destination:"
-      const z =
-        lowerText.match(/end on\s+(.*?)(?=[.,\n]|$)/i) ||
-        lowerText.match(/destination\s*[:-]?\s*(.*?)(?=[.,\n]|$)/i);
-
-      // if (destinationMatch && destinationMatch[1]) {
-      //   destination = destinationMatch[1].trim();
-      //   setDestination(destination);
-      // }
-
-      console.log('✅ Extracted Origin:', origin);
-      console.log('✅ Extracted Destination:', destination);
-      const routeRegex = /(-?\d+|I-\d+|US-\d+|SR-\d+)/g;
-      const cleanedText = lowerText?.replace(/[\(\)\.]/g, ' ');
-
-      const routeMatches = [...cleanedText.matchAll(routeRegex)].map(m => m[1]);
-
-      const cleanedRoutes = getCleanRoutes(routeMatches);
-      setRoute(cleanedRoutes);
-
-      // const [originCoords, destinationCoords] = await Promise.all([
-      //   isRouteRelated(origin),
-      //   isRouteRelated(destination),
-      // ]);
-      // Destination from "end on" to end of string
-      // }
-      //   return {origin, destination};
-      // } else {
-      // fallback: only origin found
-      // return {origin: text.trim(), destination: ''};
-    }
-
-    // Origin: match "start on" or "origin:"
-
-    return {origin, destination};
-  };
-
-  const getCleanRoutes = routesArray => {
-    const validRoutes = new Set();
-
-    routesArray.forEach(item => {
-      // Remove empty or non-number strings
-      const cleaned = item.trim();
-
-      // If already in correct format
-      if (/^(I|US|SR)-\d+$/.test(cleaned)) {
-        validRoutes.add(cleaned.toUpperCase());
-      }
-
-      // If starts with "-", assume it's I-Route like -380 => I-380
-      else if (/^-\d+$/.test(cleaned)) {
-        validRoutes.add(`I${cleaned}`);
-      }
-
-      // If it's a number like 80, 20, 29 etc – guess it's I-Route (optional)
-      else if (
-        /^\d+$/.test(cleaned) &&
-        Number(cleaned) >= 10 &&
-        Number(cleaned) <= 999
-      ) {
-        validRoutes.add(`I-${cleaned}`);
-      }
-    });
-
-    return Array.from(validRoutes);
-  };
-
-  const findLocations = async () => {
-    console.log('check location are VAlid ?s');
-
-    for (let wordObj of recognizedText) {
-      const isLocation = wordObj.text;
-
-      const parts = isLocation.split(/end on/i); // case insensitive
-      const rawText = parts[0];
-      const lowerText = rawText.replace(/\n/g, ' ').toLowerCase();
-      const startIndex = Math.max(
-        lowerText.indexOf('start on'),
-        lowerText.indexOf('origin'),
-        // lowerText.indexOf('from')
-      );
-      const endIndex = Math.max(
-        lowerText.indexOf('end on'),
-        lowerText.indexOf('destination'),
-        // lowerText.indexOf('to'),
-      );
-      const routeMatch = lowerText.match(/route:\s*(.*)/i);
-
-      console.log(
-        '==================== <<<<<<<<<<< reset',
-        startIndex,
-        endIndex,
-        routeMatch,
-      );
-      if (startIndex !== -1 && endIndex !== -1) {
-        const checkOrigin = rawText.slice(startIndex, endIndex).trim();
-        const finalorigin = checkOrigin.replace(/start on\s*/i, '').trim();
-      //  return console.log("🚀 ~ findLocations ~ finalorigin:", finalorigin)
-        setOrigin(finalorigin);
-        const checkdestination = rawText.slice(endIndex).trim();
-        const finaldestination = checkdestination
-          .toLowerCase()
-          .replace(/end on\s*/i, '')
-          .trim();
-        setDestination(finaldestination);
-
-        const routeRegex = /(-?\d+|I-\d+|US-\d+|SR-\d+)/g;
-        const cleanedText = lowerText?.replace(/[\(\)\.]/g, ' ');
-
-        const routeMatches = [...cleanedText.matchAll(routeRegex)].map(
-          m => m[1],
-        );
-
-        const cleanedRoutes = getCleanRoutes(routeMatches);
-        setRoute(cleanedRoutes);
-        // const [originCoords, destinationCoords] = await Promise.all([
-        //   isRouteRelated(origin),
-        //   isRouteRelated(destination),
-        // ]);
-        // Destination from "end on" to end of string
-        // }
-        //   return {origin, destination};
-        // } else {
-        // fallback: only origin found
-        // return {origin: text.trim(), destination: ''};
-      }
-      // const isLocation = isRouteRelated(word)
-      // const finalResult  = await checkWithGeoAPI(word);
-    }
-  };
-
-  // const isRouteRelated = text => {
-  //   const highwayRegex = /(I-\d+|US-\d+|Route\s\d+)/i;
-  //   const directionRegex = /\b(WB|EB|NB|SB|Exit|Junction|Mile)\b/i;
-  //   const stateBorderRegex = /STATE BORDER OF/i;
-
-  //   return (
-  //     highwayRegex.test(text) ||
-  //     directionRegex.test(text) ||
-  //     stateBorderRegex.test(text)
+  //   throw new Error(
+  //     'Text recognition model did not load in time. Try again later.',
   //   );
   // };
 
-  // // const openGallery = () => {
-  // //   let options = {
-  // //     mediaType: 'photo',
-  // //     maxWidth: 500,
-  // //     maxHeight: 500,
-  // //     quailty: 0.9,
-  // //     saveToPhotos: true,
-  // //   };
+  // const pickAndRecognizeText = async () => {
+  //   console.log('first ================== > from image picker function');
+  //   const result = await launchImageLibrary({mediaType: 'photo'});
 
-  // //   launchImageLibrary(options, response => {
-  // //     if (Platform.OS === 'ios') {
-  // //       setShow(false);
-  // //     }
-  // //     if (response.didCancel) {
-  // //     } else if (response.error) {
-  // //     } else if (response.customButton) {
-  // //       Alert.alert(response.customButton);
-  // //     } else {
-  // //       setFileObject({
-  // //         uri: response?.assets[0]?.uri,
-  // //         type: response?.assets[0]?.type,
-  // //         name: response?.assets[0]?.fileName,
-  // //       });
+  //   if (result.assets && result.assets.length > 0) {
+  //     const uri = result.assets[0].uri;
+  //     console.log('Picked image URI:', uri);
 
-  // //     }
-  // //   });
-  // //   // }
-  // // };
-
-  // const selectDocument = async () => {
-  //   try {
-  //     const result = await pick({
-  //       allowMultiSelection: false,
-  //       type: ['application/pdf'],
-  //     });
-  //     console.log('first ================= >>>>>', result);
-  //     setisLoading(true);
-  //     setModalVisible(true);
   //     try {
-  //       if (result?.uri) {
-  //         console.log('first ================= >>>>> from if');
-  //         const uri = result?.uri;
+  //       console.log('first ================ >>>>>>> from utl');
+  //       if (uri) {
   //         const resultText = await MLKitOcr.detectFromFile(uri);
 
-  //         // setRecognizedText(resultText);
+  //         setisLoading(true);
+  //         setModalVisible(true);
   //       }
-  //     } catch (error) {
-  //       console.error(
-  //         '❌ Error in takePicture or detectFromFile:================ >>>',
-  //         error,
-  //       );
-  //     }
-  //   } catch (err) {
-  //     if (err.code === 'DOCUMENT_PICKER_CANCELED') {
-  //       console.log('User canceled the picker');
-  //     } else {
-  //       console.error('Unknown error:', err);
+
+  //       // const allBlockText = blocks.map(block => block.text).join('\n');
+  //       // console.log('Block-wise text:', allBlockText);
+  //       // console.log('Full text:', text);
+  //     } catch (err) {
+  //       console.log('Text recognition error:', err);
   //     }
   //   }
   // };
 
-  // const handleSelectImage = () => {
-  //   ImagePicker.launchCamera({}, async response => {
-  //     if (response.assets && response.assets.length > 0) {
-  //       const uri = response.assets[0].uri;
-  //       setImage(uri);
-
-  //       const result = await TextRecognition.recognize(uri);
-  //       // setRecognizedText(result.join(' ')); // result is an array of strings
-  //     }
-  //   });
-  // };
-
-  const isLocationValid = async (origin, destination, routes) => {
-    // const isOriginValid = await checkIfLocation(origin);
-    // const isDestinationValid = await checkIfLocation(destination);
-    const routeCoords = await Promise.all(
-      routes.map(route => checkIfLocation(`${route} highway`)),
+  const callGoogleVision = async base64Image => {
+    const body = {
+      requests: [
+        {
+          image: {content: base64Image.replace(/^data:.*;base64,/, '')},
+          features: [{type: 'DOCUMENT_TEXT_DETECTION'}],
+        },
+      ],
+    };
+    const res = await fetch(
+      `https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAqNK7IfM16zi79N0u7qX4Ncm5QgGvBqmg`,
+      {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body),
+      },
     );
-    const validRouteCoords = routeCoords.filter(Boolean);
-    console.log('🚀 ~ isLocationValid ~ validRouteCoords:', validRouteCoords);
-    setWaypoint(validRouteCoords);
-    const [originCoords, destinationCoords] = await Promise.all([
-      checkIfLocation(origin),
-      checkIfLocation(destination),
-    ]);
-    if (originCoords && destinationCoords) {
-      //
-      onPressStartNavigation(originCoords, destinationCoords, validRouteCoords);
-      // navigationService.navigate('MapScreen', {
-      //   data: {origin: originCoords, destination: destinationCoords},
-      // });
+    const json = await res.json();
+    return json; // pass Vision JSON to parser
+  };
 
-      console.log('✅aaaa Both locations are valid!');
-    } else {
-    setModalVisible(false);
-
-      setisLoading(false);
-      alert('something went worg please try again');
-      console.log('❌ One or both locations are invalid.');
+  const processImage = async path => {
+    try {
+      setIsLoading(true);
+      const visionJson = await callGoogleVision(path);
+      // Here we call your function — feed it Vision JSON (it will extract text)
+      const {parsed: parsedOut, url: routeUrl} =
+        await handleOcrResponseAndRedirect({
+          visionJsonOrText: visionJson,
+          confirmWithUser: false,
+        });
+      setParsed(parsedOut);
+      setUrl(routeUrl);
+      setIsLoading(false);
+    } catch (e) {
+      setIsLoading(false);
+      Alert.alert('Error', e.message || 'Failed to process image');
     }
   };
 
-  const onPressStartNavigation = async (pickup, destination, waypoints) => {
-    console.log(
-      ' =================== > from redirect map fussnction==========',
-      pickup,
-      destination,
-      waypoints,
-    );
-    // if (pickup && destination != ) {
-    console.log('from if condition ============== >');
-    const url = `https://www.google.com/maps/dir/?api=1&origin=${pickup?.lat},${pickup?.lng}&destination=${destination?.lat},${destination?.lng}&waypoints=${waypoint}&travelmode=driving`;
-    Linking.openURL(url).catch(err => console.error('An error occurred', err));
-    setModalVisible(false);
-    setisLoading(false);
-    setWaypoint([]);
-    setDestination('');
-    setOrigin('');
-    // }
+  const openMaps = () => {
+    if (!url) return Alert.alert('No route', 'No route URL available');
+    Linking.openURL(url);
   };
 
-  const checkIfLocation = async place => {
-    console.log(' ======================== > from checkif');
-    const apiKey = 'AIzaSyDacSuTjcDtJs36p3HTDwpDMLkvnDss4H8';
-    const response = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-        place,
-      )}&key=${apiKey}`,
-    );
-    const data = await response.json();
-    if (!data.results || data.results.length === 0) {
-      console.warn('❌ No results for:', place);
-      return null;
+  const MAX_WAYPOINTS = 23;
+
+  const ROUTE_TOKEN_RE =
+    /\b(I[-\s]?\d+\b|US[-\s]?\d+\b|SR[-\s]?\d+\b|State Route \d+\b|Hwy\s*\d+|Highway\s*\d+)\b/gi;
+  const VIA_LABELS =
+    /\b(route|routing|via|authorize route |waypoints|through|head toward|turn|take exit)\b[:\s\-]*/i;
+  const PLACE_NAME_RE =
+    /([A-Z][a-zA-Z0-9&\.\-']+(?:\s+[A-Z][a-zA-Z0-9&\.\-']+){0,4}(?:,\s*[A-Z]{2})?)/g;
+
+  /* ---------- If you have Vision JSON with bounding boxes, rebuild text lines in reading order ---------- */
+  const buildOrderedTextFromVision = visionJson => {
+    try {
+      const ann = visionJson?.responses?.[0]?.fullTextAnnotation;
+      if (!ann)
+        return (
+          visionJson?.responses?.[0]?.textAnnotations?.[0]?.description || ''
+        );
+      const words = [];
+
+      (ann.pages || []).forEach(page =>
+        (page.blocks || []).forEach(block =>
+          (block.paragraphs || []).forEach(para =>
+            (para.words || []).forEach(word => {
+              const text = (word.symbols || []).map(s => s.text).join('');
+              if (!text) return;
+              const verts = (word.boundingBox || {}).vertices || [];
+              const ys = verts.map(v => v.y || 0);
+              const xs = verts.map(v => v.x || 0);
+              const centerY = ys.reduce((a, b) => a + b, 0) / (ys.length || 1);
+              const centerX = xs.reduce((a, b) => a + b, 0) / (xs.length || 1);
+              words.push({text, centerX, centerY});
+            }),
+          ),
+        ),
+      );
+
+      words.sort((a, b) => a.centerY - b.centerY || a.centerX - b.centerX);
+
+      const rows = [];
+      const TOL = 10;
+      words.forEach(w => {
+        const last = rows[rows.length - 1];
+        if (!last || Math.abs(last.y - w.centerY) > TOL) {
+          rows.push({y: w.centerY, words: [w]});
+        } else {
+          last.words.push(w);
+        }
+      });
+
+      const lines = rows.map(r =>
+        r.words
+          .sort((a, b) => a.centerX - b.centerX)
+          .map(w => w.text)
+          .join(' '),
+      );
+      return lines.join('\n');
+    } catch (e) {
+      console.warn('buildOrderedTextFromVision failed', e);
+      return '';
+    }
+  };
+
+  /* ---------- Core parser: tolerant, label-first then heuristic fallback ---------- */
+  const parseLocationsAndRouteFromText = ocrText => {
+    if (!ocrText)
+      return {origin: null, destination: null, waypoints: [], rawMatches: {}};
+
+    const text = ocrText
+      .replace(/\r/g, '\n')
+      .replace(/\t/g, ' ')
+      .replace(/[ ]{2,}/g, ' ')
+      .trim();
+    const lines = text
+      .split('\n')
+      .map(l => l.trim())
+      .filter(Boolean);
+
+    let origin = null;
+    let destination = null;
+    let waypoints = [];
+    const rawMatches = {originLines: [], destinationLines: [], routeLines: []};
+
+    for (const line of lines) {
+      const l = line;
+
+      // origin label detection
+      if (!origin) {
+        const m =
+          l.match(/(?:^|\b)origin[:\s\-]*(.*)$/i) ||
+          l.match(/(?:^|\b)from[:\s\-]*(.*)$/i) ||
+          l.match(/(?:^|\b)start(?:ing)?\s*point[:\s\-]*(.*)$/i) ||
+          l.match(/(?:^|\b)start(?:ing)?\s*location[:\s\-]*(.*)$/i) ||
+          l.match(/(?:^|\b)begin(?:ning)?\s*location[:\s\-]*(.*)$/i) ||
+          l.match(/(?:^|\b)begin(?:ning)?\s*point[:\s\-]*(.*)$/i);
+        if (m && m[1]) {
+          origin = m[1].trim();
+          rawMatches.originLines.push(l);
+          continue;
+        }
+      }
+
+      // destination label detection
+      if (!destination) {
+        const m =
+          l.match(/(?:^|\b)(?:final\s+)?destination[:\s\-]*(.*)$/i) ||
+          l.match(/(?:^|\b)to[:\s\-]*(.*)$/i) ||
+          l.match(/(?:^|\b)finish(?:ing)?\s*point[:\s\-]*(.*)$/i) ||
+          l.match(/(?:^|\b)drop\s*off[:\s\-]*(.*)$/i) ||
+          l.match(/(?:^|\b)end(?:ing)?\s*location[:\s\-]*(.*)$/i) ||
+          l.match(/(?:^|\b)end(?:ing)?\s*point[:\s\-]*(.*)$/i);
+        if (m && m[1]) {
+          destination = m[1].trim();
+          rawMatches.destinationLines.push(l);
+          continue;
+        }
+      }
+
+      // route/via detection
+      if (
+        VIA_LABELS.test(l) ||
+        ROUTE_TOKEN_RE.test(l) ||
+        /turn left|turn right|head toward|take exit|continue straight|via/i.test(
+          l,
+        )
+      ) {
+        rawMatches.routeLines.push(l);
+
+        // gather route tokens and place names in doc-order for this line
+        const combined = [];
+        const allMatches = [];
+        for (const m of l.matchAll(ROUTE_TOKEN_RE))
+          allMatches.push({idx: m.index, text: m[0].trim()});
+        for (const m of l.matchAll(PLACE_NAME_RE))
+          allMatches.push({idx: m.index, text: m[0].trim()});
+        allMatches.sort((a, b) => (a.idx || 0) - (b.idx || 0));
+        allMatches.forEach(a => {
+          if (!combined.includes(a.text)) combined.push(a.text);
+        });
+
+        // fallback: capture "toward" phrasing
+        const toward = (l.match(
+          /(?:head toward|toward|to)\s+([A-Z][A-Za-z0-9 \-\,&']{2,80})/i,
+        ) || [])[1];
+        if (!combined.length && toward) combined.push(toward.trim());
+
+        combined.forEach(c => {
+          if (c && !waypoints.includes(c)) waypoints.push(c);
+        });
+      }
     }
 
-    const fullMatches = data.results.filter(res => !res.partial_match);
-    const bestMatch = fullMatches[0] || data.results[0];
+    // Try document-wide heuristics if origin/destination still missing
+    const bigText = lines.join(' | ');
+    if (!origin) {
+      const m =
+        bigText.match(/from[:\s\-]*([A-Z][A-Za-z0-9 \-\,&']{2,80})/i) ||
+        bigText.match(/origin[:\s\-]*([A-Z][A-Za-z0-9 \-\,&']{2,80})/i) ||
+        bigText.match(/routing from[:\s\-]*([A-Z][A-Za-z0-9 \-\,&']{2,80})/i)
+        ;
+      if (m) origin = m[1].trim();
+    }
+    if (!destination) {
+      const m =
+        bigText.match(/destination[:\s\-]*([A-Z][A-Za-z0-9 \-\,&']{2,80})/i) ||
+        bigText.match(
+          /final destination[:\s\-]*([A-Z][A-Za-z0-9 \-\,&']{2,80})/i,
+        ) || bigText.match(/to[:\s\-]*([A-Z][A-Za-z0-9 \-\,&']{2,80})/i)  ;
+      if (m) destination = m[1].trim();
+    }
 
-    return bestMatch?.geometry?.location || null;
+    // Fallback to first/last meaningful tokens
+    if (!origin || !destination) {
+      const tokens = [];
+      for (const match of bigText.matchAll(
+        /(I[-\s]?\d+|US[-\s]?\d+|SR[-\s]?\d+|State Route \d+|[A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,3})/g,
+      )) {
+        tokens.push({idx: match.index, text: match[0].trim()});
+      }
+      tokens.sort((a, b) => (a.idx || 0) - (b.idx || 0));
+      const uniqueTokens = [...new Set(tokens.map(t => t.text))];
+      if (!origin && uniqueTokens.length) origin = uniqueTokens[0];
+      if (!destination && uniqueTokens.length > 1)
+        destination = uniqueTokens[uniqueTokens.length - 1];
+    }
+
+    const clean = t => (t ? t.replace(/[:;]$/, '').trim() : t);
+    origin = clean(origin) || null;
+    destination = clean(destination) || null;
+    waypoints = waypoints.map(w => clean(w)).filter(Boolean);
+
+    if (
+      origin &&
+      waypoints.length &&
+      waypoints[0] &&
+      waypoints[0].toLowerCase().includes(origin.toLowerCase())
+    )
+      waypoints.shift();
+    if (
+      destination &&
+      waypoints.length &&
+      waypoints[waypoints.length - 1] &&
+      waypoints[waypoints.length - 1]
+        .toLowerCase()
+        .includes(destination.toLowerCase())
+    )
+      waypoints.pop();
+
+    waypoints = waypoints.slice(0, MAX_WAYPOINTS);
+
+    return {origin, destination, waypoints, rawMatches};
+  };
+
+  /* ---------- Build Google Maps Directions URL ---------- */
+  const buildGoogleMapsDirectionsUrl = ({
+    origin,
+    destination,
+    waypoints = [],
+    travelmode = 'driving',
+  }) => {
+    if (!origin || !destination) return null;
+    const originParam = encodeURIComponent(origin);
+    const destParam = encodeURIComponent(destination);
+    const wpParam =
+      waypoints && waypoints.length
+        ? `&waypoints=${encodeURIComponent(waypoints.join('|'))}`
+        : '';
+    return `https://www.google.com/maps/dir/?api=1&origin=${originParam}&destination=${destParam}${wpParam}&travelmode=${encodeURIComponent(
+      travelmode,
+    )}`;
+  };
+
+  /* ---------- Example integration flow (arrow-style) ----------
+  - visionJsonOrText: either Vision JSON or plain text
+  - geocodeFn: optional async function(placeString) => {lat, lng} or null
+  - confirmWithUser: if true, you should prompt user to confirm parsed values in your UI
+------------------------------------------------------------------ */
+  const handleOcrResponseAndRedirect = async ({
+    visionJsonOrText,
+    geocodeFn = null,
+    confirmWithUser = false,
+  }) => {
+    const text =
+      typeof visionJsonOrText === 'string'
+        ? visionJsonOrText
+        : buildOrderedTextFromVision(visionJsonOrText) ||
+          visionJsonOrText?.responses?.[0]?.textAnnotations?.[0]?.description ||
+          '';
+
+    const parsed = parseLocationsAndRouteFromText(text);
+
+    // If you want to confirm with user, handle that in UI before proceeding (not done here).
+    // Optionally geocode to coordinates via geocodeFn
+    let originForUrl = parsed.origin;
+    let destForUrl = parsed.destination;
+
+    if (geocodeFn) {
+      try {
+        const [o, d] = await Promise.all([
+          geocodeFn(parsed.origin),
+          geocodeFn(parsed.destination),
+        ]);
+        if (o && o.lat != null && o.lng != null)
+          originForUrl = `${o.lat},${o.lng}`;
+        if (d && d.lat != null && d.lng != null)
+          destForUrl = `${d.lat},${d.lng}`;
+      } catch (e) {
+        console.warn('geocodeFn failed', e);
+      }
+    }
+
+    const url = buildGoogleMapsDirectionsUrl({
+      origin: originForUrl,
+      destination: destForUrl,
+      waypoints: parsed.waypoints,
+    });
+    setRouteUrl(url);
+    return {parsed, url, rawText: text};
   };
 
   return (
@@ -585,67 +425,9 @@ const CreateRoute = () => {
       <Text style={styles.title}>Create A Route</Text>
       <View style={styles.scanBoxContainer}>
         <Text style={styles.label}>Scan Permit</Text>
-        <View style={styles.scanBox}>
-          <RNCamera
-            ref={cameraRef}
-            style={styles.cameraStyle}
-            type={RNCamera.Constants.Type.back}
-            captureAudio={false}>
-            <View style={styles.overlayContainer}>
-              <View style={[styles.corner, styles.topLeft]} />
-              <View style={[styles.corner, styles.topRight]} />
-              <View style={[styles.corner, styles.bottomLeft]} />
-              <View style={[styles.corner, styles.bottomRight]} />
-            </View>
-          </RNCamera>
-        </View>
-        <CustomButton
-          text={'Scan QR COde'}
-          textColor={Color.white}
-          height={windowHeight * 0.06}
-          borderColor={Color.secondary}
-          borderWidth={1}
-          borderRadius={moderateScale(30, 0.6)}
-          width={windowWidth * 0.72}
-          bgColor={Color.secondary}
-          marginTop={windowHeight * 0.13}
-          onPress={
-            () => {
-              takePicture();
-            }
-            // handleSelectImage()
-            //   async () => {
-            //     const result = await launchCamera({mediaType: 'photo'});
-            //     if (result.assets && result.assets.length > 0) {
-            //       const path = result.assets[0].uri;
-            //       const resultText = await MLKitOcr.detectFromFile(path);
-            //       // setRecognizedText(resultText?.map((item ,index )=> item?.text) .join(' '))
-            //       setRecognizedText(resultText);
-            //     }
-            //   }
-          }
-        />
-        {/* <View style={styles.scanBox}>
-          <QRCodeScanner
-            onRead={onSuccess}
-            reactivate={true}
-            showMarker={true}
-            cameraStyle={styles.cameraStyle}
-            customMarker={
-              <>
-                <View style={styles.corner} />
-                <View style={[styles.corner, styles.topLeft]} />
-                <View style={[styles.corner, styles.topRight]} />
-                <View style={[styles.corner, styles.bottomLeft]} />
-                <View style={[styles.corner, styles.bottomRight]} />
-              </>
-            }
-          />
-        </View> */}
       </View>
       <CustomButton
-        style={{}}
-        text={'Upload File'}
+        text={'capture your permit'}
         textColor={Color.white}
         height={windowHeight * 0.06}
         borderColor={Color.secondary}
@@ -653,26 +435,35 @@ const CreateRoute = () => {
         borderRadius={moderateScale(30, 0.6)}
         width={windowWidth * 0.72}
         bgColor={Color.secondary}
-        marginTop={moderateScale(20, 0.6)}
+        marginTop={moderateScale(15, 0.6)}
         onPress={() => {
-          // console.log('============== >')
-          // openGallery();
-          pickAndRecognizeText();
+          setIsModalVisible(true);
+          // takePicture();
         }}
       />
       <CustomButton
-        text={'Upload PDF'}
+        style={{}}
+        text={'Upload permit image'}
         textColor={Color.white}
         height={windowHeight * 0.06}
         borderColor={Color.secondary}
         borderWidth={1}
         borderRadius={moderateScale(30, 0.6)}
         width={windowWidth * 0.72}
-        bgColor={Color.secondary}
+        bgColor={'transparent'}
         marginTop={moderateScale(20, 0.6)}
         onPress={() => {
-          // selectDocument();
+          pickAndRecognizeText();
         }}
+      />
+
+      <ScanRoute
+        isModalVisible={isModalVisible}
+        setIsModalVisible={setIsModalVisible}
+        handleOnPress={() => {
+          takePicture();
+        }}
+        cameraRef={cameraRef}
       />
 
       <Text style={styles.description}>
@@ -685,18 +476,105 @@ const CreateRoute = () => {
         animationType="slide"
         onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            {isLoading && (
-              <ActivityIndicator size={'large'} color={Color.secondary} />
+          <View
+            style={[
+              styles.modalContent,
+              {
+                height: url
+                  ? windowHeight * 0.4
+                  : errorMessage != ''
+                  ? windowHeight * 0.3
+                  : windowHeight * 0.3,
+                padding: moderateScale(15, 0.6),
+                // backgroundColor: 'red',
+                backgroundColor: Color.white,
+              },
+            ]}>
+            {isLoading ? (
+              <View
+                style={{
+                  width: windowWidth * 0.8,
+                  height: windowHeight * 0.25,
+                }}>
+                <Lottie
+                  style={{
+                    height: '100%',
+                    width: '100%',
+                  }}
+                  source={require('../Assets/Images/LoadingAmimation.json')}
+                  loop
+                  autoPlay
+                />
+              </View>
+            ) : errorMessage ? (
+              <View style={styles.error_container}>
+                <Icon
+                  name="alert-circle"
+                  as={Feather}
+                  size={moderateScale(35, 0.6)}
+                  color={Color.red}
+                />
+                <CustomText
+                  numberOfLines={4}
+                  style={{
+                    paddingTop: moderateScale(15, 0.6),
+                    color: Color.black,
+                    textAlign: 'center',
+                    fontSize: moderateScale(15, 0.6),
+                  }}>
+                  {errorMessage}
+                </CustomText>
+                <CustomButton
+                  text={'CAPTIRE AGAIN'}
+                  textColor={Color.white}
+                  height={windowHeight * 0.06}
+                  borderColor={Color.secondary}
+                  borderWidth={1}
+                  borderRadius={moderateScale(30, 0.6)}
+                  width={windowWidth * 0.72}
+                  bgColor={Color.secondary}
+                  marginTop={moderateScale(15, 0.6)}
+                  onPress={() => {
+                    setModalVisible(false);
+                  }}
+                />
+              </View>
+            ) : (
+              url && (
+                <>
+                  <FastImage
+                    style={{width: 200, height: 200, borderRadius: 12}}
+                    source={require('../Assets/Images/dot.gif')}
+                    resizeMode={FastImage.resizeMode.cover}
+                  />
+                  <CustomText
+                    style={{
+                      color: Color.black,
+                      textAlign: 'center',
+                      fontSize: moderateScale(15, 0.6),
+                    }}>
+                    Route found successfully. You can proceed with your trip.
+                  </CustomText>
+                  <CustomButton
+                    text={'View on Map'}
+                    textColor={Color.white}
+                    height={windowHeight * 0.06}
+                    borderColor={Color.secondary}
+                    borderWidth={1}
+                    borderRadius={moderateScale(30, 0.6)}
+                    width={windowWidth * 0.72}
+                    bgColor={Color.secondary}
+                    marginTop={moderateScale(15, 0.6)}
+                    onPress={() => {
+                      openMaps();
+                      // Linking.openURL(routeUrl);
+                      // setModalVisible(false);
+                      // setRouteUrl('');
+                    }}
+                  />
+                </>
+              )
             )}
-            {/* <CustomText style={styles.modalTitle}>Scanned QR Code</CustomText>
-            <CustomText style={styles.modalData}>{scannedData}</CustomText>
-
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}>
-              <Text style={styles.closeText}>Close</Text>
-            </TouchableOpacity> */}
           </View>
         </View>
       </Modal>
@@ -720,14 +598,14 @@ const styles = StyleSheet.create({
     marginBottom: moderateScale(20, 0.6),
   },
   scanBoxContainer: {
-    backgroundColor: '#6e6e6e',
+    // backgroundColor: '#6e6e6e',ca
     borderRadius: moderateScale(10, 0.6),
     padding: moderateScale(10, 0.6),
     alignItems: 'center',
     width: windowWidth * 0.85,
-    height: windowHeight * 0.58,
+    height: windowHeight * 0.4,
     borderWidth: moderateScale(1, 0.6),
-    borderColor: Color.secondary,
+    // borderColor: Color.secondary,
   },
   label: {
     color: '#fff',
@@ -781,34 +659,25 @@ const styles = StyleSheet.create({
     right: 20,
     transform: [{rotate: '180deg'}],
   },
-  button: {
-    backgroundColor: '#B91C1C',
-    paddingVertical: moderateScale(10, 0.6),
-    paddingHorizontal: moderateScale(40, 0.6),
-    borderRadius: moderateScale(30, 0.6),
-    marginTop: moderateScale(5, 0.6),
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: moderateScale(14, 0.6),
-  },
+
   description: {
     color: '#b0b0b0',
     textAlign: 'center',
-    marginTop: moderateScale(50, 0.6),
+    marginTop: windowHeight * 0.25,
     fontSize: moderateScale(12, 0.6),
     width: '80%',
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
+    // backgroundColor : Color.white
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
   modalContent: {
     margin: 20,
     borderRadius: 10,
-    padding: 30,
+    // backgroundColor :'red',
+    width: windowWidth * 0.8,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
@@ -816,36 +685,15 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-  modalData: {
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 20,
-  },
-  closeButton: {
-    backgroundColor: '#2196F3',
-    paddingVertical: 10,
-    paddingHorizontal: 25,
-    borderRadius: 8,
-  },
-  closeText: {
-    color: 'white',
-    fontSize: 16,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  preview: {
-    // flex: 1,
-  },
+
   overlayContainer: {
     ...StyleSheet.absoluteFillObject,
+  },
+  error_container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+    width: '100%',
+    borderRadius: moderateScale(10, 0.6),
   },
 });

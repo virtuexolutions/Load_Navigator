@@ -233,3 +233,210 @@ const styles = StyleSheet.create({
     backgroundColor: Color.grey,
   },
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ // useEffect(() => {
+  //   if ((origin && destination, route)) {
+  //     isLocationValid(destination, origin, route);
+  //   }
+  // }, [recognizedText]);
+
+  // const extractPermitDetails = text => {
+  //   // const fullText = text?.map(item => item.text).join('\n');
+
+  //   // let origin = '';
+  //   // let destination = '';
+
+  //   // const fullLower = fullText.replace(/\n/g, ' ').toLowerCase();
+
+  //   for (let wordObj of text) {
+  //     const isLocation = wordObj.text;
+
+  //     const parts = isLocation.split(/end on/i); // case insensitive
+  //     const rawText = parts[0];
+  //     const lowerText = rawText.replace(/\n/g, ' ').toLowerCase();
+  //     const originMatch =
+  //       lowerText.match(/start on\s+(.*?)(?=[.,\n]|$)/i) ||
+  //       lowerText.match(/origin\s*[:-]?\s*(.*?)(?=[.,\n]|$)/i);
+
+  //     // if (originMatch && originMatch[1]) {
+  //     //   origin = originMatch[1].trim();
+  //     //   setOrigin(origin);
+  //     // }
+
+  //     // Destination: match "end on" or "destination:"
+  //     const z =
+  //       lowerText.match(/end on\s+(.*?)(?=[.,\n]|$)/i) ||
+  //       lowerText.match(/destination\s*[:-]?\s*(.*?)(?=[.,\n]|$)/i);
+
+  //     // if (destinationMatch && destinationMatch[1]) {
+  //     //   destination = destinationMatch[1].trim();
+  //     //   setDestination(destination);
+  //     // }
+
+  //     console.log('✅ Extracted Origin:', origin);
+  //     console.log('✅ Extracted Destination:', destination);
+  //     const routeRegex = /(-?\d+|I-\d+|US-\d+|SR-\d+)/g;
+  //     const cleanedText = lowerText?.replace(/[\(\)\.]/g, ' ');
+
+  //     const routeMatches = [...cleanedText.matchAll(routeRegex)].map(m => m[1]);
+
+  //     const cleanedRoutes = getCleanRoutes(routeMatches);
+  //     setRoute(cleanedRoutes);
+
+  //     // const [originCoords, destinationCoords] = await Promise.all([
+  //     //   isRouteRelated(origin),
+  //     //   isRouteRelated(destination),
+  //     // ]);
+  //     // Destination from "end on" to end of string
+  //     // }
+  //     //   return {origin, destination};
+  //     // } else {
+  //     // fallback: only origin found
+  //     // return {origin: text.trim(), destination: ''};
+  //   }
+
+  //   // Origin: match "start on" or "origin:"
+
+  //   return {origin, destination};
+  // };
+
+  // const getCleanRoutes = routesArray => {
+  //   const validRoutes = new Set();
+
+  //   routesArray.forEach(item => {
+  //     // Remove empty or non-number strings
+  //     const cleaned = item.trim();
+
+  //     // If already in correct format
+  //     if (/^(I|US|SR)-\d+$/.test(cleaned)) {
+  //       validRoutes.add(cleaned.toUpperCase());
+  //     }
+
+  //     // If starts with "-", assume it's I-Route like -380 => I-380
+  //     else if (/^-\d+$/.test(cleaned)) {
+  //       validRoutes.add(`I${cleaned}`);
+  //     }
+
+  //     // If it's a number like 80, 20, 29 etc – guess it's I-Route (optional)
+  //     else if (
+  //       /^\d+$/.test(cleaned) &&
+  //       Number(cleaned) >= 10 &&
+  //       Number(cleaned) <= 999
+  //     ) {
+  //       validRoutes.add(`I-${cleaned}`);
+  //     }
+  //   });
+
+  //   return Array.from(validRoutes);
+  // };
+
+  // const findLocations = async text => {
+  //   console.log('check location are VAlid ?s', text);
+
+  //   for (let wordObj of text) {
+  //     const isLocation = wordObj.text;
+
+  //     const parts = isLocation.split(/end on/i); // case insensitive
+  //     const rawText = parts[0];
+  //     const lowerText = rawText.replace(/\n/g, ' ').toLowerCase();
+  //     const startIndex = Math.max(
+  //       lowerText.indexOf('start on'),
+  //       lowerText.indexOf('origin'),
+  //       // lowerText.indexOf('from')
+  //     );
+  //     const endIndex = Math.max(
+  //       lowerText.indexOf('end on'),
+  //       lowerText.indexOf('destination'),
+  //       // lowerText.indexOf('to'),
+  //     );
+  //     const routeMatch = lowerText.match(/route:\s*(.*)/i);
+
+  //     console.log(
+  //       '==================== <<<<<<<<<<< reset',
+  //       startIndex,
+  //       endIndex,
+  //       routeMatch,
+  //     );
+  //     if (startIndex !== -1 && endIndex !== -1) {
+  //       const checkOrigin = rawText.slice(startIndex, endIndex).trim();
+  //       const finalorigin = checkOrigin.replace(/start on\s*/i, '').trim();
+  //       //  return console.log("🚀 ~ findLocations ~ finalorigin:", finalorigin)
+  //       setOrigin(finalorigin);
+  //       const checkdestination = rawText.slice(endIndex).trim();
+  //       const finaldestination = checkdestination
+  //         .toLowerCase()
+  //         .replace(/end on\s*/i, '')
+  //         .trim();
+  //       setDestination(finaldestination);
+
+  //       const routeRegex = /(-?\d+|I-\d+|US-\d+|SR-\d+)/g;
+  //       const cleanedText = lowerText?.replace(/[\(\)\.]/g, ' ');
+
+  //       const routeMatches = [...cleanedText.matchAll(routeRegex)].map(
+  //         m => m[1],
+  //       );
+
+  //       const cleanedRoutes = getCleanRoutes(routeMatches);
+  //       setRoute(cleanedRoutes);
+  //       // const [originCoords, destinationCoords] = await Promise.all([
+  //       //   isRouteRelated(origin),
+  //       //   isRouteRelated(destination),
+  //       // ]);
+  //       // Destination from "end on" to end of string
+  //       // }
+  //       //   return {origin, destination};
+  //       // } else {
+  //       // fallback: only origin found
+  //       // return {origin: text.trim(), destination: ''};
+  //     }
+  //     // const isLocation = isRouteRelated(word)
+  //     // const finalResult  = await checkWithGeoAPI(word);
+  //   }
+  // };
+
+  // const isRouteRelated = text => {
+  //   const highwayRegex = /(I-\d+|US-\d+|Route\s\d+)/i;
+  //   const directionRegex = /\b(WB|EB|NB|SB|Exit|Junction|Mile)\b/i;
+  //   const stateBorderRegex = /STATE BORDER OF/i;
+
+  //   return (
+  //     highwayRegex.test(text) ||
+  //     directionRegex.test(text) ||
+  //     stateBorderRegex.test(text)
+  //   );
+  // };
+
+  
+  {/* <View style={styles.scanBox}>
+          <QRCodeScanner
+            onRead={onSuccess}
+            reactivate={true}
+            showMarker={true}
+            cameraStyle={styles.cameraStyle}
+            customMarker={
+              <>
+                <View style={styles.corner} />
+                <View style={[styles.corner, styles.topLeft]} />
+                <View style={[styles.corner, styles.topRight]} />
+                <View style={[styles.corner, styles.bottomLeft]} />
+                <View style={[styles.corner, styles.bottomRight]} />
+              </>
+            }
+          />
+        </View> */}
