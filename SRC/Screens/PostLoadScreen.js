@@ -148,6 +148,7 @@ const PostLoadScreen = () => {
         textstyle={{
           color: Color.white,
         }}
+        showBack
         title={'Post A Load'}
         headerColor={Color.secondary}
         // Ismenu

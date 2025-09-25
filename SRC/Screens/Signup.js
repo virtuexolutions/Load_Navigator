@@ -190,7 +190,7 @@ const Signup = props => {
         style={styles.bg_con}
         resizeMode={'stretch'}
         source={require('../Assets/Images/login_bg.png')}>
-        <CustomStatusBar />
+        <CustomStatusBar  barStyle={'dark-content'} />
         {/* <Header
           title=" "
           headerColor={'transparent'}

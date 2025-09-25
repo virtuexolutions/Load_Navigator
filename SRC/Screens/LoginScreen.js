@@ -338,7 +338,7 @@ const LoginScreen = props => {
           />
         </>
       </View>
-      <View style={styles.button_container}>
+      {/* <View style={styles.button_container}>
         <View style={styles.line}></View>
         <CustomText style={styles.soc_text}>You can Connect with</CustomText>
 
@@ -360,7 +360,7 @@ const LoginScreen = props => {
             source={require('../Assets/Images/mac.png')}
           />
         </View>
-      </View>
+      </View>*/}
       <CustomText style={styles.do_text}>
         Don’t have an account?
         <CustomText
@@ -371,7 +371,7 @@ const LoginScreen = props => {
           style={styles.Sign_text}>
           Sign Up
         </CustomText>
-      </CustomText>
+      </CustomText> 
 
       <ImagePickerModal
         show={imagePicker}

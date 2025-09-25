@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {KeyboardAvoidingView, StyleSheet, View} from 'react-native';
 import 'react-native-get-random-values';
 import Modal from 'react-native-modal';
@@ -6,17 +6,24 @@ import {moderateScale} from 'react-native-size-matters';
 import Color from '../Assets/Utilities/Color';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import CustomText from './CustomText';
-
+import {CropView} from 'react-native-image-crop-tools';
 import {useDispatch} from 'react-redux';
 import {RNCamera} from 'react-native-camera';
 import CustomButton from './CustomButton';
+import {Icon} from 'native-base';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 const ScanRoute = ({
   isModalVisible,
   setIsModalVisible,
   handleOnPress,
   cameraRef,
+  imageuri,
 }) => {
+  const cropViewRef = useRef();
+  const [isTip, setIsTip] = useState(false);
+
   return (
     <Modal
       avoidKeyboard={true}
@@ -33,15 +40,79 @@ const ScanRoute = ({
       {/* > */}
       <KeyboardAvoidingView keyboardVerticalOffset={100} style={{flex: 1}}>
         <View style={styles.maincontainer}>
-          <CustomText
+          <View
             style={{
-              color: Color.white,
-              marginBottom: moderateScale(40, 0.3),
-              fontSize: moderateScale(22, 0.6),
-            }}
-            isBold>
-            {'scan permit'}
-          </CustomText>
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              // backgroundColor :'red',
+              width: '90%',
+            }}>
+            <Icon
+              onPress={() => {
+                setIsTip(!isTip);
+                // console.log('sdjkfhjkasdhjkfh');
+              }}
+              style={
+                {
+                  // position: 'absolute',
+                  // left: 12,
+                }
+              }
+              as={Ionicons}
+              name={'information-circle'}
+              size={moderateScale(25, 0.6)}
+              color={Color.white}
+            />
+            <CustomText
+              style={{
+                color: Color.white,
+                marginBottom: moderateScale(40, 0.3),
+                fontSize: moderateScale(22, 0.6),
+              }}
+              isBold>
+              {'scan permit'}
+            </CustomText>
+            <Icon
+              onPress={() => {
+                setIsModalVisible(false);
+                // console.log('sdjkfhjkasdhjkfh');
+              }}
+              style={
+                {
+                  // position: 'absolute',
+                  // right: 165,
+                }
+              }
+              as={Entypo}
+              name={'cross'}
+              size={moderateScale(25, 0.6)}
+              color={Color.white}
+            />
+          </View>
+          {isTip && (
+            <CustomText
+              style={{
+                fontSize: moderateScale(13, 0.6),
+                color: Color.black,
+                // marginBottom : moderateScale(30,.6),
+                position: 'absolute',
+                top: 50,
+                backgroundColor: 'red',
+                left: 15,
+                paddingVertical: moderateScale(5, 0.6),
+                borderRadius: 10,
+                backgroundColor: '#e7f5ffff',
+                paddingHorizontal: moderateScale(10, 0.6),
+                zIndex: 1,
+              }}>
+              This scanner currently works with permits issued in the following
+              states: Arkansas, Illinois, Kentucky, Alberta, Indiana, South
+              Dakota, Texas, Mississippi, Georgia, Utah, Colorado, Nevada,
+              Minnesota, Connecticut, Iowa, Missouri, California, Delaware,
+              Wisconsin, Montana, Nebraska, and Idaho.
+            </CustomText>
+          )}
+
           <View style={styles.scanBoxContainer}>
             {/* <CustomText style={styles.label}>Scan Permit</CustomText> */}
             {/*  */}
@@ -68,13 +139,28 @@ const ScanRoute = ({
               borderRadius={moderateScale(30, 0.6)}
               width={windowWidth * 0.72}
               bgColor={Color.secondary}
-              marginTop={windowHeight*0.15}
+              marginTop={windowHeight * 0.17}
               onPress={() => {
                 handleOnPress();
                 // setIsModalVisible(true)
                 // takePicture();
               }}
             />
+            <CustomText
+              style={{
+                zIndex: 1,
+                color: Color.white,
+                fontSize: moderateScale(11, 0.6),
+                paddingVertical: moderateScale(10, 0.5),
+                // marginTop: windowHeight * 0.17,
+                // backgroundColor: 'red',
+                textAlign: 'center',
+                width: windowWidth * 0.8,
+                // alignSelf : 'center'
+              }}>
+              Note: Please make sure to capture the permit only where the Origin
+              and Destination fields are clearly visible.
+            </CustomText>
           </View>
         </View>
       </KeyboardAvoidingView>
@@ -86,9 +172,10 @@ export default ScanRoute;
 
 const styles = StyleSheet.create({
   maincontainer: {
+    // backgroundColor :'red',
     backgroundColor: '#6e6e6e',
     width: windowWidth * 0.9,
-    height: windowHeight * 0.7,
+    height: windowHeight * 0.75,
     alignItems: 'center',
     marginVertical: moderateScale(65, 0.6),
     borderRadius: moderateScale(20, 0.3),
@@ -97,6 +184,7 @@ const styles = StyleSheet.create({
     borderColor: Color.mediumGray,
   },
   scanBoxContainer: {
+    // backgroundColor :'red',
     backgroundColor: '#6e6e6e',
     borderRadius: moderateScale(10, 0.6),
     // padding: moderateScale(10, 0.6),
@@ -119,7 +207,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: moderateScale(10, 0.6),
+    // marginBottom: moderateScale(10, 0.6),
   },
   corner: {
     position: 'absolute',
