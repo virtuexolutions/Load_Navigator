@@ -186,6 +186,7 @@ const Profile = () => {
           },
         ]}>
         <ScrollView
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             alignItems: 'center',
             paddingBottom: moderateScale(70, 0.6),
@@ -576,6 +577,7 @@ const styles = ScaledSheet.create({
     height: windowHeight * 0.9,
     backgroundColor: Color.white,
     alignItems: 'center',
+    // paddingVertical: moderateScale(10, 0.6),
   },
   main_view: {
     height: windowHeight,

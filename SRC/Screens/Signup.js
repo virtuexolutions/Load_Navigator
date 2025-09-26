@@ -23,15 +23,19 @@ import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText';
 import SearchLocationModal from '../Components/SearchLocationModal';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import {setUserToken} from '../Store/slices/auth-slice';
-import {setSelectedRole, setUserData} from '../Store/slices/common';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import DropDownSingleSelect from '../Components/DropDownSingleSelect';
 import {
   setIsEmailVerified,
   setIsMobileVerified,
-  SetUserRole,
-} from '../Store/slices/auth';
+  setPm_Type,
+  setUserToken,
+} from '../Store/slices/auth-slice';
+import {setSelectedRole, setUserData} from '../Store/slices/common';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import DropDownSingleSelect from '../Components/DropDownSingleSelect';
+// import {
+//   setIsEmailVerified,
+//   setIsMobileVerified,
+// } from '../Store/slices/auth';
 import navigationService from '../navigationService';
 
 const Signup = props => {
@@ -51,7 +55,8 @@ const Signup = props => {
   const [password, setpassword] = useState('');
   const [Experience, setExperience] = useState('');
   const [confirmPassword, setconfirmPassword] = useState('');
-  const [aboutUs, setaboutUs] = useState({});
+  const [aboutUs, setaboutUs] = useState('');
+  console.log('🚀 ~ Signup ~ aboutUs:', aboutUs);
   const [Policy, setPolicy] = useState(false);
   const [InsuranceCertificate, setInsuranceCertificate] = useState(false);
   const [CarDirectory, setCarDirectory] = useState(false);
@@ -96,7 +101,7 @@ const Signup = props => {
       agree_to_terms: Policy,
       experience: Experience,
       car_certificate: InsuranceCertificate,
-      includeme_car_directory: CarDirectory,
+      // includeme_car_directory: CarDirectory,
       selected_area: selectedArea,
       role: 'pilot',
       address: userAddress?.name,
@@ -121,8 +126,6 @@ const Signup = props => {
               ToastAndroid.SHORT,
             )
           : Alert.alert(`Required field should not be empty`);
-        // ? ToastAndroid.show(` ${key} field is empty`, ToastAndroid.SHORT)
-        // : Alert.alert(` ${key} field is empty`);
       }
     }
     if (password.length < 8) {
@@ -140,11 +143,14 @@ const Signup = props => {
         : Alert.alert('Password does not match');
     }
     if (selectedUserType == 'Trucking company') {
-      body.is_notified = isNotified;
-      console.log('============ >>>>> hello');
+      (body.is_notified = isNotified),
+        //  (body.hear_about_us = aboutUs);
+        console.log('============ >>>>> hello');
     } else {
       console.log('============ >>>>> ');
+      body1.includeme_car_directory = CarDirectory;
       body1.is_notified = isNotified;
+      // body1.hear_about_us = aboutUs;
     }
     const url = 'register';
     // return console.log("====", apiBody)
@@ -157,18 +163,24 @@ const Signup = props => {
     );
     setIsLoading(false);
     if (response != undefined) {
+      console.log('🚀 ~ onPressregister ~ response:', response?.data);
       Platform.OS == 'android'
         ? ToastAndroid.show('Sign up successfully', ToastAndroid.SHORT)
         : Alert.alert('Sign up successfully');
       dispatch(setUserData(response?.data?.user_info));
       dispatch(setUserToken({token: response?.data?.token}));
       dispatch(setSelectedRole(response?.data?.user_info?.role));
-      // dispatch(
-      //   setIsEmailVerified(response?.data?.user_info?.is_email_verified),
-      // );
-      // dispatch(
-      //   setIsMobileVerified(response?.data?.user_info?.is_number_verified),
-      // );
+      dispatch(
+        setIsEmailVerified(
+          response?.data?.user_info?.is_email_verified == 1 ? true : false,
+        ),
+      );
+      dispatch(
+        setIsMobileVerified(
+          response?.data?.user_info?.is_number_verified == 1 ? true : false,
+        ),
+        dispatch(setPm_Type(response?.data?.user_info?.pm_type == null && '')),
+      );
     }
   };
   const dummyarray = [
@@ -190,7 +202,7 @@ const Signup = props => {
         style={styles.bg_con}
         resizeMode={'stretch'}
         source={require('../Assets/Images/login_bg.png')}>
-        <CustomStatusBar  barStyle={'dark-content'} />
+        <CustomStatusBar barStyle={'dark-content'} />
         {/* <Header
           title=" "
           headerColor={'transparent'}
@@ -694,6 +706,7 @@ const Signup = props => {
               paddingBottom: moderateScale(10, 0.6),
             }}>
             {dummyarray?.map((item, index) => {
+              console.log('🚀 ~ map ~ item:', item);
               return (
                 <TouchableOpacity
                   onPress={() => {

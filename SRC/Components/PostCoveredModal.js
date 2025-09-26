@@ -157,7 +157,7 @@ const PostCoveredModal = ({
             borderRadius={10}
             backgroundColor={'transparent'}
             borderColor={'#333333'}
-            keyboardType={'numeric'}
+            // keyboardType={'numeric'}
             placeholderColor={Color.mediumGray}
             titleStlye={{right: 15}}
           />

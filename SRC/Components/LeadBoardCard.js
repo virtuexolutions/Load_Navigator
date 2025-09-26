@@ -14,6 +14,7 @@ import CustomText from '../Components/CustomText';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 
 const LeadBoardCard = ({item}) => {
+  console.log("🚀 ~ LeadBoardCard ~ item:", typeof item?.origin)
   const IsFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
@@ -26,6 +27,9 @@ const LeadBoardCard = ({item}) => {
       2,
     ),
   );
+  const finalorigin = JSON.parse(item?.origin)
+  const finaldestination = JSON.parse(item?.destination)
+
   const [isLoading, setIsLoading] = useState(false);
   const [leaderData, setLeaderData] = useState([]);
   const rbref = useRef();
@@ -118,7 +122,7 @@ const LeadBoardCard = ({item}) => {
                 width: windowWidth * 0.7,
               },
             ]}>
-            {item?.origin?.name}
+            {finalorigin?.name}
           </CustomText>
         </View>
         {/* </View> */}
@@ -143,7 +147,7 @@ const LeadBoardCard = ({item}) => {
                 width: windowWidth * 0.7,
               },
             ]}>
-            {item?.destination?.name}
+            {finaldestination?.name}
           </CustomText>
         </View>
         <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
@@ -284,7 +288,7 @@ const LeadBoardCard = ({item}) => {
           </CustomText>
         </TouchableOpacity>
       </TouchableOpacity>
-      <BottomSheet Rbref={rbref} item={item} />
+      <BottomSheet Rbref={rbref} item={item}  loadStatus={item?.status}/>
     </>
   );
 };
@@ -305,7 +309,8 @@ const styles = StyleSheet.create({
   },
   card: {
     width: windowWidth * 0.85,
-    height: windowHeight * 0.29,
+    paddingVertical : moderateScale(10,.6),
+    // height: windowHeight * 0.29,
     backgroundColor: Color.grey,
     borderRadius: moderateScale(20, 0.6),
     marginTop: moderateScale(10, 0.6),

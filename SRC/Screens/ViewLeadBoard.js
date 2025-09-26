@@ -34,7 +34,9 @@ import StatesCodeModal from '../Components/StatesCodeModal';
 const ViewLeadBoard = () => {
   const IsFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
+  console.log("🚀 ~ ViewLeadBoard ~ token:", token)
   const userData = useSelector(state => state.commonReducer.userData);
+  console.log("🚀 ~ ViewLeadBoard ~ userData:", userData?.selected_area)
   const [isLoading, setIsLoading] = useState(false);
   const [leaderData, setLeaderData] = useState([]);
   const [selectedOrigin, setSelectedOrigin] = useState('');
@@ -48,8 +50,10 @@ const ViewLeadBoard = () => {
 
   const getLoadList = async () => {
     const url = `auth/load_list?origin=${selectedOrigin?.label}&destination=${selectedDestination?.label}`;
+    console.log("🚀 ~ getLoadList ~ url:", url)
     setIsLoading(true);
     const response = await Get(url, token);
+  //  return  console.log("🚀 ~ getLoadList ~ response:", response?.data)
     setIsLoading(false);
     if (response != undefined) {
       setLeaderData(response?.data?.load_detail);

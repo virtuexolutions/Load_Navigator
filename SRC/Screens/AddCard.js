@@ -34,7 +34,8 @@ const height = Dimensions.get('window').height;
 const AddCard = () => {
   const token = useSelector(state => state.authReducer.token);
   // const userData = useSelector(state => state.commonReducer.userData);
-
+  const [cardDetails, setCardDetails] = useState(null);
+  console.log("🚀 ~ AddCard ~ cardDetails:", cardDetails)
   const dispatch = useDispatch();
   const {userData} = useSelector(state => state.commonReducer);
 
@@ -53,6 +54,7 @@ const AddCard = () => {
     const responseData = await createToken({
       type: 'Card',
     });
+    // return console.log('🚀 ~ addCard ~ responseData:', responseData);
 
     if (responseData.error) {
       setIsLoading(false);
@@ -136,13 +138,7 @@ const AddCard = () => {
           }}> */}
           <CardField
             postalCodeEnabled={false}
-            placeholders={{
-              number: '4242 4242 4242 4242',
-            }}
-            // placeholderColor
-            // placeholders={{
-            //   number: '4242 4242 4242 4242',
-            // }}
+            placeholders={{number: '4242 4242 4242 4242'}}
             cardStyle={{
               placeholderColor: Color.darkGray,
               backgroundColor: '#EAEAEA',
@@ -155,14 +151,11 @@ const AddCard = () => {
               marginVertical: moderateScale(12, 0.3),
               borderColor: Color.lightGrey,
             }}
-            onCardChange={cardDetails => {
-              console.log('cardDetails', cardDetails);
-            }}
-            onFocus={focusedField => {
-              console.log('focusField', focusedField);
+            onCardChange={details => {
+              console.log('cardDetails', details);
+              setCardDetails(details);
             }}
           />
-
           <CustomButton
             // textTransform={"capitalize"}
             text={

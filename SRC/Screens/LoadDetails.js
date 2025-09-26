@@ -37,6 +37,7 @@ const LoadDetails = props => {
   const item = props?.route?.params?.item;
   const repost = props?.route?.params?.repost;
   const token = useSelector(state => state.authReducer.token);
+  console.log('🚀 ~ LoadDetails ~ token:', token);
   const userData = useSelector(state => state.commonReducer.userData);
   const [isMiles, setIsMiles] = useState(false);
   const repostrate = item?.rate;
@@ -67,6 +68,10 @@ const LoadDetails = props => {
   const [destination, setDestination] = useState(
     repost ? item?.destination : {},
   );
+  console.log('🚀 ~ LoadDetails ~ destination:', JSON.parse(destination));
+  const repostDestination = JSON.parse(destination);
+  const repostOrigin = JSON.parse(origin);
+
   const rate1 = item?.rate;
   const numberOnly = rate1?.split('/')[0];
   const [Rate, setRate] = useState(repost ? numberOnly : 0);
@@ -278,8 +283,10 @@ const LoadDetails = props => {
   const updatePost = async () => {
     const body = {
       start_date: date,
-      end_date : endDate,
+      end_date: endDate,
+      status: item?.status,
     };
+    // return   console.log("🚀 ~ updatePost ~ body :", body )
     const url = `auth/load_detail/${item?.id}?_method=put`;
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
@@ -361,7 +368,7 @@ const LoadDetails = props => {
                     fontSize: moderateScale(12, 0.6),
                     color: Color.darkGray,
                   }}>
-                  {origin?.name ? origin?.name : 'city,state'}
+                  {repostOrigin?.name ? repostOrigin?.name : 'city,state'}
                 </CustomText>
               </TouchableOpacity>
 
@@ -381,7 +388,9 @@ const LoadDetails = props => {
                     fontSize: moderateScale(12, 0.6),
                     color: Color.darkGray,
                   }}>
-                  {destination?.name ? destination?.name : 'city,state'}
+                  {repostDestination?.name
+                    ? repostDestination?.name
+                    : 'city,state'}
                 </CustomText>
               </TouchableOpacity>
             </View>
@@ -747,7 +756,7 @@ const LoadDetails = props => {
               <CustomButton
                 text={'custom'}
                 onPress={() => {
-                    setDateType('startdate')
+                  setDateType('startdate');
                   setShowCalendarModal(true);
                 }}
                 fontSize={moderateScale(12, 0.3)}
@@ -788,7 +797,7 @@ const LoadDetails = props => {
             <CustomButton
               text={'custom'}
               onPress={() => {
-                setDateType('enddate')
+                setDateType('enddate');
                 setShowCalendarModal(true);
               }}
               fontSize={moderateScale(12, 0.3)}
@@ -994,8 +1003,9 @@ const LoadDetails = props => {
             }}
             minDate={moment().format()}
             onDayPress={day => {
-              dateType == 'enddate' ?setEndDate(day?.dateString):
-              setDate(day?.dateString);
+              dateType == 'enddate'
+                ? setEndDate(day?.dateString)
+                : setDate(day?.dateString);
               setShowCalendarModal(false);
             }}
             theme={{

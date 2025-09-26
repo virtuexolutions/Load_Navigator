@@ -23,6 +23,7 @@ import {useNavigation} from '@react-navigation/native';
 
 const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item, loadStatus}) => {
   console.log('🚀 ~ BottomSheet ~ loadStatus:', loadStatus);
+  console.log('🚀 ~ BottomSheet ~ loadStatus:', loadStatus);
   const navigation = useNavigation();
   const userRole = useSelector(state => state.commonReducer.selectedRole);
   const token = useSelector(state => state.authReducer.token);
@@ -98,11 +99,12 @@ const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item, loadStatus}) => {
       // closeOnPressMask={true}
       customStyles={{
         container: {
+          paddingVertical : moderateScale(5,.6),
           borderTopRightRadius: 30,
           borderTopLeftRadius: 30,
           height:
             userRole.toLowerCase() == 'pilot'
-              ? windowHeight * 0.6
+              ? windowHeight * 0.63
               : windowHeight * 0.69,
         },
       }}>
@@ -363,12 +365,17 @@ const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item, loadStatus}) => {
 
         {userRole.toLowerCase() == 'pilot' ? (
           <CustomButton
+            // onPress={() => {
+            //   navigationService.navigate('CreateRoute');
+            // }}
             text={'create route'}
             textColor={Color.white}
             width={windowWidth * 0.8}
-            height={windowHeight * 0.05}
+            height={windowHeight * 0.052}
             marginTop={moderateScale(15, 0.3)}
-            onPress={() => {}}
+            onPress={() => {
+              navigationService.navigate('CreateRoute');
+            }}
             bgColor={Color.secondary}
             borderRadius={moderateScale(30, 0.3)}
             fontSize={moderateScale(15, 0.3)}

@@ -49,9 +49,12 @@ const VerificationScreen = () => {
     state => state.commonReducer.cometRegistrationStatus,
   );
   const userData = useSelector(state => state.commonReducer.userData);
+  console.log("🚀 ~ VerificationScreen ~ userData:", userData)
   const token = useSelector(state => state.authReducer.token);
+  console.log("🚀 ~ VerificationScreen ~ token:", token)
   const mobileVerified = useSelector(state => state.authReducer.numberVerified);
   const emailVerified = useSelector(state => state.authReducer.emailVerified);
+  console.log("🚀 ~ VerificationScreen ~ emailVerified:", emailVerified)
   const [emailCode, setEmailCode] = useState('');
   const [phoneCode, setPhoneCode] = useState('');
   const [emailVerify, setEmailVerify] = useState(false);
@@ -108,6 +111,7 @@ const VerificationScreen = () => {
       {phone: userData?.contact},
       apiHeader(token),
     );
+    console.log("🚀 ~ sendMobileOtp ~ response===================:", response?.data)
     setIsLoading(false);
     if (response?.data) {
       // return console.log(response?.data?.code)
@@ -143,10 +147,12 @@ const VerificationScreen = () => {
       {email: userData?.email},
       apiHeader(token),
     );
+    console.log("🚀 ~ sendEmailOtp ~ response:==========================", response?.data)
     setLoading(false);
     if (response?.data) {
       setType('email');
       setModalVisible(true);
+      setEmailCode('')
       // console.log('Response ===== verified');
     }
   };
@@ -317,7 +323,7 @@ const VerificationScreen = () => {
                 end={{x: 1, y: 0}}
                 style={{
                   height: '100%',
-                  width: `${emailVerified ? 50 : mobileVerified ? 100 : 0}%`,
+                  width: `${emailVerified  ? 50 : mobileVerified ? 100 : 0}%`,
                   borderTopRightRadius: moderateScale(10, 0.3),
                   borderBottomRightRadius: moderateScale(10, 0.3),
                 }}></LinearGradient>
@@ -360,7 +366,7 @@ const VerificationScreen = () => {
               }
               textColor={Color.white}
               width={windowWidth * 0.32}
-              height={windowHeight * 0.035}
+              height={windowHeight * 0.05}
               marginTop={moderateScale(20, 0.3)}
               bgColor={'transparent'}
               borderRadius={moderateScale(25, 0.3)}
@@ -387,7 +393,7 @@ const VerificationScreen = () => {
               }
               textColor={Color.white}
               width={windowWidth * 0.32}
-              height={windowHeight * 0.035}
+              height={windowHeight * 0.05}
               marginTop={moderateScale(20, 0.3)}
               bgColor={Color.secondary}
               borderRadius={moderateScale(25, 0.3)}
@@ -412,8 +418,8 @@ const VerificationScreen = () => {
             }}
             style={{
               color: Color.white,
-              fontSize: moderateScale(10, 0.6),
-              marginTop: moderateScale(10, 0.3),
+              fontSize: moderateScale(12, 0.6),
+              marginTop: moderateScale(13, 0.3),
               textTransform: 'uppercase',
             }}>
             log out
@@ -440,7 +446,7 @@ const VerificationScreen = () => {
                       color: Color.themeColor,
                     }}>
                     {type == 'phone'
-                      ? `+${country?.callingCode}-${userData?.phone}`
+                      ? `${userData?.contact} `
                       : `${userData?.email}\n`}
                   </CustomText>
                   <CustomText
@@ -565,12 +571,12 @@ const styles = ScaledSheet.create({
     borderBottomWidth: 2,
   },
   cellText: {
-    color: Color.themeColor,
+    color: Color.black,
     fontSize: moderateScale(16, 0.3),
     textAlign: 'center',
   },
   txt4: {
-    color: Color.themeColor,
+    color: Color.black,
     fontSize: moderateScale(14, 0.6),
     textAlign: 'center',
   },

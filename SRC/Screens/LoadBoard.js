@@ -40,7 +40,7 @@ const LoadBoard = ({navigation}) => {
     const url = 'auth/load_detail';
     setIsLoading(true);
     const response = await Get(url, token);
-    console.log('🚀 ~ getLoad ~ response:', response?.data);
+    console.log('🚀 ~ getLoad ~ response:', JSON.stringify (response?.data ,null ,2));
     setIsLoading(false);
     if (response != undefined) {
       setloadData(response?.data?.load_detail);

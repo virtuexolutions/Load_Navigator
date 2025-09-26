@@ -12,6 +12,7 @@ import CustomText from '../Components/CustomText';
 import ScanRoute from '../Components/ScanRoute';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import CustomImage from '../Components/CustomImage';
+import Header from '../Components/Header';
 
 const CreateRoute = () => {
   const cameraRef = useRef(null);
@@ -784,12 +785,19 @@ const CreateRoute = () => {
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor={Color.black} barStyle={'light-content'} />
-      <CustomText style={styles.title}>Create A Route</CustomText>
+        <Header
+          title="create a route"
+          headerColor={Color.black}
+          textstyle={{color: Color.white}}
+          showBack
+          // menu
+        />
+      {/* <CustomText style={styles.title}>Create A Route</CustomText> */}
       <View style={styles.scanBoxContainer}>
         <CustomText style={styles.label}>Scan Permit</CustomText>
         <View
           style={{
-            backgroundColor: 'red',
+            // backgroundColor: 'red',
             width: windowWidth * 0.9,
             height: windowHeight * 0.33,
             borderRadius: 10,

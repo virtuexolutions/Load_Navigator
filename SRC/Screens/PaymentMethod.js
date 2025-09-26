@@ -47,6 +47,7 @@ const PaymentMethod = props => {
   const userRole = useSelector(state => state.commonReducer.selectedRole);
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
+  console.log('🚀 ~ PaymentMethod ~ userDatasssssssssssss :', userData);
   const submitCardData = useSelector(state => state.commonReducer.cardData);
   console.log('🚀 ~ PaymentMethod ~ submitCardData:', submitCardData);
 
@@ -68,6 +69,7 @@ const PaymentMethod = props => {
     const responseData = await createToken({
       type: 'Card',
     });
+    console.log('🚀 ~ addCard ~ responseData:', responseData);
 
     if (responseData.error) {
       setIsLoading(false);
@@ -75,7 +77,9 @@ const PaymentMethod = props => {
       alert(responseData.error.message);
     }
     if (responseData?.error?.code != 'Failed') {
+      console.log('hereeeeeeeeeeeeeeeeeee from if ');
       const responseApi = await Post(url, responseData, apiHeader(token));
+      console.log('🚀 ~ addCard ~ responseApi:', responseApi);
       setIsLoading(false);
       if (responseApi != undefined) {
         // setCardData({});
@@ -414,7 +418,7 @@ const PaymentMethod = props => {
   //     setCardLoading(false);
   //   };
 
-  const cardBrand = userData?.pm_type.toLowerCase();
+  const cardBrand = userData?.pm_type?.toLowerCase();
   const cardimageData = {
     imageUrl:
       cardBrand === 'visa'
@@ -618,7 +622,8 @@ const PaymentMethod = props => {
             overflow: 'hidden',
             borderRadius: moderateScale(5, 0.3),
             width: windowWidth * 0.9,
-            height: windowHeight * 0.22,
+            paddingBottom: moderateScale(10, 0.6),
+            // height: windowHeight * 0.22,
             backgroundColor: 'white',
             alignItems: 'center',
           }}>
@@ -631,9 +636,11 @@ const PaymentMethod = props => {
               number: '4242 4242 4242 4242',
             }}
             cardStyle={{
-              backgroundColor: '#EAEAEA',
+              // backgroundColor :'red',
+              backgroundColor: '#f7f7f7ff',
               textColor: '#000000',
               borderRadius: moderateScale(25, 0.3),
+              placeholderColor: Color.darkGray,
             }}
             style={{
               width: windowWidth * 0.75,
