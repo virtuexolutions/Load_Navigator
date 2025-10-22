@@ -1,8 +1,6 @@
-// import messaging from '@react-native-firebase/messaging';
-// import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {useNavigation} from '@react-navigation/native';
-import {Formik} from 'formik';
-import React, {useState} from 'react';
+
+import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -10,33 +8,27 @@ import {
   Platform,
   StyleSheet,
   ToastAndroid,
-  TouchableOpacity,
-  View,
+  View
 } from 'react-native';
-import {moderateScale} from 'react-native-size-matters';
-import {useDispatch, useSelector} from 'react-redux';
+import { moderateScale } from 'react-native-size-matters';
+import { useDispatch, useSelector } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import { Post } from '../Axios/AxiosInterceptorFunction';
+import CustomAlertModal from '../Components/CustomAlertModal';
 import CustomButton from '../Components/CustomButton';
 import CustomImage from '../Components/CustomImage';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
-import {loginSchema} from '../Constant/schema';
 import {
   setIsEmailVerified,
   setIsMobileVerified,
   setPm_Type,
   setUserToken,
 } from '../Store/slices/auth-slice';
-import {setSelectedRole, setUserData} from '../Store/slices/common';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import {mode} from 'native-base/lib/typescript/theme/tools';
-import navigationService from '../navigationService';
-import DropDownSingleSelect from '../Components/DropDownSingleSelect';
-import {Icon} from 'native-base';
-import Entypo from 'react-native-vector-icons/Entypo';
+import { setSelectedRole, setUserData } from '../Store/slices/common';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 
 const LoginScreen = props => {
   const dispatch = useDispatch();
@@ -48,12 +40,10 @@ const LoginScreen = props => {
   const [imagePicker, setImagePicker] = useState(false);
   const [image, setImage] = useState({});
   const navigation = useNavigation();
-  const [loginMethod, setLoginMethod] = useState('');
-  const [selectedUserType, setSelectedUserType] = useState('');
-  const [isSelected, setIsSelected] = useState(false);
   const [email, setemail] = useState('');
   const [password, setpassword] = useState('');
-  const [device_token, setDeviceToken] = useState(null);
+
+  const [isModalVisible, setIsModalVisible] = useState(true);
 
   const loginWithGoogle = async response1 => {
     const body = {...response1?.data};
@@ -77,10 +67,6 @@ const LoginScreen = props => {
     const response = await Post(url, body, apiHeader());
     setIsLoading(false);
     if (response != undefined) {
-      // return console.log(
-      //   'darta =====>',
-      //   JSON.stringify(response?.data?.user_info?.pm_type, null, 2),
-      // );
       dispatch(
         setIsMobileVerified(
           response?.data?.user_info?.is_number_verified == 0 ? false : true,
@@ -101,16 +87,6 @@ const LoginScreen = props => {
     }
   };
 
-  // useEffect(() => {
-  //   messaging()
-  //     .getToken()
-  //     .then(_token => {
-  //       setDeviceToken(_token);
-  //       dispatch(SetFCMToken({fcmToken: _token}));
-  //     })
-  //     .catch(e => console.log('token error', e));
-  // }, []);
-  const servicesArray = ['Pilot', 'Company'];
   return (
     <ImageBackground
       imageStyle={{
@@ -126,8 +102,8 @@ const LoginScreen = props => {
         justifyContent: 'center',
       }}>
       <CustomStatusBar
-        backgroundColor={Color.white}
-        barStyle={'dark-content'}
+        backgroundColor={Color.primary}
+        barStyle={'light-content'}
       />
       <View
         style={{
@@ -155,121 +131,6 @@ const LoginScreen = props => {
       </CustomText>
       <View>
         <>
-          {/* <DropDownSingleSelect
-            array={['Pilot', 'Trucking']}
-            item={selectedUserType}
-            setItem={setSelectedUserType}
-            width={windowWidth * 0.85}
-            // placeHolderColor={Color.darkGray}
-            // placeholder={'Ápproval for Admittance'}
-            placeholder={'Select User Type'}
-            dropdownStyle={{
-              borderBottomWidth: 0,
-              width: windowWidth * 0.85,
-              marginTop: 10,
-            }}
-            menuStyle={{
-              // backgroundColor:Color.red,
-              // borderColor:Color.mediumGray,
-              backgroundColor: Color.black,
-              borderColor: Color.mediumGray,
-              width: '79.5%',
-              left: 42,
-              borderWidth: 1,
-              overflow: 'hidden',
-              marginTop: moderateScale(-6, 0.2),
-              //
-              // position:"absolute",
-              // top:-10,
-              // borderTopLeftRadius:moderateScale(5,0.2),
-              // borderTopRightRadius:moderateScale(5,0.2),
-              borderBottomRightRadius: moderateScale(15, 0.2),
-              borderBottomLeftRadius: moderateScale(15, 0.2),
-            }}
-            menuTextColor={Color.mediumGray}
-            changeColorOnSelect={true}
-            btnStyle={{
-              backgroundColor: 'transparent',
-              height: windowHeight * 0.057,
-              borderWidth: 1,
-              bordderColor: Color.white,
-            }}
-          /> */}
-          {/* <TouchableOpacity
-            onPress={() => {
-              setIsSelected(!isSelected);
-            }}
-            style={{
-              width: windowWidth * 0.85,
-              height: windowHeight * 0.055,
-              borderWidth: 1,
-              borderRadius: moderateScale(30, 0.6),
-              alignSelf: 'center',
-              borderColor: Color.white,
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingHorizontal: moderateScale(20, 0.6),
-              flexDirection: 'row',
-            }}>
-            <CustomText
-              style={{
-                color: Color.mediumGray,
-                fontSize: moderateScale(12, 0.6),
-              }}>
-              {selectedUserType ? selectedUserType : ' select user type'}
-            </CustomText>
-            <Icon
-              name={isSelected ? "chevron-up" :"chevron-down"}
-              as={Entypo}
-              color={Color.mediumGray}
-              size={moderateScale(15, 0.6)}
-            />
-          </TouchableOpacity>
-          {isSelected && (
-            <View
-              style={{
-                width : windowWidth *0.85,
-                marginTop: moderateScale(-1, 0.6),
-                borderRadius: moderateScale(15, 0.6),
-                borderWidth: 1,
-                backgroundColor:Color.black,
-                borderColor: Color.white,
-                paddingVertical: moderateScale(2, 0.6),
-                paddingHorizontal: moderateScale(15, 0.6),
-              }}>
-              <TouchableOpacity
-                onPress={() => {
-                  setSelectedUserType('Pilot');
-                  setIsSelected(false);
-                }}>
-                <CustomText
-                  style={{
-                    color: Color.mediumGray,
-                    fontSize: moderateScale(12, 0.6),
-                    paddingVertical: moderateScale(3, 0.6),
-                    borderBottomWidth: 0.2,
-                    borderBottomColor: Color.white,
-                  }}>
-                  Pilot
-                </CustomText>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setSelectedUserType('Trucking');
-                  setIsSelected(false);
-                }}>
-                <CustomText
-                  style={{
-                    color: Color.mediumGray,
-                    fontSize: moderateScale(12, 0.6),
-
-                    paddingVertical: moderateScale(5, 0.6),
-                  }}>
-                  Trucking
-                </CustomText>
-              </TouchableOpacity>
-            </View>
-          )} */}
 
           <TextInputWithTitle
             titleText={'Username'}
@@ -287,6 +148,7 @@ const LoginScreen = props => {
             marginTop={moderateScale(10, 0.3)}
             placeholderColor={Color.mediumGray}
             titleStlye={{right: 10}}
+            inputColor={Color.white}
           />
           <TextInputWithTitle
             secureText={true}
@@ -301,7 +163,6 @@ const LoginScreen = props => {
             backgroundColor={'transparent'}
             borderColor={Color.white}
             marginTop={moderateScale(15, 0.3)}
-            // color={Color.white}
             placeholderColor={Color.mediumGray}
             titleStlye={{right: 10}}
           />
@@ -361,6 +222,8 @@ const LoginScreen = props => {
           />
         </View>
       </View>*/}
+      <CustomAlertModal isisModalVisible={isModalVisible} />
+
       <CustomText style={styles.do_text}>
         Don’t have an account?
         <CustomText
@@ -371,7 +234,7 @@ const LoginScreen = props => {
           style={styles.Sign_text}>
           Sign Up
         </CustomText>
-      </CustomText> 
+      </CustomText>
 
       <ImagePickerModal
         show={imagePicker}

@@ -155,11 +155,9 @@ const styles = StyleSheet.create({
   mainScreen: {
     width: windowWidth,
     height: windowHeight * 0.9,
-    // backgroundColor: Color.white,
     alignItems: 'center',
   },
   flatListContainer: {
-    // backgroundColor: Color.white,
     paddingTop : windowHeight*0.04,
     width: windowWidth * 0.9,
     alignItems: 'center',
@@ -192,7 +190,7 @@ const styles = StyleSheet.create({
     gap: moderateScale(10, 0.2),
     marginTop: moderateScale(20, 0.2),
     marginBottom: moderateScale(10, 0.2),
-    // backgroundColor :'red',
+    
     height: windowHeight * 0.1,
     width: windowWidth * 0.9,
     marginVertical: moderateScale(10, 0.6),
@@ -222,19 +220,15 @@ const styles = StyleSheet.create({
     transitionDuration: '0.3s',
     timingFunc: 'ease',
   },
-  //   container: {padding: moderateScale(20, 0.6)},
   item: {
     marginVertical: moderateScale(10, 0.6),
     backgroundColor: '#f1f1f1',
     borderRadius: moderateScale(10, 0.6),
     padding: moderateScale(10, 0.6),
     width: windowWidth * 0.9,
-
-    // marginBottom: moderateScale(10, 0.6),
-  },
+},
   question: {
     color: Color.secondary,
-
     fontSize: moderateScale(13, 0.6),
   },
   answer: {

@@ -20,6 +20,8 @@ import {
 } from './SRC/Utillity/utils';
 import AppNavigator from './SRC/appNavigation';
 import {LogBox} from 'react-native';
+import {ModalProvider} from './SRC/Components/ModalContext';
+import CustomAlertModal from './SRC/Components/CustomAlertModal';
 
 const App = () => {
   LogBox.ignoreLogs([
@@ -35,7 +37,10 @@ const App = () => {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <NativeBaseProvider>
-            <MainContainer />
+            {/* <ModalProvider> */}
+              <MainContainer />
+              {/* <CustomAlertModal/> */}
+            {/* </ModalProvider> */}
           </NativeBaseProvider>
         </PersistGate>
       </Provider>

@@ -26,7 +26,7 @@ const PostLoadScreen = () => {
   const navigation = useNavigation();
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
-  console.log("🚀 ~ PostLoadScreen ~ userData:", userData?.contact)
+  console.log('🚀 ~ PostLoadScreen ~ userData:', userData?.contact);
 
   const [isVisible, setIsVisible] = useState(false);
   const [isDetails, setIsDetails] = useState(false);
@@ -154,19 +154,15 @@ const PostLoadScreen = () => {
         // Ismenu
         menu
       />
+        <CustomStatusBar
+          // backgroundColor={Color.white}
+          barStyle={'light-content'}
+        />
       <ScrollView
         showsVerticalScrollIndicator={false}
         tyle={styles.scroll_view}>
-        <CustomStatusBar
-          backgroundColor={Color.white}
-          barStyle={'light-content'}
-        />
 
         <View style={styles.main_view}>
-          {/* <View style={[
-             styles.post_card,
-  {     marginVertical : moderateScale(10,.6)   }]}>
-          </View> */}
           <View
             style={[
               styles.post_card,
@@ -177,7 +173,6 @@ const PostLoadScreen = () => {
             <View
               style={{
                 flexDirection: 'row',
-                // justifyContent: 'space-between',
               }}>
               <CustomText
                 isBold
@@ -186,7 +181,6 @@ const PostLoadScreen = () => {
                   {
                     fontSize: moderateScale(17, 0.6),
                     color: Color.secondary,
-                    // paddingVertical: moderateScale(5, 0.6),
                   },
                 ]}>
                 {userData?.company_name}

@@ -16,10 +16,11 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Feather from 'react-native-vector-icons/Feather';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import Entypo from 'react-native-vector-icons/Entypo';
 
 const Drawer = React.memo(() => {
   const dispatch = useDispatch();
-  const navigation = useNavigation();
+  const navigation = useNavigation();  
 
   const userRole = useSelector(state => state.commonReducer.selectedRole);
   const userData = useSelector(state => state.commonReducer.userData);
@@ -45,16 +46,16 @@ const Drawer = React.memo(() => {
       iconName: 'post',
       iconType: MaterialCommunityIcons,
     },
-    {
-      id: 2,
-      name: 'payment method',
-      onPress: () => {
-        // navigation.navigate('LoadBoard');
-        navigation.navigate('MyDrawer', {screen: 'PaymentMethod'});
-      },
-      iconName: 'post',
-      iconType: MaterialCommunityIcons,
-    },
+    // {
+    //   id: 2,
+    //   name: 'payment method',
+    //   onPress: () => {
+    //     // navigation.navigate('LoadBoard');
+    //     navigation.navigate('MyDrawer', {screen: 'PaymentMethod'});
+    //   },
+    //   iconName: 'post',
+    //   iconType: MaterialCommunityIcons,
+    // },
     {
       id: 3,
       name: 'Directory',
@@ -66,6 +67,7 @@ const Drawer = React.memo(() => {
       iconName: 'folder',
       iconType: Feather,
     },
+
     {
       id: 4,
       name: 'Profile',
@@ -133,6 +135,15 @@ const Drawer = React.memo(() => {
       iconType: Feather,
     },
     {
+      id: 4,
+      name: 'my jobs',
+      onPress: () => {
+        navigation.navigate('MyDrawer', {screen: 'MyJobs'});
+      },
+      iconName: 'suitcase',
+      iconType: Entypo,
+    },
+    {
       id: 9,
       name: 'Profile',
       onPress: () => {
@@ -141,16 +152,16 @@ const Drawer = React.memo(() => {
       iconName: 'user',
       iconType: FontAwesome5,
     },
-     {
-      id: 2,
-      name: 'payment method',
-      onPress: () => {
-        // navigation.navigate('LoadBoard');
-        navigation.navigate('MyDrawer', {screen: 'PaymentMethod'});
-      },
-      iconName: 'post',
-      iconType: MaterialCommunityIcons,
-    },
+    // {
+    //   id: 2,
+    //   name: 'payment method',
+    //   onPress: () => {
+    //     // navigation.navigate('LoadBoard');
+    //     navigation.navigate('MyDrawer', {screen: 'PaymentMethod'});
+    //   },
+    //   iconName: 'post',
+    //   iconType: MaterialCommunityIcons,
+    // },
     {
       id: 2,
       name: 'Help/FAQS',

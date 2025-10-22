@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  RefreshControl,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -36,11 +37,16 @@ const LoadBoard = ({navigation}) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [loadData, setloadData] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+
   const getLoad = async () => {
     const url = 'auth/load_detail';
     setIsLoading(true);
     const response = await Get(url, token);
-    console.log('🚀 ~ getLoad ~ response:', JSON.stringify (response?.data ,null ,2));
+    console.log(
+      '🚀 ~ getLoad ~ response:=========================== >>>>>>>>>>>>>>>>',
+      JSON.stringify(response?.data, null, 2),
+    );
     setIsLoading(false);
     if (response != undefined) {
       setloadData(response?.data?.load_detail);
@@ -51,6 +57,15 @@ const LoadBoard = ({navigation}) => {
     getLoad();
   }, [IsFocused]);
 
+  const onRefresh = () => {
+    console.log('oonnnnnnnnnnn refersh ========== >>>>>>>');
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+      getLoad();
+    }, 2000);
+  };
+
   return (
     <SafeAreaView style={styles.main_view}>
       <Header
@@ -58,7 +73,7 @@ const LoadBoard = ({navigation}) => {
         headerColor={Color.secondary}
         textstyle={{color: Color.white}}
         // showBack
-        Ismenu
+        menu
       />
       <CustomStatusBar
         backgroundColor={Color.white}
@@ -76,8 +91,11 @@ const LoadBoard = ({navigation}) => {
           />
         ) : (
           <FlatList
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
             contentContainerStyle={{
-              paddingBottom: moderateScale(90, 0.6),
+              paddingBottom: moderateScale(190, 0.6),
             }}
             data={loadData}
             keyExtractor={item => item.id.toString()}
@@ -116,7 +134,7 @@ export default LoadBoard;
 const styles = StyleSheet.create({
   mainScreen: {
     width: windowWidth,
-    height: windowHeight * 0.9,
+    height: windowHeight ,
     backgroundColor: Color.white,
     alignItems: 'center',
   },

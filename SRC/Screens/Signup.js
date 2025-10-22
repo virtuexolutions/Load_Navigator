@@ -1,6 +1,6 @@
-import {useNavigation} from '@react-navigation/native';
-import {Checkbox, Icon} from 'native-base';
-import React, {useState} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { Icon } from 'native-base';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -12,15 +12,15 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {moderateScale, ScaledSheet} from 'react-native-size-matters';
+import { moderateScale, ScaledSheet } from 'react-native-size-matters';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Color from '../Assets/Utilities/Color';
-import {Post} from '../Axios/AxiosInterceptorFunction';
-import CountryStatePicker from '../Components/CountryStatePicker';
+import { Post } from '../Axios/AxiosInterceptorFunction';
 import CustomButton from '../Components/CustomButton';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import CustomText from '../Components/CustomText';
+import DropDownSingleSelect from '../Components/DropDownSingleSelect';
 import SearchLocationModal from '../Components/SearchLocationModal';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
 import {
@@ -29,14 +29,8 @@ import {
   setPm_Type,
   setUserToken,
 } from '../Store/slices/auth-slice';
-import {setSelectedRole, setUserData} from '../Store/slices/common';
-import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
-import DropDownSingleSelect from '../Components/DropDownSingleSelect';
-// import {
-//   setIsEmailVerified,
-//   setIsMobileVerified,
-// } from '../Store/slices/auth';
-import navigationService from '../navigationService';
+import { setSelectedRole, setUserData } from '../Store/slices/common';
+import { apiHeader, windowHeight, windowWidth } from '../Utillity/utils';
 
 const Signup = props => {
   const selectedArea = props?.route?.params?.selectedArea;
@@ -56,7 +50,6 @@ const Signup = props => {
   const [Experience, setExperience] = useState('');
   const [confirmPassword, setconfirmPassword] = useState('');
   const [aboutUs, setaboutUs] = useState('');
-  console.log('🚀 ~ Signup ~ aboutUs:', aboutUs);
   const [Policy, setPolicy] = useState(false);
   const [InsuranceCertificate, setInsuranceCertificate] = useState(false);
   const [CarDirectory, setCarDirectory] = useState(false);
@@ -64,9 +57,13 @@ const Signup = props => {
   const [selectedState, setSelectedState] = useState('');
   const [commnuicationMode, setCommunicationMode] = useState('call');
   const [selectedUserType, setSelectedUserType] = useState('Pilot Cars');
-  const [isSelected, setIsSelected] = useState(false);
   const [isNotified, setIsNotified] = useState(false);
   const [insuranceNumber, setInsuranceNumber] = useState(false);
+
+
+
+
+  
   const onPressregister = async values => {
     const body = {
       first_name: firstName,
@@ -110,13 +107,7 @@ const Signup = props => {
       lat: userAddress?.lat,
       lng: userAddress?.lng,
     };
-    console.log(
-      '================= >>>>>>>>>>>>',
-      selectedUserType == 'Trucking company'
-        ? JSON.stringify(body, null, 2)
-        : JSON.stringify(body1, null, 2),
-    );
-
+  
     const apiBody = selectedUserType == 'Trucking company' ? body : body1;
     for (let key in apiBody) {
       if (apiBody[key] == '') {
@@ -202,13 +193,7 @@ const Signup = props => {
         style={styles.bg_con}
         resizeMode={'stretch'}
         source={require('../Assets/Images/login_bg.png')}>
-        <CustomStatusBar barStyle={'dark-content'} />
-        {/* <Header
-          title=" "
-          headerColor={'transparent'}
-          textstyle={{color: Color.white}}
-          // showBack
-        /> */}
+        <CustomStatusBar barStyle={'light-content'} />
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
@@ -319,18 +304,13 @@ const Signup = props => {
             item={selectedUserType}
             setItem={setSelectedUserType}
             width={windowWidth * 0.9}
-            // placeHolderColor={Color.darkGray}
-            // placeholder={'Ápproval for Admittance'}
             placeholder={'Select User Type'}
             dropdownStyle={{
               borderBottomWidth: 0,
               width: windowWidth * 0.85,
               marginTop: 10,
-              // paddingVertical:15,
             }}
             menuStyle={{
-              // backgroundColor:Color.red,
-              // borderColor:Color.mediumGray,
               backgroundColor: Color.black,
               borderColor: Color.mediumGray,
               width: '84%',
@@ -338,11 +318,6 @@ const Signup = props => {
               borderWidth: 1,
               overflow: 'hidden',
               marginTop: moderateScale(-6, 0.2),
-              //
-              // position:"absolute",
-              // top:-10,
-              // borderTopLeftRadius:moderateScale(5,0.2),
-              // borderTopRightRadius:moderateScale(5,0.2),
               borderBottomRightRadius: moderateScale(15, 0.2),
               borderBottomLeftRadius: moderateScale(15, 0.2),
             }}

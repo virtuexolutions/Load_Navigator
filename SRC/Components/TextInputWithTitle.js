@@ -148,6 +148,7 @@ const TextInputWithTitle = props => {
                           ? props?.fontSize
                           : moderateScale(12, 0.6),
                         fontWeight: '400',
+                        color : props.textColor ? props.textColor :'white',
                         fontFamily: 'Poppins-Regular',
                         // fontFamily: 'Poppins-Bold',
                         // fontWeight: 'bold',
@@ -165,6 +166,7 @@ const TextInputWithTitle = props => {
               secureTextEntry={!showPassword}
               placeholder={`${props.placeholder}`}
               placeholderTextColor={
+                
                 props.placeholderColor ? props.placeholderColor : Color.white
               }
               keyboardType={props.keyboardType}

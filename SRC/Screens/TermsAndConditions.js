@@ -10,6 +10,7 @@ import {windowHeight, windowWidth} from '../Utillity/utils';
 import {useNavigation} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useSelector} from 'react-redux';
+import CustomStatusBar from '../Components/CustomStatusBar';
 
 const TermsAndConditions = () => {
   const navigation = useNavigation();
@@ -23,20 +24,24 @@ const TermsAndConditions = () => {
         styles.mainScreen,
         {
           backgroundColor:
-            userRole.toLowerCase() == 'pilot' ? Color.primary : Color.white,
+            userRole.toLowerCase() == 'pilot' ? Color.primary : Color.secondary,
         },
       ]}
       //   conltentContainerStyle={{
       //     aignItems: 'center',
       //   }}
     >
+      <CustomStatusBar backgroundColor={Color.secondary} barStyle={'light-content'} />
+
       <View
         style={[
           styles.main_view,
-          // {
-          //   backgroundColor:
-          //     userRole.toLowerCase() == 'pilot' ? Color.primary : Color.white,
-          // },
+          {
+            height: windowHeight,
+            backgroundColor: Color.white,
+            backgroundColor:
+              userRole.toLowerCase() == 'pilot' ? Color.primary : Color.white,
+          },
         ]}>
         <StatusBar
           backgroundColor={
@@ -96,7 +101,7 @@ const styles = ScaledSheet.create({
     width: windowWidth,
     height: windowHeight,
     backgroundColor: Color.white,
-    aignItems: 'center',
+    // aignItems: 'center',
   },
   back: {
     width: moderateScale(35, 0.6),

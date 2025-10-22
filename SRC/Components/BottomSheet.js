@@ -20,14 +20,23 @@ import navigationService from '../navigationService';
 import PostCoveredModal from './PostCoveredModal';
 import {Post} from '../Axios/AxiosInterceptorFunction';
 import {useNavigation} from '@react-navigation/native';
+import AddCard from './AddCard';
 
 const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item, loadStatus}) => {
-  console.log('🚀 ~ BottomSheet ~ loadStatus:', loadStatus);
-  console.log('🚀 ~ BottomSheet ~ loadStatus:', loadStatus);
+  console.log(
+    '🚀 ~ BottomSheet ~ =====================> sssssssssssssssssitem:',
+    item?.card,
+    item?.origin,
+  );
   const navigation = useNavigation();
   const userRole = useSelector(state => state.commonReducer.selectedRole);
   const token = useSelector(state => state.authReducer.token);
 
+  const [isModal, setIsModal] = useState(false);
+  console.log(
+    '🚀 ~ ====================== >>>>> isModalVisible:',
+    isModalVisible,
+  );
   const origin =
     typeof item?.origin === 'string' ? JSON.parse(item?.origin) : item?.origin;
   const destination =
@@ -58,12 +67,21 @@ const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item, loadStatus}) => {
 
   const checkcompletionDate = () => {
     if (!item?.end_date) return false;
+
     const today = new Date();
     const itemDate = new Date(item?.end_date);
+
+    // strip time part, only compare YYYY-MM-DD
     const todayStr = today.toISOString().split('T')[0];
     const itemStr = itemDate.toISOString().split('T')[0];
-    const isTodaycompletion = itemStr === todayStr;
-    setIsCompletionToday(isTodaycompletion);
+
+    const isToday = itemStr === todayStr;
+    const isPast = itemDate < today;
+
+    // Agar aaj ya past hai → allow, warna false
+    const isAllowed = isToday || isPast;
+
+    setIsCompletionToday(isAllowed);
   };
 
   const statusUpdate = async () => {
@@ -99,7 +117,7 @@ const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item, loadStatus}) => {
       // closeOnPressMask={true}
       customStyles={{
         container: {
-          paddingVertical : moderateScale(5,.6),
+          paddingVertical: moderateScale(5, 0.6),
           borderTopRightRadius: 30,
           borderTopLeftRadius: 30,
           height:
@@ -152,10 +170,7 @@ const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item, loadStatus}) => {
                   : loadStatus.toLowerCase() == 'complete'
                   ? '#42d1fa'
                   : 'yellow',
-              // width: moderateScale(50, 0.6),
               height: windowHeight * 0.025,
-              // justifyContent: 'center',
-              // alignItems: 'center',
               paddingHorizontal: moderateScale(5, 0.6),
               borderRadius: moderateScale(20, 0.6),
               marginLeft: moderateScale(10, 0.6),
@@ -414,37 +429,54 @@ const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item, loadStatus}) => {
                 borderRadius={moderateScale(30, 0.3)}
                 fontSize={moderateScale(15, 0.3)}
               />
-            )}
-
+            )} 
+{/* 
             {userRole?.toLowerCase() != 'pilot' &&
               isCompletionToday &&
-              loadStatus !== 'pending' && (
-                <CustomButton
-                  text={
-                    isLoading ? (
-                      <ActivityIndicator size={'small'} color={Color.white} />
-                    ) : (
-                      'complete'
-                    )
-                  }
-                  textColor={Color.white}
-                  width={windowWidth * 0.8}
-                  height={windowHeight * 0.05}
-                  marginTop={moderateScale(15, 0.3)}
-                  onPress={() => {
-                    statusUpdate();
-                    // Rbref?.current?.close();
-                  }}
-                  bgColor={Color.secondary}
-                  borderWidth={1}
-                  borderColor={Color.secondary}
-                  borderRadius={moderateScale(30, 0.3)}
-                  fontSize={moderateScale(15, 0.3)}
-                  disabled={
-                    loadStatus.toLowerCase() == 'complete' ? true : false
-                  }
-                />
-              )}
+              loadStatus !== 'pending' && ( */}
+                <>
+                  <CustomButton
+                    text={
+                      isLoading ? (
+                        <ActivityIndicator size={'small'} color={Color.white} />
+                      ) : (
+                        'complete'
+                      )
+                    }
+                    textColor={Color.white}
+                    width={windowWidth * 0.8}
+                    height={windowHeight * 0.05}
+                    marginTop={moderateScale(5, 0.3)}
+                    onPress={() => {
+                      setIsModal(true);
+                      // statusUpdate();
+                      // Rbref?.current?.close();
+                    }}
+                    bgColor={Color.secondary}
+                    borderWidth={1}
+                    borderColor={Color.secondary}
+                    borderRadius={moderateScale(30, 0.3)}
+                    fontSize={moderateScale(15, 0.3)}
+                    // disabled={
+                    //   item?.card == null
+                    //     ? true
+                    //     : loadStatus?.toLowerCase() == 'complete'
+                    //     ? true
+                    //     : false
+                    // }
+                  />
+                  {item?.card == null && (
+                    <CustomText
+                      style={{
+                        fontSize: moderateScale(11, 0.6),
+                        // marginTop: moderateScale(15, 0.6),
+                        color: Color.red,
+                      }}>
+                      pilot has not added their payment card yet.
+                    </CustomText>
+                  )} 
+                </>
+              {/* )} */}
           </>
         )}
 
@@ -453,6 +485,12 @@ const BottomSheet = ({Rbref, setRbRef, setLoadStatus, item, loadStatus}) => {
           setIsModalVisible={setIsModalVisible}
           item={item}
           setLoadStatus={setLoadStatus}
+        />
+        <AddCard
+          setLoadStatus={setLoadStatus}
+          item={item}
+          setIsModalVisible={setIsModal}
+          isModalVisible={isModal}
         />
       </View>
     </RBSheet>

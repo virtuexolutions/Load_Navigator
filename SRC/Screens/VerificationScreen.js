@@ -49,12 +49,12 @@ const VerificationScreen = () => {
     state => state.commonReducer.cometRegistrationStatus,
   );
   const userData = useSelector(state => state.commonReducer.userData);
-  console.log("🚀 ~ VerificationScreen ~ userData:", userData)
+  console.log('🚀 ~ VerificationScreen ~ userData:', userData);
   const token = useSelector(state => state.authReducer.token);
-  console.log("🚀 ~ VerificationScreen ~ token:", token)
+  console.log('🚀 ~ VerificationScreen ~ token:', token);
   const mobileVerified = useSelector(state => state.authReducer.numberVerified);
   const emailVerified = useSelector(state => state.authReducer.emailVerified);
-  console.log("🚀 ~ VerificationScreen ~ emailVerified:", emailVerified)
+  console.log('🚀 ~ VerificationScreen ~ emailVerified:', emailVerified);
   const [emailCode, setEmailCode] = useState('');
   const [phoneCode, setPhoneCode] = useState('');
   const [emailVerify, setEmailVerify] = useState(false);
@@ -111,7 +111,10 @@ const VerificationScreen = () => {
       {phone: userData?.contact},
       apiHeader(token),
     );
-    console.log("🚀 ~ sendMobileOtp ~ response===================:", response?.data)
+    console.log(
+      '🚀 ~ sendMobileOtp ~ response===================:',
+      response?.data,
+    );
     setIsLoading(false);
     if (response?.data) {
       // return console.log(response?.data?.code)
@@ -125,13 +128,13 @@ const VerificationScreen = () => {
   };
   const ConfirmMobileOTP = async () => {
     const url = 'auth/phone_verify';
-    setIsLoading(true);
+    setLoading(true);
     const response = await Post(
       url,
       {phone: userData?.contact, phone_code: phoneCode},
       apiHeader(token),
     );
-    setIsLoading(false);
+    setLoading(false);
     if (response != undefined) {
       console.log('verified');
       dispatch(setIsMobileVerified(true));
@@ -147,12 +150,15 @@ const VerificationScreen = () => {
       {email: userData?.email},
       apiHeader(token),
     );
-    console.log("🚀 ~ sendEmailOtp ~ response:==========================", response?.data)
+    console.log(
+      '🚀 ~ sendEmailOtp ~ response:==========================',
+      response?.data,
+    );
     setLoading(false);
     if (response?.data) {
       setType('email');
       setModalVisible(true);
-      setEmailCode('')
+      setEmailCode('');
       // console.log('Response ===== verified');
     }
   };
@@ -323,7 +329,7 @@ const VerificationScreen = () => {
                 end={{x: 1, y: 0}}
                 style={{
                   height: '100%',
-                  width: `${emailVerified  ? 50 : mobileVerified ? 100 : 0}%`,
+                  width: `${emailVerified ? 50 : mobileVerified ? 100 : 0}%`,
                   borderTopRightRadius: moderateScale(10, 0.3),
                   borderBottomRightRadius: moderateScale(10, 0.3),
                 }}></LinearGradient>
@@ -443,7 +449,7 @@ const VerificationScreen = () => {
                 <>
                   <CustomText
                     style={{
-                      color: Color.themeColor,
+                      color: Color.mediumGray,
                     }}>
                     {type == 'phone'
                       ? `${userData?.contact} `
@@ -451,7 +457,7 @@ const VerificationScreen = () => {
                   </CustomText>
                   <CustomText
                     style={{
-                      color: Color.themeColor,
+                      color: Color.mediumGray,
                     }}>
                     currently your code is {mobileCode}
                   </CustomText>
@@ -499,7 +505,8 @@ const VerificationScreen = () => {
           </View>
           <CustomButton
             text={
-              loading ? (
+       
+                   loading ? (
                 <ActivityIndicator color={'#FFFFFF'} size={'small'} />
               ) : (
                 'Submit'

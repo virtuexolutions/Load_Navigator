@@ -13,11 +13,12 @@ import BottomSheet from '../Components/BottomSheet';
 import CustomText from '../Components/CustomText';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 
-const LeadBoardCard = ({item}) => {
-  console.log("🚀 ~ LeadBoardCard ~ item:", typeof item?.origin)
+const LeadBoardCard = ({item, fromMyjobs}) => {
+  console.log('🚀 ~ LeadBoardCard ~ item:', typeof item?.origin);
   const IsFocused = useIsFocused();
   const token = useSelector(state => state.authReducer.token);
   const userData = useSelector(state => state.commonReducer.userData);
+  const [isModalVisible ,setIsModalVisible] = useState(false)
   console.log(
     '🚀 ~ LeadBoardCard======================= >>>>>>>>>>>>',
     JSON.stringify(
@@ -27,8 +28,8 @@ const LeadBoardCard = ({item}) => {
       2,
     ),
   );
-  const finalorigin = JSON.parse(item?.origin)
-  const finaldestination = JSON.parse(item?.destination)
+  const finalorigin = JSON.parse(item?.origin);
+  const finaldestination = JSON.parse(item?.destination);
 
   const [isLoading, setIsLoading] = useState(false);
   const [leaderData, setLeaderData] = useState([]);
@@ -42,6 +43,9 @@ const LeadBoardCard = ({item}) => {
     const recent = now - createdTime <= THREE_HOURS;
     setIsRecent(recent);
   }, []);
+
+
+
   return (
     <>
       <TouchableOpacity
@@ -51,20 +55,20 @@ const LeadBoardCard = ({item}) => {
         // }}
         style={styles.card}>
         <View style={styles.row}>
-          {/* {isRecent && ( */}
-          <CustomText
-            style={{
-              color: Color.black,
-              fontSize: moderateScale(10, 0.6),
-              backgroundColor: Color.lightGrey,
-              paddingHorizontal: moderateScale(5, 0.6),
-              borderRadius: moderateScale(10, 0.6),
-              position: 'absolute',
-              right: 90,
-            }}>
-            recent
-          </CustomText>
-          {/* )}  */}
+          {isRecent && (
+            <CustomText
+              style={{
+                color: Color.black,
+                fontSize: moderateScale(10, 0.6),
+                backgroundColor: Color.lightGrey,
+                paddingHorizontal: moderateScale(5, 0.6),
+                borderRadius: moderateScale(10, 0.6),
+                position: 'absolute',
+                right: 90,
+              }}>
+              recent
+            </CustomText>
+          )}
 
           <View
             style={[
@@ -163,17 +167,20 @@ const LeadBoardCard = ({item}) => {
             {moment(item?.start_date).format('DD-MM-YYYY')}
           </CustomText>
         </View>
-        <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-          <View style={styles.icon_view}>
-            <Icon
-              name="chat"
-              as={MaterialIcons}
-              size={moderateScale(12, 0.6)}
-              color={Color.white}
-            />
+        {!fromMyjobs && (
+          <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+            <View style={styles.icon_view}>
+              <Icon
+                name="chat"
+                as={MaterialIcons}
+                size={moderateScale(12, 0.6)}
+                color={Color.white}
+              />
+            </View>
+            <CustomText
+              style={styles.text}>{`${item?.miles} miles`}</CustomText>
           </View>
-          <CustomText style={styles.text}>{`${item?.miles} miles`}</CustomText>
-        </View>
+        )}
         {/* <View
                     style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
                     <View style={styles.icon_view}>
@@ -183,10 +190,21 @@ const LeadBoardCard = ({item}) => {
                         size={moderateScale(12, 0.6)}
                         color={Color.white}
                       />
-                    </View>
-
-                    <CustomText style={styles.text}>{item?.weight}</CustomText>
-                  </View> */}
+                      </View>
+                      
+                      <CustomText style={styles.text}>{item?.weight}</CustomText>
+                      </View> */}
+        <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+          <View style={styles.icon_view}>
+            <Icon
+              name="phone"
+              as={AntDesign}
+              size={moderateScale(12, 0.6)}
+              color={Color.white}
+            />
+          </View>
+          <CustomText style={styles.text}>{item?.contact}</CustomText>
+        </View>
         {/* <View
                     style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
                     <View style={styles.icon_view}>
@@ -212,18 +230,6 @@ const LeadBoardCard = ({item}) => {
                     <CustomText style={styles.text}>
                       {'Call For rate'}
                     </CustomText>
-                  </View>
-                  <View
-                    style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-                    <View style={styles.icon_view}>
-                      <Icon
-                        name="phone"
-                        as={AntDesign}
-                        size={moderateScale(12, 0.6)}
-                        color={Color.white}
-                      />
-                    </View>
-                    <CustomText style={styles.text}>{item?.contact}</CustomText>
                   </View>
                   <View
                     style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
@@ -261,34 +267,53 @@ const LeadBoardCard = ({item}) => {
                         ]}>
                         Lead
                         </CustomText> */}
-        <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
-          <View style={styles.icon_view}>
-            <Icon
-              name="clockcircle"
-              as={AntDesign}
-              size={moderateScale(12, 0.6)}
-              color={Color.white}
-            />
+        {!fromMyjobs && (
+          <View style={[styles.row, {marginTop: moderateScale(10, 0.6)}]}>
+            <View style={styles.icon_view}>
+              <Icon
+                name="clockcircle"
+                as={AntDesign}
+                size={moderateScale(12, 0.6)}
+                color={Color.white}
+              />
+            </View>
+            <CustomText style={styles.text}>
+              {moment(item?.created_at).format('LT')}
+            </CustomText>
           </View>
-          <CustomText style={styles.text}>
-            {moment(item?.created_at).format('LT')}
-          </CustomText>
-        </View>
-        <TouchableOpacity
-          onPress={() => {
-            rbref?.current?.open();
-          }}
-          style={styles.load_btn}>
-          <CustomText
-            style={{
-              color: Color.white,
-              fontSize: moderateScale(12, 0.6),
-            }}>
-            Load more
-          </CustomText>
-        </TouchableOpacity>
+        )}
+        {!fromMyjobs && (
+          <TouchableOpacity
+            onPress={() => {
+              rbref?.current?.open();
+            }}
+            style={styles.load_btn}>
+            <CustomText
+              style={{
+                color: Color.white,
+                fontSize: moderateScale(12, 0.6),
+              }}>
+              Load more
+            </CustomText>
+          </TouchableOpacity>
+        )}
+          {fromMyjobs && (
+          <TouchableOpacity
+            onPress={() => {
+            setIsModalVisible(true)
+            }}
+            style={styles.load_btn}>
+            <CustomText
+              style={{
+                color: Color.white,
+                fontSize: moderateScale(12, 0.6),
+              }}>
+              add card
+            </CustomText>
+          </TouchableOpacity>
+        )}
       </TouchableOpacity>
-      <BottomSheet Rbref={rbref} item={item}  loadStatus={item?.status}/>
+      <BottomSheet Rbref={rbref} item={item} loadStatus={item?.status} />
     </>
   );
 };
@@ -309,8 +334,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: windowWidth * 0.85,
-    paddingVertical : moderateScale(10,.6),
-    // height: windowHeight * 0.29,
+    paddingVertical: moderateScale(10, 0.6),
     backgroundColor: Color.grey,
     borderRadius: moderateScale(20, 0.6),
     marginTop: moderateScale(10, 0.6),
@@ -318,13 +342,13 @@ const styles = StyleSheet.create({
     borderColor: Color.secondary,
     paddingLeft: moderateScale(15, 0.6),
     paddingVertical: moderateScale(15, 0.6),
+
+    overflow: 'hidden',
   },
   card_heading: {
     fontSize: moderateScale(18, 0.6),
     color: Color.white,
     paddingHorizontal: moderateScale(5, 0.6),
-    // width : windowWidth *0.6,
-    // backgroundColor: 'red',
   },
   row: {
     marginTop: moderateScale(5, 0.6),
@@ -344,7 +368,6 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(12, 0.6),
     marginLeft: moderateScale(5, 0.6),
     color: Color.black,
-    // backgroundColor :'red'
   },
   badges: {
     width: moderateScale(70, 0.6),

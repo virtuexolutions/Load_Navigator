@@ -552,7 +552,8 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   dropDownsContainer: {
-    gap: moderateScale(10, 0.2),
+    // paddingVertical :  moderateScale(10,.6),
+    gap: moderateScale(12, 0.2),
     marginTop: moderateScale(20, 0.2),
     marginBottom: moderateScale(10, 0.2),
     // backgroundColor :'red',

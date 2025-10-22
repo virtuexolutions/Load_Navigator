@@ -13,34 +13,71 @@ import ScanRoute from '../Components/ScanRoute';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import CustomImage from '../Components/CustomImage';
 import Header from '../Components/Header';
+// import RNFetchBlob from 'rn-fetch-blob';
+// import RNFetchBlob from 'react-native-blob-util';
+import RNFS from 'react-native-fs';
+import navigationService from '../navigationService';
 
 const CreateRoute = () => {
   const cameraRef = useRef(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+
   const [isRouteFound, setIsRouteFound] = useState(false);
   const [routeUrl, setRouteUrl] = useState('');
+  const [finalOrigin, setfinalOrigin] = useState({});
+  const [finaldestination, setfinalDestination] = useState({});
+
+  const [finalWayPoint, setfinalWayPoint] = useState([]);
+
   const [isPermitScan, setisPermitScan] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
   const [parsed, setParsed] = useState(null);
-  const [url, setUrl] = useState(null);
+  const [url, setUrl] = useState(false);
+  console.log('🚀 ~ CreateRoute ~ url:', url);
   const [isLoading, setIsLoading] = useState(false);
   const [permitData, setPermitData] = useState(null);
 
   const takePicture = async () => {
     if (cameraRef.current) {
-      const options = {quality: 0.5, base64: true, includeBase64: true};
-      const data = await cameraRef.current.takePictureAsync(options);
-      setModalVisible(true);
-      setIsLoading(true);
-      if (data?.base64) {
-        const path = data?.base64;
-        await processImage(path);
+      try {
+        const capturedPhoto = await cameraRef.current.takePhoto({
+          flash: 'off',
+          qualityPrioritization: 'quality',
+        });
+
+        console.log('📸 Photo path:', capturedPhoto.path);
+
+        // Convert to base64 using react-native-fs
+        const base64Data = await RNFS.readFile(capturedPhoto.path, 'base64');
+        const base64URI = `data:image/jpeg;base64,${base64Data}`;
+
+        console.log('✅ Base64 string ready:', base64URI.slice(0, 100) + '...');
+
+        setModalVisible(true);
+        setIsLoading(true);
+
+        await processImage(base64URI);
+      } catch (error) {
+        console.error('❌ Error taking photo:', error);
       }
     }
   };
+
+  // const takePicture = async () => {
+  //   if (cameraRef.current) {
+  //     const options = {quality: 0.5, base64: true, includeBase64: true};
+  //     const data = await cameraRef.current.takePictureAsync(options);
+  //     setModalVisible(true);
+  //     setIsLoading(true);
+  //     if (data?.base64) {
+  //       const path = data?.base64;
+  //       await processImage(path);
+  //     }
+  //   }
+  // };
 
   // const detectTextWithRetry = async (uri, maxRetries = 5) => {
   //   let retries = 0;
@@ -137,9 +174,9 @@ const CreateRoute = () => {
         confirmWithUser: false,
       });
       if (!error) {
-        console.log('im in error blocks');
+        console.log('====================== >>>>>>>>im in !error blocks');
         setParsed(parsed);
-        setUrl(url);
+        setUrl(true);
         setIsLoading(false);
         // setErrorMessage('Unable to read permit. Please upload a clearer photo');
         return;
@@ -181,7 +218,15 @@ const CreateRoute = () => {
 
   const openMaps = () => {
     if (!url) return Alert.alert('No route', 'No route URL available');
-    Linking.openURL(url);
+
+    navigationService.navigate('MapScreen', {
+      data: {
+        origin: finalOrigin,
+        destination: finaldestination,
+        waypoint: finalWayPoint,
+      },
+    });
+    // Linking.openURL(url);
     setModalVisible(false);
     setRouteUrl('');
   };
@@ -300,7 +345,7 @@ const CreateRoute = () => {
   const ORIGIN_LABELS =
     /^\s*(?:origin|from|starting\s*point|start|pickup|load\s*from|begin(?:ning)?|routing\s*from)\b[:\s\-]*/i;
   const DEST_LABELS =
-    /\b(destination|trip\s*destination|to|drop\s*off|end(?:ing)?|end\s*at|finish(?:ing)?\s*point|unload|delivery|routing\s*to|deliver\s*to|travel(?:ling|ing)?\s*to)\b[:\s\-]*/i;
+    /\b(destination|trip[\s\-_]*destination|direction|to|drop\s*off|end(?:ing)?|end\s*at|finish(?:ing)?\s*point|unload|delivery|routing\s*to|deliver\s*to|travel(?:ling|ing)?\s*to|travel(?:ling|ing)?\s*point|border\s*end(?:ing)?|exit(?:\s*point)?)\b[:\s\-]*/i;
 
   const ROUTE_START_LABELS =
     /^\s*(?:route|routes\s*traveled|start\s*on|routes|routing|over\s*routes|highway\s*routing|detailed\s*routing)\b[:\s\-]*/i;
@@ -460,10 +505,16 @@ const CreateRoute = () => {
           l.match(/^\s*start\s*at[:\s\-]+(.+)$/i) ||
           l.match(/(?:^|\b)routing\s*from[:\s\-]*(.*)$/i) ||
           l.match(/^\s*routing\s*from[:\s\-]+(.+)$/i) ||
+          l.match(/^\s*Border\s*Start[:\s\-]+(.+)$/i) ||
           l.match(/^\s*(?:origin|trip\s*origin)[:\s\-]+(.+)$/i) ||
           l.match(/^\s*(?:origin|trip\s*origin|pickup\s*at)[:\s\-]+(.+)$/i) ||
           l.match(/^\s*travel(?:ling|ing)?\s+from\s+(.+)$/i) ||
+          l.match(l.match(/^\s*trip[\s\-\_]*origin[:\s\-]+(.+)$/i)) ||
           l.match(/\bOrigin[:\s\-]+([A-Za-z0-9\;\,\-\s]+)/i) ||
+          l.match(/^\s*(Starting\s*Point|Start\s*Point)[:\s\-]+(.+)$/i) ||
+          l.match(/^\s*(Entry\s*Point|Entry)[:\s\-]+(.+)$/i) ||
+          l.match(l.match(/^\s*bridge[\s\-_]*crossing[:\s\-]+(.+)$/i)) ||
+          l.match(/^\s*Travel(?:ling|ing)?\s*From[:\s\-]+(.+)$/i) ||
           // l.match(/^\s*start(?:ing)?\s*(?:point|location)?[:\s\-]+(.+)$/i) ||
           l.match(/^\s*begin(?:ning)?\s*(?:point|location)?[:\s\-]+(.+)$/i);
 
@@ -715,12 +766,19 @@ const CreateRoute = () => {
     }
 
     // Step 5: Build URL from lat/lng (use validated coordinates)
-    const url = buildGoogleMapsDirectionsUrl({
-      origin: `${validOrigin.lat},${validOrigin.lng}`,
-      destination: `${validDestination.lat},${validDestination.lng}`,
-      waypoints: validWaypoints.map(w => `${w.lat},${w.lng}`),
-    });
+    // const url = buildGoogleMapsDirectionsUrl({
+    //   origin: `${validOrigin.lat},${validOrigin.lng}`,
+    //   destination: `${validDestination.lat},${validDestination.lng}`,
+    //   waypoints: validWaypoints.map(w => `${w.lat},${w.lng}`),
+    // });
 
+    setfinalOrigin({lat: validOrigin?.lat, lng: validOrigin?.lng});
+    setfinalDestination({
+      lat: validDestination?.lat,
+      lng: validDestination?.lng,
+    });
+    setfinalWayPoint(validWaypoints.map(w => `${w.lat},${w.lng}`));
+    // navigationService.navigate('MapScreen');
     // Clear any prior error on success
     setErrorMessage(null);
     // openMaps(url);
@@ -785,13 +843,13 @@ const CreateRoute = () => {
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor={Color.black} barStyle={'light-content'} />
-        <Header
-          title="create a route"
-          headerColor={Color.black}
-          textstyle={{color: Color.white}}
-          showBack
-          // menu
-        />
+      <Header
+        title="create a route"
+        headerColor={Color.black}
+        textstyle={{color: Color.white}}
+        showBack
+        // menu
+      />
       {/* <CustomText style={styles.title}>Create A Route</CustomText> */}
       <View style={styles.scanBoxContainer}>
         <CustomText style={styles.label}>Scan Permit</CustomText>
@@ -824,6 +882,7 @@ const CreateRoute = () => {
         marginTop={moderateScale(15, 0.6)}
         onPress={() => {
           setIsModalVisible(true);
+          console.log('agsdhfgahsd gfjagsd fj =====================');
           // takePicture();
         }}
       />
@@ -866,12 +925,13 @@ const CreateRoute = () => {
             style={[
               styles.modalContent,
               {
-                height: url
-                  ? windowHeight * 0.4
-                  : errorMessage != ''
-                  ? windowHeight * 0.3
-                  : windowHeight * 0.3,
-                padding: moderateScale(15, 0.6),
+                // height: url
+                //   ? windowHeight * 0.4
+                //   : errorMessage != ''
+                //   ? windowHeight * 0.3
+                //   : windowHeight * 0.3,
+                paddingVertical: moderateScale(20, 0.6),
+                paddingHorizontal: moderateScale(12, 0.6),
                 // backgroundColor: 'red',
                 backgroundColor: isLoading ? 'rgba(0, 0, 0, 0.7)' : Color.white,
               },
@@ -914,7 +974,7 @@ const CreateRoute = () => {
                     paddingHorizontal: moderateScale(5, 0.6),
                     marginTop: moderateScale(-75, 0.6),
                     alignSelf: 'center',
-                    textAlign :'center',
+                    textAlign: 'center',
                     width: '80%',
                     // backgroundColor :'red'
                   }}>
@@ -1084,10 +1144,10 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   modalContainer: {
-    flex: 1,
+    width: windowWidth,
+    height: windowHeight,
+    backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'center',
-    // backgroundColor : Color.white
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
   modalContent: {
     margin: 20,
@@ -1108,8 +1168,8 @@ const styles = StyleSheet.create({
   error_container: {
     alignItems: 'center',
     justifyContent: 'center',
-    height: '100%',
-    width: '100%',
+    // height: '100%',
+    // width: '100%',
     borderRadius: moderateScale(10, 0.6),
   },
 });

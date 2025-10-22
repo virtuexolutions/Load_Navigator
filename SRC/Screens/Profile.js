@@ -35,9 +35,11 @@ const Profile = () => {
   const token = useSelector(state => state.authReducer.token);
   console.log('🚀 ~ Profile ~ token:', token);
   const userData = useSelector(state => state.commonReducer.userData);
+  console.log('🚀 ~ Profile ~ userData:', userData);
   const userRole = useSelector(state => state.commonReducer.selectedRole);
   console.log('🚀 ~ Profile ~ userData:', userData);
   const [email, setEmail] = useState(userData?.email || '');
+  console.log("🚀 ~ Profile ~ email:", email)
   const [Contact, setContact] = useState(userData?.contact || '');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [firstName, setFirstName] = useState(userData?.first_name || '');
@@ -194,15 +196,19 @@ const Profile = () => {
           style={styles.text_input}>
           {userRole.toLowerCase() == 'pilot' ? (
             <>
+              <CustomText
+                style={{
+                  fontSize: moderateScale(14, 0.6),
+                  color: Color.white,
+                }}>
+                {`id :${userData?.pilot_custom_id}`}
+              </CustomText>
               <TextInputWithTitle
                 titleStlye={{
-                  color:
-                    userRole.toLowerCase() == 'pilot'
-                      ? Color.white
-                      : Color.black,
+                  color: Color.white,
                 }}
-                title={'First Name'}
-                placeholder={'CFirst Name'}
+                title={'First Name '}
+                placeholder={'First Name'}
                 setText={setFirstName}
                 value={firstName}
                 // secureText={true}

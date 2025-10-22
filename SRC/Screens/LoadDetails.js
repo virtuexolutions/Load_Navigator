@@ -36,17 +36,14 @@ const LoadDetails = props => {
   const isPostDetails = props?.route?.params?.isPostDetails;
   const item = props?.route?.params?.item;
   const repost = props?.route?.params?.repost;
-  const token = useSelector(state => state.authReducer.token);
-  console.log('🚀 ~ LoadDetails ~ token:', token);
-  const userData = useSelector(state => state.commonReducer.userData);
-  const [isMiles, setIsMiles] = useState(false);
   const repostrate = item?.rate;
+
+  const token = useSelector(state => state.authReducer.token);
+  const userData = useSelector(state => state.commonReducer.userData);
+
   const perMilesOnly = repostrate?.split('/')[1]; //
+  const [isMiles, setIsMiles] = useState(false);
   const [selectedRate, setSelectedRate] = useState('/per miles');
-  const [selectedSize, setSelectedSize] = useState('select type');
-  const [isSize, setIsSize] = useState(false);
-  const [weight, setWeight] = useState('');
-  const [dimensions, setDimensions] = useState('');
   const [originState, setOriginState] = useState('');
   const [destinationState, setdestinationState] = useState('');
 
@@ -68,10 +65,19 @@ const LoadDetails = props => {
   const [destination, setDestination] = useState(
     repost ? item?.destination : {},
   );
-  console.log('🚀 ~ LoadDetails ~ destination:', JSON.parse(destination));
-  const repostDestination = JSON.parse(destination);
-  const repostOrigin = JSON.parse(origin);
+  const repostDestination =
+    repost && item?.destination
+      ? typeof item.destination === 'string'
+        ? JSON.parse(item.destination)
+        : item.destination // agar already object hai toh direct use
+      : null;
 
+  const repostOrigin =
+    repost && item?.origin
+      ? typeof item.origin === 'string'
+        ? JSON.parse(item.origin)
+        : item.origin
+      : null;
   const rate1 = item?.rate;
   const numberOnly = rate1?.split('/')[0];
   const [Rate, setRate] = useState(repost ? numberOnly : 0);
@@ -97,8 +103,6 @@ const LoadDetails = props => {
     repost && item?.communication_mode == 'text-only' ? true : false,
   );
   const [totalRate, setTotalRate] = useState(0);
-  const [fuelPrice, setFuelPrice] = useState(0);
-  const [tollPrice, setTollPrice] = useState(0);
   const [description, setDescription] = useState(
     repost ? item?.description : '',
   );
@@ -261,9 +265,6 @@ const LoadDetails = props => {
       setDistance('');
       setSelectedRate('');
       setTitle('');
-      setWeight('');
-      setDimensions('');
-      setSelectedSize('');
       setSelectedRate('');
 
       navigationN.goBack();
@@ -301,13 +302,24 @@ const LoadDetails = props => {
       setDistance('');
       setSelectedRate('');
       setTitle('');
-      setWeight('');
-      setDimensions('');
-      setSelectedSize('');
       setSelectedRate('');
 
       navigationN.goBack();
     }
+  };
+
+  const cancel = () => {
+    setSelectedRequirement([]);
+    setSelectedPosition([]);
+    setOrigin({});
+    setDestination({});
+    setRate(0);
+    setDistance('');
+    setSelectedRate('');
+    setTitle('');
+    setSelectedRate('');
+
+    navigationN.goBack();
   };
 
   return (
@@ -317,8 +329,8 @@ const LoadDetails = props => {
           title="load details"
           headerColor={Color.secondary}
           textstyle={{color: Color.white}}
-          showBack
-          // menu
+          // showBack
+          menu
         />
         <CustomStatusBar
           backgroundColor={Color.white}
@@ -351,6 +363,7 @@ const LoadDetails = props => {
                 paddingHorizontal: moderateScale(10, 0.6),
                 borderRadius: moderateScale(10, 0.6),
                 height: windowHeight * 0.22,
+                paddingVertical: moderateScale(15, 0.6),
               }}>
               <CustomText isBold style={styles.heading_text}>
                 Origin
@@ -969,6 +982,9 @@ const LoadDetails = props => {
               textTransform={'capitalize'}
             />
             <CustomButton
+            onPress={() =>{
+              cancel()
+            }}
               text={'Cancel'}
               fontSize={moderateScale(14, 0.3)}
               textColor={Color.black}
@@ -1081,6 +1097,7 @@ const styles = StyleSheet.create({
   },
   heading_text: {
     fontSize: moderateScale(15, 0.6),
+    paddingTop: moderateScale(5, 0.6),
     // marginTop: moderateScale(10, 0.6),
   },
   header: {

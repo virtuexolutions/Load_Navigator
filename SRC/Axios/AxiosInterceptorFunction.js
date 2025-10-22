@@ -2,6 +2,8 @@ import axios from 'axios';
 import {Alert} from 'react-native';
 // import NetworkErrorAlert from "../Components/NetworkErrorAlert";
 import {baseUrl} from '../Config';
+import {store} from '../Store';
+import {setErrorAlert} from '../Store/slices/common';
 
 /**
  * @description Sends a Get request to api
@@ -31,33 +33,19 @@ let Get = async (route, token, showAlert = true) => {
     let networkError = error.message === 'Network Error';
     if (showAlert == true) {
       if (networkError === true) {
-        Alert.alert(
-          error.message,
-          'Please Check Your Network Connection',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                console.log('OK Pressed');
-              },
-            },
-          ],
-          {cancelable: false},
+        store.dispatch(
+          setErrorAlert({
+            title: 'Network  Error',
+            message: 'Please Check Your Network Connection',
+          }),
         );
         // <NetworkErrorAlert/>
       } else {
-        Alert.alert(
-          'Submission Errors',
-          error.response.data.message,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                console.log('OK Pressed');
-              },
-            },
-          ],
-          {cancelable: false},
+        store.dispatch(
+          setErrorAlert({
+            title: 'submission Error',
+            message: error?.response?.data?.message || 'Something went wrong!',
+          }),
         );
       }
     }
@@ -86,34 +74,22 @@ let Post = async (route, data, headers, showAlert = true) => {
       if (networkError === true) {
         console.log('sadasdsad');
 
-        Alert.alert(
-          error.message,
-          'Please Check Your Network Connection',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                console.log('OK Pressed');
-              },
-            },
-          ],
-          {cancelable: false},
+        store.dispatch(
+          setErrorAlert({
+            title: 'Network  Error',
+            message: 'Please Check Your Network Connection',
+          }),
         );
         // <NetworkErrorAlert/>
       } else {
-        Alert.alert(
-          'Submission Errors',
-          error.response.data.message,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                console.log('OK Pressed');
-              },
-            },
-          ],
-          {cancelable: false},
+        console.log('============================ >>>>>>>>>>>>>>');
+        store.dispatch(
+          setErrorAlert({
+            title: 'submission Error',
+            message: error?.response?.data?.message || 'Something went wrong!',
+          }),
         );
+        return undefined;
       }
     }
     return undefined;
@@ -137,46 +113,30 @@ let Patch = async (route, data, headers, showAlert = true) => {
     let networkError = error.message === 'Network Error';
     if (showAlert == true) {
       if (networkError === true) {
-        Alert.alert(
-          error.message,
-          'Please Check Your Network Connection',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                console.log('OK Pressed');
-              },
-            },
-          ],
-          {cancelable: false},
+        store.dispatch(
+          setErrorAlert({
+            title: 'Network  Error',
+            message: 'Please Check Your Network Connection',
+          }),
         );
         console.log('sadasdsad');
         // <NetworkErrorAlert/>
       } else {
-        Alert.alert(
-          'Submission Errors',
-          error.response.data.message,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                console.log('OK Pressed');
-              },
-            },
-          ],
-          {cancelable: false},
+        store.dispatch(
+          setErrorAlert({
+            title: 'submission Error',
+            message: error?.response?.data?.message || 'Something went wrong!',
+          }),
         );
       }
     }
   }
 };
 
-
-
 let Put = async (route, data, headers, showAlert = true) => {
   const apiUrl = URL(route);
   console.log('here is the url =>', apiUrl);
- 
+
   try {
     return await axios.put(apiUrl, data, headers);
   } catch (error) {
@@ -184,32 +144,18 @@ let Put = async (route, data, headers, showAlert = true) => {
     let networkError = error.message === 'Network Error';
     if (showAlert) {
       if (networkError) {
-        Alert.alert(
-          error.message,
-          'Please Check Your Network Connection',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                console.log('OK Pressed');
-              },
-            },
-          ],
-          { cancelable: false }
+        store.dispatch(
+          setErrorAlert({
+            title: 'Network  Error',
+            message: 'Please Check Your Network Connection',
+          }),
         );
       } else {
-        Alert.alert(
-          'Submission Errors',
-          error.response?.data?.message || 'Something went wrong.',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                console.log('OK Pressed');
-              },
-            },
-          ],
-          { cancelable: false }
+        store.dispatch(
+          setErrorAlert({
+            title: 'submission Error',
+            message: error?.response?.data?.message || 'Something went wrong!',
+          }),
         );
       }
     }
@@ -228,36 +174,22 @@ let Delete = async (route, data, headers, showAlert = true) => {
     let networkError = error.message === 'Network Error';
     if (showAlert == true) {
       if (networkError === true) {
-        Alert.alert(
-          error.message,
-          'Please Check Your Network Connection',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                console.log('OK Pressed');
-              },
-            },
-          ],
-          {cancelable: false},
+        store.dispatch(
+          setErrorAlert({
+            title: 'Network  Error',
+            message: 'Please Check Your Network Connection',
+          }),
         );
       } else {
-        Alert.alert(
-          'Submission Errors',
-          error.response.data.message,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                console.log('OK Pressed');
-              },
-            },
-          ],
-          {cancelable: false},
+        store.dispatch(
+          setErrorAlert({
+            title: 'submission Error',
+            message: error?.response?.data?.message || 'Something went wrong!',
+          }),
         );
       }
     }
   }
 };
 
-export {Post, Get, Patch, Delete ,Put};
+export {Post, Get, Patch, Delete, Put};

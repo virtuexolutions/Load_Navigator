@@ -155,7 +155,7 @@ const ChangePassword = () => {
                   }}
                   title={'confirm new password *'}
                   titleText={'Confirm your new password'}
-                  placeholder={'Confirm your new password'}
+                  placeholder={'Confirm Your New Password'}
                   setText={handleChange('confirmNewPassword')}
                   value={values.confirmNewPassword}
                   secureText={true}

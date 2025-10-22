@@ -35,6 +35,8 @@ import TermsAndConditions from './Screens/TermsAndConditions';
 import VerificationScreen from './Screens/VerificationScreen';
 import AddCard from './Screens/AddCard';
 import PaymentMethod from './Screens/PaymentMethod';
+import MyJobs from './Screens/MyJobs';
+import MapScreen from './Screens/MapScreen';
 // import MapScreen from './Screens/MapScreen';
 
 enableScreens();
@@ -65,8 +67,8 @@ const AppNavigator = () => {
         ? 'SelecteArea'
         : emailVerified == false || numberVerified == false
         ? 'VerificationScreen'
-        : [null, '', undefined].includes(pm_type)
-        ? 'AddCard'
+        // : [null, '', undefined].includes(pm_type) 
+        // ? 'AddCard'
         : 'MyDrawer';
     // : token != null && (!emailVerified || !numberVerified)
     // ? 'VerificationScreen'
@@ -82,8 +84,8 @@ const AppNavigator = () => {
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
-          // initialRouteName={'CreateRoute'}
-          initialRouteName={firstScreen}
+          initialRouteName={'MapScreen'}
+          // initialRouteName={firstScreen}
           screenOptions={{headerShown: false}}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
           <RootNav.Screen name="CarDirectory" component={CarDirectory} />
@@ -109,9 +111,9 @@ const AppNavigator = () => {
           <RootNav.Screen name="CreateRoute" component={CreateRoute} />
           <RootNav.Screen name="LoadDetails" component={LoadDetails} />
           <RootNav.Screen name="PostScreen" component={PostScreen} />
-          {/* <RootNav.Screen name="PaymentMethod" component={PaymentMethod} /> */}
+          {/* <RootNav.Screen name="MyJobs" component={MyJobs} /> */}
           <RootNav.Screen name="AddCard" component={AddCard} />
-          {/* <RootNav.Screen name="MapScreen" component={MapScreen} /> */}
+          <RootNav.Screen name="MapScreen" component={MapScreen} />
 
           <RootNav.Screen
             name="VerificationScreen"
@@ -276,7 +278,7 @@ export const MyDrawer = () => {
       <DrawerNavigation.Screen name="Profile" component={Profile} />
       <DrawerNavigation.Screen name="AddCard" component={AddCard} />
 
-      {/* <DrawerNavigation.Screen name="VerificationScreen" component={VerificationScreen} /> */}
+      <DrawerNavigation.Screen name="MyJobs" component={MyJobs} />
 
       <DrawerNavigation.Screen
         name="ServicesScreen"

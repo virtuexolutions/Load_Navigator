@@ -6,6 +6,7 @@ import {moderateScale} from 'react-native-size-matters';
 import navigationService from '../navigationService';
 import Color from '../Assets/Utilities/Color';
 import {useSelector} from 'react-redux';
+import CustomStatusBar from '../Components/CustomStatusBar';
 
 const SelectRoute = () => {
   const userRole = useSelector(state => state.commonReducer.selectedRole);
@@ -25,6 +26,7 @@ const SelectRoute = () => {
         alignItems: 'center',
         justifyContent: 'center',
       }}>
+        <CustomStatusBar barStyle={'dark-content'}/>
       <View
         style={{
           alignSelf: 'center',

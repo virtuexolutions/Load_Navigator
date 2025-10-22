@@ -17,6 +17,7 @@ import Color from '../Assets/Utilities/Color';
 import Header from '../Components/Header';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useSelector} from 'react-redux';
+import CustomStatusBar from '../Components/CustomStatusBar';
 
 const PrivacyPolicy = () => {
   const navigation = useNavigation();
@@ -29,17 +30,20 @@ const PrivacyPolicy = () => {
         styles.mainScreen,
         {
           backgroundColor:
-            userRole.toLowerCase() == 'pilot' ? Color.primary : Color.white,
+            userRole.toLowerCase() == 'pilot' ? Color.primary : Color.secondary,
         },
       ]}
       //   conltentContainerStyle={{
       //     aignItems: 'center',
       //   }}
     >
+      <CustomStatusBar backgroundColor={Color.secondary} barStyle={'light-content'}/>
       <View
         style={[
           styles.main_view,
           {
+            height: windowHeight,
+            backgroundColor: Color.white,
             backgroundColor:
               userRole.toLowerCase() == 'pilot' ? Color.primary : Color.white,
           },
