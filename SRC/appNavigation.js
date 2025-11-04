@@ -48,13 +48,12 @@ const AppNavigator = () => {
 
   const isLoggedIn = useSelector(state => state.authReducer.isLoggedIn);
   const pm_type = useSelector(state => state.authReducer.pm_type);
-  console.log("🚀 ~ AppNavigator ~ pm_type:", pm_type)
 
   const emailVerified = useSelector(state => state.authReducer.emailVerified);
-  console.log("🚀 ~ AppNavigator ~ emailVerified:", emailVerified)
-  console.log("🚀 ~ AppNavigator ~ emailVerified:", emailVerified)
 
   const numberVerified = useSelector(state => state.authReducer.numberVerified);
+  const isTrackingActive = useSelector(state => state.commonReducer.isTrackingActive);
+
 
   const RootNav = createNativeStackNavigator();
   const RootNavLogged = createNativeStackNavigator();
@@ -69,6 +68,7 @@ const AppNavigator = () => {
         ? 'VerificationScreen'
         // : [null, '', undefined].includes(pm_type) 
         // ? 'AddCard'
+        :isTrackingActive == true ? 'MapScreen'
         : 'MyDrawer';
     // : token != null && (!emailVerified || !numberVerified)
     // ? 'VerificationScreen'

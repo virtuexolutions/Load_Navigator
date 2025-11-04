@@ -12,6 +12,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        
     }
     dependencies {
         classpath("com.android.tools.build:gradle")
@@ -20,5 +21,21 @@ buildscript {
         classpath 'com.google.gms:google-services:4.4.2'
     }
 }
+
+
+allprojects {
+    repositories {
+        // It's been reported that some people might require mavenLocal() repo here.
+        // I leave it disabled for now.
+        //mavenLocal()
+
+        // Required for react-native-background-geolocation
+        maven { url("${project(':react-native-background-geolocation').projectDir}/libs") }
+        maven { url 'https://developer.huawei.com/repo/' }
+        // Required for react-native-background-fetch
+        maven { url("${project(':react-native-background-fetch').projectDir}/libs") }
+    }
+}
+
 
 apply plugin: "com.facebook.react.rootproject"

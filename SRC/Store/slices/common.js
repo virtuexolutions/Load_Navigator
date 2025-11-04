@@ -18,6 +18,7 @@ const initialState = {
   pickupLocatin: {},
   dropoffLocation: {},
   cardData: {},
+  isTrackingActive : false,
   error: {
     visible: false,
     title: '',
@@ -238,6 +239,9 @@ const CommonSlice = createSlice({
     hideErrorAlert(state) {
       state.error.visible = false;
     },
+    setIsTrackingActive(state ,action){
+      state.isTrackingActive = action.payload
+    }
   },
 });
 
@@ -270,6 +274,7 @@ export const {
   setPaymentCard,
   setErrorAlert,
   hideErrorAlert,
+  setIsTrackingActive
 } = CommonSlice.actions;
 
 export default CommonSlice.reducer;

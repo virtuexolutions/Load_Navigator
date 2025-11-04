@@ -6,7 +6,6 @@ import {moderateScale} from 'react-native-size-matters';
 import Color from '../Assets/Utilities/Color';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import CustomText from './CustomText';
-import {CropView} from 'react-native-image-crop-tools';
 import {useDispatch} from 'react-redux';
 import {RNCamera} from 'react-native-camera';
 import CustomButton from './CustomButton';
