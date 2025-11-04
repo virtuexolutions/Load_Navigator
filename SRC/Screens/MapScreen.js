@@ -612,7 +612,7 @@ export default function App() {
   useEffect(() => {
     if (mapRef.current) {
       mapRef.current.fitToCoordinates([origin, destination], {
-        edgePadding: { top: 50, right: 60, bottom: 60, left: 50 },
+        edgePadding: { top: 50, right: 50, bottom: 60, left: 50 },
         animated: true,
       });
     }
@@ -620,26 +620,26 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-    <MapView
-         ref={MapView => (this.MapView = MapView)}
-         style={styles.map}
-         initialRegion={this.state.region}
-         loadingEnabled = {true}
-         loadingIndicatorColor="#666666"
-         loadingBackgroundColor="#eeeeee"
-         moveOnMarkerPress = {false}
-         showsUserLocation={true}
-         showsCompass={true}
-         showsPointsOfInterest = {false}
-         provider="google">
-         {/* {this.state.markers.map((marker:any)  => (  
-              <MapView.Marker
-                key={marker.id}
-                coordinate={marker.coordinate}
-                title={marker.title}
-                description={marker.description}
-              />
-         ))} */}
+      <MapView
+        ref={mapRef}
+        style={styles.map}
+        initialRegion={{
+          latitude: 24.7672467,
+          longitude: 67.0492,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        }}
+      >
+        <Marker   pinColor={Color.red} coordinate={{latitude :origin?.latitude, longitude: origin?.longitude }} title="Origin" />
+        <Marker  pinColor={Color.black} coordinate={{latitude :destination?.latitude, longitude: destination?.longitude } } title="Destination" />
+
+        <MapViewDirections
+          origin={origin}
+          destination={destination}
+          apikey={GOOGLE_MAPS_APIKEY}
+          strokeWidth={4}
+          strokeColor="#FF0000"
+        />
       </MapView>
     </View>
   );
