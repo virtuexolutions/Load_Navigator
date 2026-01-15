@@ -18,7 +18,7 @@ const initialState = {
   pickupLocatin: {},
   dropoffLocation: {},
   cardData: {},
-  isTrackingActive : false,
+  isTrackingActive : {},
   error: {
     visible: false,
     title: '',
@@ -241,6 +241,7 @@ const CommonSlice = createSlice({
     },
     setIsTrackingActive(state ,action){
       state.isTrackingActive = action.payload
+      console.log("🚀 ~ isTrackingActive:",  state.isTrackingActive ,action?.payload)
     }
   },
 });

@@ -1,8 +1,9 @@
 import React from 'react';
-import { Dimensions, PermissionsAndroid } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { setLoaction } from '../Store/slices/common';
+import {Dimensions, PermissionsAndroid} from 'react-native';
+import {useDispatch} from 'react-redux';
+import {setLoaction} from '../Store/slices/common';
 
+import BackgroundGeolocation from 'react-native-background-geolocation';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
@@ -22,7 +23,7 @@ const windowHeight = Dimensions.get('window').height;
 //       console.log('🚀 ~ requestLocationPermission ~ granted:', granted);
 //       dispatch(setLoaction(granted));
 //       console.log('You can use the Location');
-//     } 
+//     }
 //     else {
 //       console.log('Location permission denied');
 //     }
@@ -71,7 +72,6 @@ const windowHeight = Dimensions.get('window').height;
 //     console.warn(err);
 //   }
 // };
-
 
 const requestLocationPermission = async () => {
   try {
@@ -132,6 +132,29 @@ const requestWritePermission = async () => {
   }
 };
 
+const requestBackgroundLocationPermission = async () => {
+  try {
+    const status = await BackgroundGeolocation.requestPermission();
+
+    if (
+      status === BackgroundGeolocation.AUTHORIZATION_STATUS_ALWAYS ||
+      status === BackgroundGeolocation.AUTHORIZATION_STATUS_WHEN_IN_USE
+    ) {
+      console.log('✅ Location permission granted');
+      return true;
+    } else {
+      console.log('❌ Location permission denied');
+
+      // User ko Settings screen par bhejne ke liye
+      BackgroundGeolocation.showAppSettings();
+      return false;
+    }
+  } catch (error) {
+    console.log('Permission Error:', error);
+    return false;
+  }
+};
+
 const apiHeader = (token, isFormData) => {
   if (token && !isFormData) {
     return {
@@ -187,6 +210,7 @@ export {
   sleep,
   wait,
   ContainsHTML,
+  requestBackgroundLocationPermission,
   windowWidth,
   windowHeight,
 };

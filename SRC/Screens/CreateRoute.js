@@ -1,7 +1,15 @@
 import Lottie from 'lottie-react-native';
 import {Icon} from 'native-base';
 import React, {useRef, useState} from 'react';
-import {Alert, Linking, StatusBar, StyleSheet, Text, View} from 'react-native';
+import {
+  Alert,
+  Linking,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Modal from 'react-native-modal';
 import {moderateScale} from 'react-native-size-matters';
@@ -13,30 +21,37 @@ import ScanRoute from '../Components/ScanRoute';
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import CustomImage from '../Components/CustomImage';
 import Header from '../Components/Header';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 // import RNFetchBlob from 'rn-fetch-blob';
 // import RNFetchBlob from 'react-native-blob-util';
 import RNFS from 'react-native-fs';
 import navigationService from '../navigationService';
+import {useSelector} from 'react-redux';
 
 const CreateRoute = () => {
   const cameraRef = useRef(null);
+
+  const isTrackingActive = useSelector(
+    state => state.commonReducer.isTrackingActive,
+  );
+  console.log(
+    'first============================== <>>>>>>>>>>>>> ',
+    Object.keys(isTrackingActive).length > 0 ? 'zeri' : 'meerab',
+  );
+
   const [modalVisible, setModalVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
   const [isRouteFound, setIsRouteFound] = useState(false);
   const [routeUrl, setRouteUrl] = useState('');
   const [finalOrigin, setfinalOrigin] = useState({});
   const [finaldestination, setfinalDestination] = useState({});
-
   const [finalWayPoint, setfinalWayPoint] = useState([]);
-
   const [isPermitScan, setisPermitScan] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
   const [parsed, setParsed] = useState(null);
   const [url, setUrl] = useState(false);
-  console.log('🚀 ~ CreateRoute ~ url:', url);
   const [isLoading, setIsLoading] = useState(false);
   const [permitData, setPermitData] = useState(null);
 
@@ -910,6 +925,35 @@ const CreateRoute = () => {
         }}
         cameraRef={cameraRef}
       />
+      {/* {Object.keys(isTrackingActive).length > 0 && ( */}
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => {
+            navigationService.navigate('MapScreen', {data: isTrackingActive});
+          }}
+          activeOpacity={0.8}>
+          <View style={styles.iconContainer}>
+            <Icon
+              as={FontAwesome5}
+              name="car"
+              size={moderateScale(24)}
+              color="#fff"
+            />
+          </View>
+
+          <View style={styles.textContainer}>
+            <CustomText style={styles.title}>Permit Tracking Active</CustomText>
+            <CustomText style={styles.subtitle}>
+              Tap to open tracking
+            </CustomText>
+
+            {/* Progress Bar*/}
+             <View style={styles.progressBar}>
+              <View style={styles.progressFill} />
+            </View>
+          </View>
+        </TouchableOpacity>
+      {/* // )}   */}
 
       <Text style={styles.description}>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed scelerisque
@@ -1074,14 +1118,12 @@ const styles = StyleSheet.create({
     marginBottom: moderateScale(20, 0.6),
   },
   scanBoxContainer: {
-    // backgroundColor: '#6e6e6e',ca
     borderRadius: moderateScale(10, 0.6),
     padding: moderateScale(10, 0.6),
     alignItems: 'center',
     width: windowWidth * 0.85,
     height: windowHeight * 0.4,
     borderWidth: moderateScale(1, 0.6),
-    // borderColor: Color.secondary,
   },
   label: {
     color: '#fff',
@@ -1089,57 +1131,12 @@ const styles = StyleSheet.create({
     marginBottom: moderateScale(10, 0.6),
     fontSize: moderateScale(18, 0.6),
   },
-  scanBox: {
-    borderColor: '#fff',
-    width: windowWidth * 0.7,
-    height: windowWidth * 0.7,
-    position: 'relative',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: moderateScale(10, 0.6),
-  },
-  corner: {
-    position: 'absolute',
-    width: moderateScale(20, 0.6),
-    height: moderateScale(20, 0.6),
-    borderColor: '#fff',
-    borderLeftWidth: moderateScale(2, 0.6),
-    borderTopWidth: moderateScale(2, 0.6),
-  },
-  cameraStyle: {
-    width: windowWidth * 0.7,
-    height: windowWidth * 0.65,
-    alignSelf: 'center',
-    marginTop: windowHeight * 0.14,
-    borderRadius: 30,
-  },
-
-  topLeft: {
-    top: 0,
-    left: 20,
-    borderTopWidth: 4,
-    borderLeftWidth: 4,
-  },
-  topRight: {
-    top: 0,
-    right: 20,
-    transform: [{rotate: '90deg'}],
-  },
-  bottomLeft: {
-    bottom: 0,
-    left: 20,
-    transform: [{rotate: '-90deg'}],
-  },
-  bottomRight: {
-    bottom: 0,
-    right: 20,
-    transform: [{rotate: '180deg'}],
-  },
 
   description: {
     color: '#b0b0b0',
+    position: 'absolute',
+    bottom: moderateScale(40, 0.6),
     textAlign: 'center',
-    marginTop: windowHeight * 0.25,
     fontSize: moderateScale(12, 0.6),
     width: '80%',
   },
@@ -1152,7 +1149,6 @@ const styles = StyleSheet.create({
   modalContent: {
     margin: 20,
     borderRadius: 10,
-    // backgroundColor :'red',
     width: windowWidth * 0.8,
     alignItems: 'center',
     shadowColor: '#000',
@@ -1168,8 +1164,53 @@ const styles = StyleSheet.create({
   error_container: {
     alignItems: 'center',
     justifyContent: 'center',
-    // height: '100%',
-    // width: '100%',
     borderRadius: moderateScale(10, 0.6),
+  },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1C1C1E',
+    borderRadius: moderateScale(16),
+    padding: moderateScale(10, 0.6),
+    width: windowWidth * 0.8,
+    alignSelf: 'center',
+    marginTop: moderateScale(20),
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    marginTop: windowHeight * 0.21,
+    elevation: 4,
+  },
+  iconContainer: {
+    backgroundColor: '#E53935',
+    padding: moderateScale(10),
+    borderRadius: moderateScale(14),
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: moderateScale(14),
+  },
+  textContainer: {
+    flex: 1,
+  },
+  title: {
+    color: '#fff',
+    fontSize: moderateScale(13, 0.6),
+    fontWeight: '600',
+  },
+  subtitle: {
+    color: '#aaa',
+    fontSize: moderateScale(11),
+  },
+  progressBar: {
+    height: moderateScale(6),
+    backgroundColor: '#333',
+    borderRadius: moderateScale(10),
+    overflow: 'hidden',
+  },
+  progressFill: {
+    width: '70%', // dynamically change if needed
+    height: '100%',
+    backgroundColor: '#E53935',
+    borderRadius: moderateScale(10),
   },
 });

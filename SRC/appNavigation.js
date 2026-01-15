@@ -68,7 +68,7 @@ const AppNavigator = () => {
         ? 'VerificationScreen'
         // : [null, '', undefined].includes(pm_type) 
         // ? 'AddCard'
-        :isTrackingActive == true ? 'MapScreen'
+        // :isTrackingActive == true ? 'MapScreen'
         : 'MyDrawer';
     // : token != null && (!emailVerified || !numberVerified)
     // ? 'VerificationScreen'
@@ -84,8 +84,8 @@ const AppNavigator = () => {
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
         <RootNav.Navigator
-          initialRouteName={'MapScreen'}
-          // initialRouteName={firstScreen}
+          // initialRouteName={'MapScreen'}
+          initialRouteName={firstScreen}
           screenOptions={{headerShown: false}}>
           <RootNav.Screen name="MyDrawer" component={MyDrawer} />
           <RootNav.Screen name="CarDirectory" component={CarDirectory} />

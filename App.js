@@ -14,6 +14,7 @@ import {PersistGate} from 'redux-persist/integration/react';
 import SplashScreen from './SRC/Screens/SplashScreen';
 import {persistor, store} from './SRC/Store/index';
 import {
+  requestBackgroundLocationPermission,
   requestCameraPermission,
   requestLocationPermission,
   requestWritePermission,
@@ -54,6 +55,7 @@ const MainContainer = () => {
       await requestLocationPermission();
       await requestCameraPermission();
       await requestWritePermission();
+      await requestBackgroundLocationPermission();
     }
     GetPermission();
   }, []);
